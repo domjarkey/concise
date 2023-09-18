@@ -25,3 +25,7 @@ test_that("Atomic mapping", {
 test_that("List mapping", {
     # TODO: this one
 })
+
+test_that("Data frame mapping", {
+    # TODO: and this
+})
