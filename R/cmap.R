@@ -12,6 +12,8 @@ cmap <- function(
         )
 ) {
     # TODO: implement .x for length(.l) == 1 / .l atomic
+    # TODO: implement .x for name in rhs of .f
+    # TODO: implement argument passing inside formula
 
     ..l <- rlang::enexpr(.l)
     .f <- rlang::enexpr(.f)
@@ -61,9 +63,12 @@ cmap <- function(
         names(.l) <- paste0("...", seq_along(.l))
     }
     if (is.list(.l) && !is.data.frame(.l)) {
+        # TODO: keep lists of different lengths as lists
+        # TODO: add .i to lists of length 1 or lists of equal length
         .l <- as.data.frame(.l)
     }
     if (!(".i" %in% names(.l))) {
+        # TODO: only do this step for data.frames
         if (is.null(.i)) {
             .l <- dplyr::mutate(.l, .i = dplyr::row_number())
         } else {
@@ -86,6 +91,7 @@ cmap <- function(
     }
 }
 
+# TODO: add cmap_x etc.
 # cmap_chr <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_chr) {
 #     cmap(.l = .l, .f = .f, ..., env = env, map_fn = map_fn)
 # }

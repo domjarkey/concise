@@ -29,3 +29,6 @@ test_that("List mapping", {
 test_that("Data frame mapping", {
     # TODO: and this
 })
+
+# TODO: test recursion with single arg function on first column in data, second
+#       second column in data, w. and w/o explicit argument names in .this call

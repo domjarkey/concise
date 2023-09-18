@@ -1,4 +1,6 @@
 cmutate <- function(.data, ...) {
+    # TODO: is tidyselect possible inside formula; if not possible use list.
+    #       Maybe needs another argument to pass cols
     .args <- rlang::enquos(...)
     for (i in seq_along(.args)) {
         if (is_concise_formula(rlang::quo_get_expr(.args[[i]]))) {
