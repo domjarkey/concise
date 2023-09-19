@@ -13,8 +13,10 @@ test_that("Atomic mapping", {
     expect_type(cmap(6:10, ~ ...1 ^ 2), "double")
     expect_type(cmap(6:10, ~ ...1 ^ 2 ? int), "integer")
     expect_type(cmap(6:10, ~ ...1 ^ 2 ? dbl), "double")
-    res <- suppressWarnings(cmap(6:10, ~ ...1 ^ 2 ? chr))
-    expect_type(res, "character")
+    expect_type(
+        suppressWarnings(cmap(6:10, ~ ...1 ^ 2 ? chr)),
+        "character"
+    )
     expect_type(cmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
     expect_type(cmap(letters[1:3], ~ paste0(...1, "zzz") ? chr), "character")
     expect_equal(cmap(0:1, ~ ...1 ? lgl), c(FALSE, TRUE))
