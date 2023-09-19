@@ -4,41 +4,12 @@ cmap <- function(
         ...,
         env = parent.frame(),
         map_fn = purrr::pmap,
-        simplify = TRUE,
-        .i = tryCatch(
-            dplyr::row_number(),
-            error = function(e)
-                NULL
-        )
+        simplify = FALSE
 ) {
     # TODO: implement .x for length(.l) == 1 / .l atomic
-    # TODO: implement .x for name in rhs of .f
     # TODO: implement argument passing inside formula
 
-    ..l <- rlang::enexpr(.l)
     .f <- rlang::enexpr(.f)
-
-    if (is_concise_formula(..l)) {
-        nms <- purrr::keep(
-            get_formula_names(..l),
-            \( .x ) {
-                tryCatch(
-                    !is.null(env$.data[[.x]]),
-                    error = function(e) FALSE
-                )
-            }
-        ) |> unique()
-        .f <- ..l
-        .l <- purrr::map_dfc(nms, ~ tibble::tibble({{ .x }} := env$.data[[.x]]))
-        if (!is.null(.i) && !(".i" %in% nms)) {
-            if (length(nms) == 0) {
-                .l <- list(.i = .i)
-            } else {
-                .l$.i <- .i
-            }
-        }
-        return(cmap(.l, !!.f, ..., env = env, map_fn = map_fn))
-    }
 
     if (length(.f) > 1 && .f[[1]] == rlang::sym("?")) {
         if (any(.f[[3]] == rlang::exprs(chr, dbl, df, int, lgl))) {
@@ -51,31 +22,14 @@ cmap <- function(
                 lgl = purrr::pmap_lgl
             )
             .f <- as.formula(.f[[2]], env = env)
-            return(cmap(.l, !!.f, ..., env = env, map_fn = map_fn))
+            return(cmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify))
         }
     } else if (length(.f) == 3) {
+        # ignore RHS
         .f <- .f[-2]
     }
-    if (is.atomic(.l)) {
-        .l <- tibble::tibble(`...1` = .l)
-    }
-    if (is.null(names(.l))) {
-        names(.l) <- paste0("...", seq_along(.l))
-    }
-    if (is.list(.l) && !is.data.frame(.l)) {
-        # TODO: keep lists of different lengths as lists
-        # TODO: add .i to lists of length 1 or lists of equal length
-        .l <- as.data.frame(.l)
-    }
-    if (!(".i" %in% names(.l))) {
-        # TODO: only do this step for data.frames
-        if (is.null(.i)) {
-            .l <- dplyr::mutate(.l, .i = dplyr::row_number())
-        } else {
-            .l$.i <- .i
-        }
-    }
-    nms <- intersect(names(.l), get_formula_names(.f))
+    .l <- list(.x = .l, .i = seq_along(.l))
+    nms <- names(.l)
     .this <- rlang::new_function(
         args = purrr::map(
             purrr::set_names(nms),
@@ -83,7 +37,7 @@ cmap <- function(
         ),
         body = .f[[2]]
     )
-    out <- map_fn(.l[nms], .f = .this, ...)
+    out <- map_fn(.l, .f = .this, ...)
     if (simplify && length(out) == length(unlist(out))) {
         unlist(out)
     } else {
