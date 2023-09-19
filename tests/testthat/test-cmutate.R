@@ -9,7 +9,7 @@ test_that("Input modes", {
 
     # mode: cmutate(name = cmap(~ .f))
     expect_equal(
-        df |> cmutate(z = cmap(~ is.null(y))),
+        df |> cmutate(z = rmap(~ is.null(y))),
         df |> cmutate(z = purrr::map_lgl(y, ~ is.null(.x)))
     )
 
