@@ -9,7 +9,7 @@ cmutate <- function(.data, ...) {
             }
             .args[[i]] <- rlang::quo_set_expr(
                 .args[[i]],
-                rlang::call2("cmap", rlang::quo_get_expr(.args[[i]]))
+                rlang::call2("rmap", rlang::quo_get_expr(.args[[i]]))
             )
         }
     }
