@@ -37,7 +37,7 @@ rmap <- function(
                 .l$.i <- .i
             }
         }
-        return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn))
+        return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
     }
 
     if (length(.f) > 1 && .f[[1]] == rlang::sym("?")) {
@@ -51,7 +51,7 @@ rmap <- function(
                 lgl = purrr::pmap_lgl
             )
             .f <- as.formula(.f[[2]], env = env)
-            return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn))
+            return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
         }
     } else if (length(.f) == 3) {
         .f <- .f[-2]
