@@ -1,25 +1,23 @@
 test_that("Atomic mapping", {
-    # ...1 pronoun
-    expect_equal(cmap(6:10, ~ ...1 ^ 2), c(36, 49, 64, 81, 100))
-    expect_equal(cmap(letters[1:3], ~ paste0(...1, "zzz")), c("azzz", "bzzz", "czzz"))
-
-    # TODO: .x pronoun (when implemented)
+    # .x pronoun
+    expect_equal(cmap(6:10, ~ .x ^ 2), list(36, 49, 64, 81, 100))
+    expect_equal(cmap(letters[1:3], ~ paste0(.x, "zzz")), list("azzz", "bzzz", "czzz"))
 
     # .i pronoun
-    expect_equal(cmap(6:10, ~ .i ^ 2), c(1, 4, 9, 16, 25))
-    expect_equal(cmap(6:10, ~ ...1 * .i), c(6L, 14L, 24L, 36L, 50L))
+    expect_equal(cmap(6:10, ~ .i ^ 2), list(1, 4, 9, 16, 25))
+    expect_equal(cmap(6:10, ~ .x * .i), list(6L, 14L, 24L, 36L, 50L))
 
     # type casting
-    expect_type(cmap(6:10, ~ ...1 ^ 2), "double")
-    expect_type(cmap(6:10, ~ ...1 ^ 2 ? int), "integer")
-    expect_type(cmap(6:10, ~ ...1 ^ 2 ? dbl), "double")
+    expect_type(cmap(6:10, ~ .x ^ 2), "list")
+    expect_type(cmap(6:10, ~ .x ^ 2 ? int), "integer")
+    expect_type(cmap(6:10, ~ .x ^ 2 ? dbl), "double")
     expect_type(
-        suppressWarnings(cmap(6:10, ~ ...1 ^ 2 ? chr)),
+        suppressWarnings(cmap(6:10, ~ .x ^ 2 ? chr)),
         "character"
     )
-    expect_type(cmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
-    expect_type(cmap(letters[1:3], ~ paste0(...1, "zzz") ? chr), "character")
-    expect_equal(cmap(0:1, ~ ...1 ? lgl), c(FALSE, TRUE))
+    expect_type(cmap(letters[1:3], ~ paste0(.x, "zzz")), "list")
+    expect_type(cmap(letters[1:3], ~ paste0(.x, "zzz") ? chr), "character")
+    expect_equal(cmap(0:1, ~ .x ? lgl), c(FALSE, TRUE))
     ## TODO: test df
 
 })
