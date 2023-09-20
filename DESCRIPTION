@@ -6,6 +6,12 @@ Authors@R: person("Dominic", "Jarkey", email="dominic.jarkey@gmail.com", role = 
 Description: A set of mapping and data-transformation functions leveraging a
     custom anonymous function notation that allows for direct reference to
     data variables without having to pass them explicitly.
+Depends: R (>= 3.4)
+Imports:
+    dplyr,
+    purrr,
+    rlang,
+    tibble
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
