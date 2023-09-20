@@ -51,3 +51,5 @@ test_that("Multiple column inputs", {
         )
     )
 })
+
+# TODO: test .i, test .i when .i exists in data columns

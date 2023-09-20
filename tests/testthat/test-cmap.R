@@ -7,6 +7,8 @@ test_that("Atomic mapping", {
     expect_equal(cmap(6:10, ~ .i ^ 2), list(1, 4, 9, 16, 25))
     expect_equal(cmap(6:10, ~ .x * .i), list(6L, 14L, 24L, 36L, 50L))
 
+    # TODO: test .i, test .i when .i exists in data columns
+
     # .nm pronoun
     expect_equal(
         cmap(purrr::set_names(6:10, letters[6:10]), ~ .nm),
