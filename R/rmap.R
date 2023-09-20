@@ -13,7 +13,6 @@ rmap <- function(
                 NULL
         )
 ) {
-    # TODO: implement .nm pronoun
     # TODO: implement .x for length(.l) == 1 / .l atomic
     # TODO: implement .x for name in rhs of .f
     # TODO: implement argument passing inside formula
