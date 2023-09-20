@@ -26,7 +26,7 @@ cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simpl
     .l <- list(
         .x = .l,
         .i = seq_along(.l),
-        .nm = if(is.null(names(.l))) {seq_along(.l)} else {names(.l)}
+        .nm = if(is.null(names(.l))) {rep_len(NA_character_, length(.l))} else {names(.l)}
     )
     nms <- names(.l)
     .this <- rlang::new_function(

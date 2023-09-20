@@ -14,6 +14,11 @@ test_that("Atomic mapping", {
         cmap(purrr::set_names(6:10, letters[6:10]), ~ .nm),
         list(f = "f", g = "g", h = "h", i = "i", j = "j")
     )
+    expect_equal(
+        cmap(6:10, ~ .nm),
+        list(NA_character_, NA_character_, NA_character_, NA_character_,
+             NA_character_)
+    )
 
     # type casting
     expect_type(cmap(6:10, ~ .x ^ 2), "list")
