@@ -1,11 +1,4 @@
-cmap <- function(
-        .l,
-        .f = NULL,
-        ...,
-        env = parent.frame(),
-        map_fn = purrr::pmap,
-        simplify = FALSE
-) {
+cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simplify = FALSE ) {
     # TODO: implement .x for length(.l) == 1 / .l atomic
     # TODO: implement argument passing inside formula
 
@@ -28,7 +21,12 @@ cmap <- function(
         # ignore RHS
         .f <- .f[-2]
     }
-    .l <- list(.x = .l, .i = seq_along(.l))
+
+    .l <- list(
+        .x = .l,
+        .i = seq_along(.l),
+        .nm = if(is.null(names(.l))) {seq_along(.l)} else {names(.l)}
+    )
     nms <- names(.l)
     .this <- rlang::new_function(
         args = purrr::map(
