@@ -25,7 +25,7 @@ test_that("Atomic mapping", {
 })
 
 test_that("List mapping", {
-    # TODO: this one
+    # TODO: adds names when unnamed
 })
 
 test_that("Data frame mapping", {
@@ -34,3 +34,14 @@ test_that("Data frame mapping", {
 
 # TODO: test recursion with single arg function on first column in data, second
 #       second column in data, w. and w/o explicit argument names in .this call
+
+test_that("Fails correctly", {
+    expect_equal(
+        rmap(list(1:3, 4:6), ~ ...1 + ...2),
+        c(5, 7, 9)
+    )
+    expect_error(
+        rmap(list(1:3, 4:7), ~ ...1 + ...2),
+        "All elements of .l must be of equal length"
+    )
+})
