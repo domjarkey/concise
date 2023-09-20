@@ -9,6 +9,8 @@ test_that("Atomic mapping", {
     expect_equal(rmap(6:10, ~ .i ^ 2), c(1, 4, 9, 16, 25))
     expect_equal(rmap(6:10, ~ ...1 * .i), c(6L, 14L, 24L, 36L, 50L))
 
+    # TODO: test .i, test .i when .i exists in data columns
+
     # type casting
     expect_type(rmap(6:10, ~ ...1 ^ 2), "double")
     expect_type(rmap(6:10, ~ ...1 ^ 2 ? int), "integer")
@@ -25,21 +27,45 @@ test_that("Atomic mapping", {
 })
 
 test_that("List mapping", {
-    # TODO: adds names when unnamed
+    expect_equal(
+        rmap(list(1:3, 4:6), ~ ...1 + ...2),
+        c(5, 7, 9)
+    )
+    expect_equal(
+        rmap(list(alpha = 1:3, beta = 4:6), ~ alpha + beta),
+        c(5, 7, 9)
+    )
+
+    # .nm pronoun
+    expect_equal(
+        rmap(
+            list(first = c(a = 1, b = 2), second = c(x = 3, y = 4)),
+            ~ paste0(first.nm, second.nm)
+        ),
+        c("ax", "by")
+    )
 })
 
 test_that("Data frame mapping", {
-    # TODO: and this
+    # .nm pronoun
+    expect_equal(
+        rmap(tibble::tibble(x = c(a = 1, b = 2)), ~ paste0(x.nm, x)),
+        c(a = "a1", b = "b2")
+    )
+    expect_equal(
+        rmap(tibble::tibble(x = c(a = 1, b = 2), x.nm = c("hello", "goodbye")), ~ paste0(x.nm, x)),
+        c(a = "hello1", b = "goodbye2")
+    )
+    expect_equal(
+        rmap(tibble::tibble(x = c(1, 2)), ~ x.nm),
+        c(NA_character_, NA_character_)
+    )
 })
 
 # TODO: test recursion with single arg function on first column in data, second
 #       second column in data, w. and w/o explicit argument names in .this call
 
 test_that("Fails correctly", {
-    expect_equal(
-        rmap(list(1:3, 4:6), ~ ...1 + ...2),
-        c(5, 7, 9)
-    )
     expect_error(
         rmap(list(1:3, 4:7), ~ ...1 + ...2),
         "All elements of .l must be of equal length"

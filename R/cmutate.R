@@ -1,3 +1,4 @@
+#' @export
 cmutate <- function(.data, ...) {
     # TODO: is tidyselect possible inside formula; if not possible use list.
     #       Maybe needs another argument to pass cols

@@ -1,3 +1,5 @@
+#' @importFrom rlang `%||%`
+#' @export
 rmap <- function(
         .l,
         .f = NULL,
@@ -55,6 +57,7 @@ rmap <- function(
             return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
         }
     } else if (length(.f) == 3) {
+        # ignore RHS
         .f <- .f[-2]
     }
     if (is.atomic(.l)) {
@@ -67,13 +70,19 @@ rmap <- function(
         if (any(length(.l[[1]]) != lengths(.l))) {
             stop("All elements of .l must be of equal length")
         }
-        .l <- as.data.frame(.l)
+        .l <- tibble::as_tibble(.l)
     }
     if (!(".i" %in% names(.l))) {
         if (is.null(.i)) {
             .l <- dplyr::mutate(.l, .i = dplyr::row_number())
         } else {
             .l$.i <- .i
+        }
+    }
+    name_references <- intersect(paste0(names(.l), ".nm"), get_formula_names(.f))
+    for (nm in name_references) {
+        if (!nm %in% names(.l)) {
+            .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.l[[1]]))
         }
     }
     nms <- intersect(names(.l), get_formula_names(.f))
