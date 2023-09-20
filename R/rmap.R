@@ -30,6 +30,15 @@ rmap <- function(
                 )
             }
         ) |> unique()
+        name_references <- purrr::keep(
+            get_formula_names(..l),
+            \( .x ) {
+                tryCatch(
+                    !is.null(env$.data[[sub(".nm$", "", .x)]]),
+                    error = function(e) FALSE
+                )
+            }
+        ) |> unique()
         .f <- ..l
         .l <- purrr::map_dfc(nms, ~ tibble::tibble({{ .x }} := env$.data[[.x]]))
         if (!is.null(.i) && !(".i" %in% nms)) {
@@ -37,6 +46,11 @@ rmap <- function(
                 .l <- list(.i = .i)
             } else {
                 .l$.i <- .i
+            }
+        }
+        for (nm in name_references) {
+            if (!nm %in% names(.l)) {
+                .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.i))
             }
         }
         return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))

@@ -53,3 +53,31 @@ test_that("Multiple column inputs", {
 })
 
 # TODO: test .i, test .i when .i exists in data columns
+test_that("Pronouns", {
+    expect_equal(
+        tibble::tibble(x = c(a = 1, b = 2)) |> cmutate(z ~ x.nm),
+        structure(
+            list(x = c(a = 1, b = 2), z = c("a", "b")),
+            row.names = c(NA,  -2L),
+            class = c("tbl_df", "tbl", "data.frame")
+        )
+    )
+
+    expect_equal(
+        tibble::tibble(x = c(1, 2)) |> cmutate(z ~ x.nm),
+        structure(
+            list(x = c(1, 2), z = c(NA_character_, NA_character_)),
+            row.names = c(NA,  -2L),
+            class = c("tbl_df", "tbl", "data.frame")
+        )
+    )
+
+    expect_equal(
+        tibble::tibble(x = c(a = 4, b = 5)) |> cmutate(z ~ .i),
+        structure(
+            list(x = c(a = 4, b = 5), z = 1:2),
+            row.names = c(NA,  -2L),
+            class = c("tbl_df", "tbl", "data.frame")
+        )
+    )
+})
