@@ -22,7 +22,17 @@ test_that("Atomic mapping", {
     expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
     expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz") ? chr), "character")
     expect_equal(rmap(0:1, ~ ...1 ? lgl), c(FALSE, TRUE))
-    ## TODO: test df
+    expect_equal(
+        rmap(purrr::set_names(1:3, letters[1:3]), ~ c(value = ...1, name = ...1.nm) ? df),
+        structure(
+            list(
+                value = c("1", "2", "3"),
+                name = c("a", "b", "c")
+            ),
+            class = c("tbl_df", "tbl", "data.frame"),
+            row.names = c(NA, -3L)
+        )
+    )
 
 })
 
@@ -47,6 +57,16 @@ test_that("List mapping", {
 })
 
 test_that("Data frame mapping", {
+    expect_equal(
+        rmap(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y}),
+        c(7, 7, 9, 9, 11)
+    )
+
+    expect_equal(
+        rmap(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y} ? int),
+        c(7L, 7L, 9L, 9L, 11L)
+    )
+
     # .nm pronoun
     expect_equal(
         rmap(tibble::tibble(x = c(a = 1, b = 2)), ~ paste0(x.nm, x)),
