@@ -48,12 +48,14 @@ get_rhs <- function(.f) {
     }
 }
 
-insert_argument <- function(.f, .f_name, arg_name, arg_value) {
+insert_argument <- function(.f, .f_name, arg_name, arg_value, force = FALSE) {
     if (length(.f) >= 2 && .f[[1]] == rlang::sym(.f_name)) {
-        .f[[arg_name]] <- arg_value
+        if (force | !(arg_name %in% names(.f))) {
+            .f[[arg_name]] <- arg_value
+        }
     } else if (length(.f) >= 2) {
         for (i in seq_along(.f)) {
-            .f[[i]] <- insert_argument(.f[[i]], .f_name, arg_name, arg_value)
+            .f[[i]] <- insert_argument(.f[[i]], .f_name, arg_name, arg_value, force)
         }
     }
     .f
