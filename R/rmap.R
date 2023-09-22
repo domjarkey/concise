@@ -21,8 +21,10 @@ rmap <- function(
     .f <- rlang::enexpr(.f)
 
     if (is_concise_formula(..l)) {
+        formula_names <- get_formula_names(..l)
+        recursive <- ".this" %in% formula_names
         nms <- purrr::keep(
-            get_formula_names(..l),
+            formula_names,
             \( .x ) {
                 tryCatch(
                     !is.null(env$.data[[.x]]),
@@ -31,7 +33,7 @@ rmap <- function(
             }
         ) |> unique()
         name_references <- purrr::keep(
-            get_formula_names(..l),
+            stringr::str_subset(formula_names, ".nm$"),
             \( .x ) {
                 tryCatch(
                     !is.null(env$.data[[sub(".nm$", "", .x)]]),
@@ -47,10 +49,16 @@ rmap <- function(
             } else {
                 .l$.i <- .i
             }
+            if (recursive) {
+                .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
+            }
         }
         for (nm in name_references) {
             if (!nm %in% names(.l)) {
                 .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.i))
+            }
+            if (recursive) {
+                .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
             }
         }
         return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
@@ -85,20 +93,27 @@ rmap <- function(
         }
         .l <- tibble::as_tibble(.l)
     }
-    if (!(".i" %in% names(.l))) {
+    formula_names <- get_formula_names(.f)
+    recursive <- ".this" %in% formula_names
+    if (!".i" %in% names(.l)) {
         if (is.null(.i)) {
             .l <- dplyr::mutate(.l, .i = dplyr::row_number())
         } else {
             .l$.i <- .i
         }
-    }
-    name_references <- intersect(paste0(names(.l), ".nm"), get_formula_names(.f))
-    for (nm in name_references) {
-        if (!nm %in% names(.l)) {
-            .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.l[[1]]))
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
         }
     }
-    nms <- intersect(names(.l), get_formula_names(.f))
+    name_references <- intersect(paste0(names(.l), ".nm"), formula_names) |>
+        purrr::discard(~ .x %in% names(.l))
+    for (nm in name_references) {
+        .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.l[[1]]))
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
+        }
+    }
+    nms <- intersect(names(.l), formula_names)
     .this <- rlang::new_function(
         args = purrr::map(
             purrr::set_names(nms),
@@ -107,6 +122,7 @@ rmap <- function(
         body = .f[[2]]
     )
     out <- map_fn(.l[nms], .f = .this, ...)
+    # TODO: add error detection/reporting if length(nms) == 0 and nrow(out) == 0
     if (simplify && length(out) == length(unlist(out))) {
         unlist(out)
     } else {
