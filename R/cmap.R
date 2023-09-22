@@ -1,7 +1,6 @@
 #' @importFrom rlang `!!`
 #' @export
 cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simplify = FALSE ) {
-    # TODO: implement .x for length(.l) == 1 / .l atomic
     # TODO: implement argument passing inside formula
 
     .f <- rlang::enexpr(.f)
