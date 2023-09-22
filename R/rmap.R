@@ -13,6 +13,7 @@ rmap <- function(
                 NULL
         )
 ) {
+    # TODO: type checking of arguments with errors
     # TODO: implement .x for length(.l) == 1 / .l atomic
     # TODO: implement .x for name in rhs of .f
     # TODO: implement argument passing inside formula
