@@ -1,3 +1,4 @@
+#' @importFrom rlang `!!`
 #' @export
 cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simplify = FALSE ) {
     # TODO: implement .x for length(.l) == 1 / .l atomic
@@ -23,6 +24,10 @@ cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simpl
         .f <- .f[-2]
     }
 
+    if (".this" %in% get_formula_names(.f)) {
+        .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
+        .f <- insert_argument(.f, ".this", ".nm", rlang::sym(".nm"))
+    }
     .l <- list(
         .x = .l,
         .i = seq_along(.l),
@@ -32,7 +37,11 @@ cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simpl
     .this <- rlang::new_function(
         args = purrr::map(
             purrr::set_names(nms),
-            ~ rlang::expr(rlang::missing_arg())
+            ~ if (.x %in% c(".i", ".nm")) {
+                rlang::call2(rlang::expr("rlang::`!!`"), rlang::sym(.x))
+            } else {
+                rlang::expr(rlang::missing_arg())
+            }
         ),
         body = .f[[2]]
     )

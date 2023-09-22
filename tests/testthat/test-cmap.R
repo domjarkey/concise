@@ -110,5 +110,26 @@ test_that("Data frame mapping", {
     )
 })
 
+test_that("Recursion", {
+    expect_equal(
+        cmap(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2))),
+        list(1, 1, 2, 3, 5, 8, 13, 21, 34, 55)
+    )
+
+    expect_equal(
+        cmap(10:1, ~ ifelse(.x <= 2, .i, .this(.x = .x - 1) + .this(.x = .x - 2))),
+        list(55L, 68L, 63L, 52L, 40L, 30L, 21L, 16L, 9L, 10L)
+    )
+
+    expect_equal(
+        cmap(10:1, ~ ifelse(.x <= 2, .i, .this(.x = .x - 1, .i = .i - 1) + .this(.x = .x - 2))),
+        list(-146, -41, 5, 22, 25, 23, 18, 15, 9L, 10L)
+    )
+
+    expect_equal(
+        cmap(purrr::set_names(1:4, letters[1:4]), ~ ifelse(.x == 1, "1", paste(.nm, .this(.x - 1))) ? chr),
+        c(a = "1", b = "b 1", c = "c c 1", d = "d d d 1")
+    )
+})
 # TODO: test recursion with single arg function on first column in data, second
 #       second column in data, w. and w/o explicit argument names in .this call
