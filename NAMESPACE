@@ -3,4 +3,5 @@
 export(cmap)
 export(cmutate)
 export(rmap)
+importFrom(rlang,`!!`)
 importFrom(rlang,`%||%`)

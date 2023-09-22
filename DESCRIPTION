@@ -11,6 +11,7 @@ Imports:
     dplyr,
     purrr,
     rlang,
+    stringr,
     tibble
 License: What license is it under?
 Encoding: UTF-8
