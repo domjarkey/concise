@@ -131,5 +131,3 @@ test_that("Recursion", {
         c(a = "1", b = "b 1", c = "c c 1", d = "d d d 1")
     )
 })
-# TODO: test recursion with single arg function on first column in data, second
-#       second column in data, w. and w/o explicit argument names in .this call
