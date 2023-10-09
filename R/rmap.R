@@ -114,7 +114,8 @@ rmap <- function(
             .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
         }
     }
-    nms <- intersect(names(.l), formula_names)
+    # Always include .i so .l has at least one column
+    nms <- intersect(names(.l), c(formula_names, ".i"))
     .this <- rlang::new_function(
         args = purrr::map(
             purrr::set_names(nms),

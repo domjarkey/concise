@@ -129,3 +129,10 @@ test_that("Recursion", {
         c(a = "1", b = "b 1", c = "c c 1", d = "d d d 1")
     )
 })
+
+test_that("Constant functions", {
+    expect_equal(
+        cmap(1:3, ~5),
+        list(5, 5, 5)
+    )
+})

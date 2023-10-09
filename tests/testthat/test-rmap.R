@@ -91,3 +91,10 @@ test_that("Fails correctly", {
         "All elements of .l must be of equal length"
     )
 })
+
+test_that("Constant functions", {
+    expect_equal(
+        rmap(1:3, ~5),
+        c(5, 5, 5)
+    )
+})
