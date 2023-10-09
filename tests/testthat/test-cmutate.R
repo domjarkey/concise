@@ -92,3 +92,29 @@ test_that("Pronouns", {
         )
     )
 })
+
+test_that("Groups hold", {
+    df <- tibble::tibble(
+        colour = c("blue", "green", "blue", "blue", "green", "blue", "red", "blue"),
+        shape = rep(c("triangle", "square"), 4),
+        number = c(8, 5, 1, 2, 4, 7, 3, 6)
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            cmutate(index ~ .i),
+        df |>
+            dplyr::group_by(colour) |>
+            dplyr::mutate(index = dplyr::row_number())
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour, shape) |>
+            cmutate(index ~ .i),
+        df |>
+            dplyr::group_by(colour, shape) |>
+            dplyr::mutate(index = dplyr::row_number())
+    )
+})

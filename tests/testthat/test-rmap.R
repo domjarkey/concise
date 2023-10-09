@@ -98,3 +98,25 @@ test_that("Constant functions", {
         c(5, 5, 5)
     )
 })
+
+test_that("Groups hold", {
+    df <- tibble::tibble(
+        colour = c("blue", "green", "blue", "blue", "green", "blue", "red", "blue"),
+        shape = rep(c("triangle", "square"), 4),
+        number = c(8, 5, 1, 2, 4, 7, 3, 6)
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            rmap(~ .i),
+        c(1L, 1L, 2L, 3L, 2L, 4L, 1L, 5L)
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour, shape) |>
+            rmap(~ .i),
+        c(1L, 1L, 2L, 1L, 1L, 2L, 1L, 3L)
+    )
+})
