@@ -7,7 +7,7 @@ test_that("Input modes", {
         df |> dplyr::mutate(z = x + 1)
     )
 
-    # mode: cmutate(name = cmap(~ .f))
+    # mode: cmutate(name = rmap(~ .f))
     expect_equal(
         df |> cmutate(z = rmap(~ is.null(y))),
         df |> cmutate(z = purrr::map_lgl(y, ~ is.null(.x)))
@@ -56,28 +56,28 @@ test_that("Multiple column inputs", {
 test_that("Pronouns", {
     expect_equal(
         tibble::tibble(x = c(a = 1, b = 2)) |> cmutate(z ~ x.nm),
-        structure(
-            list(x = c(a = 1, b = 2), z = c("a", "b")),
-            row.names = c(NA,  -2L),
-            class = c("tbl_df", "tbl", "data.frame")
-        )
+        tibble::tibble(x = c(a = 1, b = 2), z = c("a", "b"))
     )
 
     expect_equal(
         tibble::tibble(x = c(1, 2)) |> cmutate(z ~ x.nm),
-        structure(
-            list(x = c(1, 2), z = c(NA_character_, NA_character_)),
-            row.names = c(NA,  -2L),
-            class = c("tbl_df", "tbl", "data.frame")
-        )
+        tibble::tibble(x = c(1, 2), z = c(NA_character_, NA_character_))
     )
 
     expect_equal(
         tibble::tibble(x = c(a = 4, b = 5)) |> cmutate(z ~ .i),
-        structure(
-            list(x = c(a = 4, b = 5), z = 1:2),
-            row.names = c(NA,  -2L),
-            class = c("tbl_df", "tbl", "data.frame")
+        tibble::tibble(x = c(a = 4, b = 5), z = 1:2)
+    )
+
+    expect_equal(
+        tibble::tibble(
+            x = c(4, 5),
+            .i = c("a", "b")
+        ) |> cmutate(z ~ .i),
+        tibble::tibble(
+            x = c(4, 5),
+            .i = c("a", "b"),
+            z = c("a", "b")
         )
     )
 })
