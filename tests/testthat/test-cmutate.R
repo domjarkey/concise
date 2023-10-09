@@ -79,4 +79,16 @@ test_that("Pronouns", {
             z = c("a", "b")
         )
     )
+
+    expect_equal(
+        tibble::tibble(
+            x = c(a = 4, b = 5),
+            x.nm = c("c", "d")
+        ) |> cmutate(z ~ x.nm),
+        tibble::tibble(
+            x = c(a = 4, b = 5),
+            x.nm = c("c", "d"),
+            z = c("c", "d")
+        )
+    )
 })
