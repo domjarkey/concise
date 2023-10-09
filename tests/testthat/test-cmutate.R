@@ -52,7 +52,6 @@ test_that("Multiple column inputs", {
     )
 })
 
-# TODO: test .i, test .i when .i exists in data columns
 test_that("Pronouns", {
     expect_equal(
         tibble::tibble(x = c(a = 1, b = 2)) |> cmutate(z ~ x.nm),
