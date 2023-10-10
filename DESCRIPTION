@@ -10,7 +10,7 @@ Depends: R (>= 3.4)
 Imports:
     dplyr,
     purrr,
-    rlang,
+    rlang (>= 1.1.1),
     stringr,
     tibble
 License: What license is it under?
