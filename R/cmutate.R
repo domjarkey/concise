@@ -14,5 +14,6 @@ cmutate <- function(.data, ...) {
             )
         }
     }
+
     dplyr::mutate(.data, !!!.args)
 }

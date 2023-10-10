@@ -1,4 +1,4 @@
-#' @importFrom rlang `!!`
+#' @import rlang
 #' @export
 cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simplify = FALSE ) {
     # TODO: type checking of arguments with errors

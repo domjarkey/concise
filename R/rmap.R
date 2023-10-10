@@ -1,4 +1,4 @@
-#' @importFrom rlang `%||%`
+#' @import rlang
 #' @export
 rmap <- function(
         .l,
@@ -24,6 +24,7 @@ rmap <- function(
     if (is_concise_formula(..l)) {
         formula_names <- get_formula_names(..l)
         recursive <- ".this" %in% formula_names
+
         nms <- purrr::keep(
             formula_names,
             \( .x ) {
@@ -33,6 +34,7 @@ rmap <- function(
                 )
             }
         ) |> unique()
+
         name_references <- purrr::keep(
             stringr::str_subset(formula_names, ".nm$"),
             \( .x ) {
@@ -42,11 +44,13 @@ rmap <- function(
                 )
             }
         ) |> unique()
+
         .f <- ..l
         .l <- purrr::map_dfc(nms, ~ tibble::tibble({{ .x }} := env$.data[[.x]]))
+
         if (!is.null(.i) && !(".i" %in% nms)) {
             if (length(nms) == 0) {
-                .l <- list(.i = .i)
+                .l <- tibble::tibble(.i = .i)
             } else {
                 .l$.i <- .i
             }
@@ -54,6 +58,7 @@ rmap <- function(
                 .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
             }
         }
+
         for (nm in name_references) {
             if (!nm %in% names(.l)) {
                 .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.i))
@@ -62,6 +67,7 @@ rmap <- function(
                 .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
             }
         }
+
         return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
     }
 
