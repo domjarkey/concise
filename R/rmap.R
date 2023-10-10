@@ -18,58 +18,7 @@ rmap <- function(
     # TODO: implement .x for name in rhs of .f
     # TODO: implement argument passing inside formula
 
-    ..l <- rlang::enexpr(.l)
     .f <- rlang::enexpr(.f)
-
-    if (is_concise_formula(..l)) {
-        formula_names <- get_formula_names(..l)
-        recursive <- ".this" %in% formula_names
-
-        nms <- purrr::keep(
-            formula_names,
-            \( .x ) {
-                tryCatch(
-                    !is.null(env$.data[[.x]]),
-                    error = function(e) FALSE
-                )
-            }
-        ) |> unique()
-
-        name_references <- purrr::keep(
-            stringr::str_subset(formula_names, ".nm$"),
-            \( .x ) {
-                tryCatch(
-                    !is.null(env$.data[[sub(".nm$", "", .x)]]),
-                    error = function(e) FALSE
-                )
-            }
-        ) |> unique()
-
-        .f <- ..l
-        .l <- purrr::map_dfc(nms, ~ tibble::tibble({{ .x }} := env$.data[[.x]]))
-
-        if (!is.null(.i) && !(".i" %in% nms)) {
-            if (length(nms) == 0) {
-                .l <- tibble::tibble(.i = .i)
-            } else {
-                .l$.i <- .i
-            }
-            if (recursive) {
-                .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
-            }
-        }
-
-        for (nm in name_references) {
-            if (!nm %in% names(.l)) {
-                .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.i))
-            }
-            if (recursive) {
-                .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
-            }
-        }
-
-        return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
-    }
 
     if (length(.f) > 1 && .f[[1]] == rlang::sym("?")) {
         if (any(.f[[3]] == rlang::exprs(chr, dbl, df, int, lgl))) {
@@ -136,6 +85,75 @@ rmap <- function(
     } else {
         out
     }
+}
+
+#' @import rlang
+#' @export
+context_lambda <- function(
+        .f,
+        ...,
+        env = parent.frame(),
+        map_fn = purrr::pmap,
+        simplify = TRUE,
+        .i = tryCatch(
+            dplyr::row_number(),
+            error = function(e)
+                NULL
+        )
+) {
+    # TODO: type checking of arguments with errors
+    # TODO: implement .x for length(.l) == 1 / .l atomic
+    # TODO: implement .x for name in rhs of .f
+    # TODO: implement argument passing inside formula
+
+    .f <- rlang::enexpr(.f)
+
+    formula_names <- get_formula_names(.f)
+    recursive <- ".this" %in% formula_names
+
+    nms <- purrr::keep(
+        formula_names,
+        \( .x ) {
+            tryCatch(
+                !is.null(env$.data[[.x]]),
+                error = function(e) FALSE
+            )
+        }
+    ) |> unique()
+
+    name_references <- purrr::keep(
+        stringr::str_subset(formula_names, ".nm$"),
+        \( .x ) {
+            tryCatch(
+                !is.null(env$.data[[sub(".nm$", "", .x)]]),
+                error = function(e) FALSE
+            )
+        }
+    ) |> unique()
+
+    .l <- purrr::map_dfc(nms, ~ tibble::tibble({{ .x }} := env$.data[[.x]]))
+
+    if (!is.null(.i) && !(".i" %in% nms)) {
+        if (length(nms) == 0) {
+            .l <- tibble::tibble(.i = .i)
+        } else {
+            .l$.i <- .i
+        }
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
+        }
+    }
+
+    for (nm in name_references) {
+        if (!nm %in% names(.l)) {
+            .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.i))
+        }
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
+        }
+    }
+
+    return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
 }
 
 # TODO: add rmap_x etc.

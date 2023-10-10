@@ -7,9 +7,9 @@ test_that("Input modes", {
         df |> dplyr::mutate(z = x + 1)
     )
 
-    # mode: cmutate(name = rmap(~ .f))
+    # mode: cmutate(name = context_lambda(~ .f))
     expect_equal(
-        df |> cmutate(z = rmap(~ is.null(y))),
+        df |> cmutate(z = context_lambda(~ is.null(y))),
         df |> cmutate(z = purrr::map_lgl(y, ~ is.null(.x)))
     )
 
