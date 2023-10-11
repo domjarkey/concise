@@ -120,3 +120,11 @@ test_that("Groups hold", {
         c(1L, 1L, 2L, 1L, 1L, 2L, 1L, 3L)
     )
 })
+
+test_that("Use ... to pass additional values", {
+    expect_equal(
+        tibble::tibble(x = 1:3) |>
+            rmap(~ x + z, z = 10),
+        11:13
+    )
+})

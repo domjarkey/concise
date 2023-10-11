@@ -20,17 +20,17 @@ test_that("Atomic mapping", {
 
     # type casting
     expect_type(cmap(6:10, ~ .x ^ 2), "list")
-    expect_type(cmap(6:10, ~ .x ^ 2 ? int), "integer")
-    expect_type(cmap(6:10, ~ .x ^ 2 ? dbl), "double")
+    expect_type(cmap_int(6:10, ~ .x ^ 2), "integer")
+    expect_type(cmap_dbl(6:10, ~ .x ^ 2), "double")
     expect_equal(
-        cmap(purrr::set_names(6:10, letters[6:10]), ~ paste(.nm, .i) ? chr),
+        cmap_chr(purrr::set_names(6:10, letters[6:10]), ~ paste(.nm, .i)),
         c(f = "f 1", g = "g 2", h = "h 3", i = "i 4", j = "j 5")
     )
     expect_type(cmap(letters[1:3], ~ paste0(.x, "zzz")), "list")
-    expect_type(cmap(letters[1:3], ~ paste0(.x, "zzz") ? chr), "character")
-    expect_equal(cmap(0:1, ~ .x ? lgl), c(FALSE, TRUE))
+    expect_type(cmap_chr(letters[1:3], ~ paste0(.x, "zzz")), "character")
+    expect_equal(cmap_lgl(0:1, ~ .x), c(FALSE, TRUE))
     expect_equal(
-        cmap(purrr::set_names(1:3, letters[1:3]), ~ c(value = .x, name = .nm) ? df),
+        cmap_df(purrr::set_names(1:3, letters[1:3]), ~ c(value = .x, name = .nm)),
         structure(
             list(
                 value = c("1", "2", "3"),
@@ -41,7 +41,7 @@ test_that("Atomic mapping", {
         )
     )
     expect_equal(
-        cmap(purrr::set_names(1:5, letters[1:5]), ~ data.frame(.x, .nm) ? df),
+        cmap_df(purrr::set_names(1:5, letters[1:5]), ~ data.frame(.x, .nm)),
         structure(
             list(
                 .x = 1:5,
@@ -56,7 +56,7 @@ test_that("Atomic mapping", {
 
 test_that("List mapping", {
     expect_equal(
-        cmap(list(1:3, 4:6), ~ sum(.x) ? dbl),
+        cmap_dbl(list(1:3, 4:6), ~ sum(.x)),
         c(6, 15)
     )
 
@@ -89,7 +89,7 @@ test_that("Data frame mapping", {
     )
 
     expect_equal(
-        cmap(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ sum(.x) ? int),
+        cmap_int(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ sum(.x)),
         c(x = 40L, y = 7L)
     )
 
@@ -125,7 +125,7 @@ test_that("Recursion", {
     )
 
     expect_equal(
-        cmap(purrr::set_names(1:4, letters[1:4]), ~ ifelse(.x == 1, "1", paste(.nm, .this(.x - 1))) ? chr),
+        cmap_chr(purrr::set_names(1:4, letters[1:4]), ~ ifelse(.x == 1, "1", paste(.nm, .this(.x - 1)))),
         c(a = "1", b = "b 1", c = "c c 1", d = "d d d 1")
     )
 })
@@ -134,5 +134,12 @@ test_that("Constant functions", {
     expect_equal(
         cmap(1:3, ~5),
         list(5, 5, 5)
+    )
+})
+
+test_that("Use ... to pass additional values", {
+    expect_equal(
+        cmap(1:3, ~ .x + z, z = 10),
+        list(11, 12, 13)
     )
 })

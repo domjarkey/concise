@@ -41,6 +41,11 @@ test_that("Multiple column inputs", {
     )
 
     expect_equal(
+        df |> cmutate(z ~ ifelse(is.null(y), x, y) ? list),
+        df |> cmutate(z = purrr::map2(x, y, ~ ifelse(is.null(.y), .x, .y)))
+    )
+
+    expect_equal(
         df |> cmutate(
             z ~ ifelse(is.null(y), x, y),
             w ~ max(x, z)
@@ -116,5 +121,19 @@ test_that("Groups hold", {
         df |>
             dplyr::group_by(colour, shape) |>
             dplyr::mutate(index = dplyr::row_number())
+    )
+})
+
+test_that("Argument passing with ?", {
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            cmutate(y ~ x + z ? (z = 10)),
+        tibble::tibble(x = 3:1, y = as.numeric(13:11))
+    )
+
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            cmutate(y ~ x + z ? int & (z = 10)),
+        tibble::tibble(x = 3:1, y = 13:11)
     )
 })
