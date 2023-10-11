@@ -13,17 +13,17 @@ test_that("Atomic mapping", {
 
     # type casting
     expect_type(rmap(6:10, ~ ...1 ^ 2), "double")
-    expect_type(rmap(6:10, ~ ...1 ^ 2 ? int), "integer")
-    expect_type(rmap(6:10, ~ ...1 ^ 2 ? dbl), "double")
+    expect_type(rmap_int(6:10, ~ ...1 ^ 2), "integer")
+    expect_type(rmap_dbl(6:10, ~ ...1 ^ 2), "double")
     expect_type(
-        suppressWarnings(rmap(6:10, ~ ...1 ^ 2 ? chr)),
+        suppressWarnings(rmap_chr(6:10, ~ ...1 ^ 2)),
         "character"
     )
     expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
-    expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz") ? chr), "character")
-    expect_equal(rmap(0:1, ~ ...1 ? lgl), c(FALSE, TRUE))
+    expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
+    expect_equal(rmap_lgl(0:1, ~ ...1), c(FALSE, TRUE))
     expect_equal(
-        rmap(purrr::set_names(1:3, letters[1:3]), ~ c(value = ...1, name = ...1.nm) ? df),
+        rmap_df(purrr::set_names(1:3, letters[1:3]), ~ c(value = ...1, name = ...1.nm)),
         structure(
             list(
                 value = c("1", "2", "3"),
@@ -63,7 +63,7 @@ test_that("Data frame mapping", {
     )
 
     expect_equal(
-        rmap(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y} ? int),
+        rmap_int(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y}),
         c(7L, 7L, 9L, 9L, 11L)
     )
 

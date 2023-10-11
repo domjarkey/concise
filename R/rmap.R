@@ -23,20 +23,7 @@ rmap <- function(
         )
     }
 
-    if (length(.f) > 1 && .f[[1]] == rlang::sym("?")) {
-        if (any(.f[[3]] == rlang::exprs(chr, dbl, df, int, lgl))) {
-            map_fn <- switch(
-                as.character(.f[[3]]),
-                chr = purrr::pmap_chr,
-                dbl = purrr::pmap_dbl,
-                df = purrr::pmap_df,
-                int = purrr::pmap_int,
-                lgl = purrr::pmap_lgl
-            )
-            .f <- as.formula(.f[[2]], env = env)
-            return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify))
-        }
-    } else if (length(.f) == 3) {
+    if (length(.f) == 3) {
         # ignore RHS
         .f <- .f[-2]
     }
@@ -90,19 +77,27 @@ rmap <- function(
     }
 }
 
-# TODO: add rmap_x etc.
-# rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_chr) {
-#     rmap(.l = .l, .f = .f, ..., env = env, map_fn = map_fn)
-# }
-#
-# rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_dbl) {
-#     rmap(.l = .l, .f = .f, ..., env = env, map_fn = map_fn)
-# }
-#
-# rmap_df <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_df) {
-#     rmap(.l = .l, .f = .f, ..., env = env, map_fn = map_fn)
-# }
-#
-# rmap_int <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_int) {
-#     rmap(.l = .l, .f = .f, ..., env = env, map_fn = map_fn)
-# }
+#' @export
+rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_chr) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+}
+
+#' @export
+rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_dbl) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+}
+
+#' @export
+rmap_df <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_df) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+}
+
+#' @export
+rmap_int <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_int) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+}
+
+#' @export
+rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_lgl) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+}
