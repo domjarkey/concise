@@ -4,6 +4,7 @@ cmutate <- function(.data, ...) {
     #       Maybe needs another argument to pass cols
 
     .args <- rlang::enquos(...)
+    .out <- .data
     for (i in seq_along(.args)) {
         if (is_concise_formula(rlang::quo_get_expr(.args[[i]]))) {
             if (names(.args)[i] == "") {
@@ -11,10 +12,11 @@ cmutate <- function(.data, ...) {
             }
             .args[[i]] <- rlang::quo_set_expr(
                 .args[[i]],
-                rlang::call2("context_lambda", rlang::quo_get_expr(.args[[i]]))
+                parse_concise_expression(.out, .args[[i]])
             )
         }
+        .out <- .out |> dplyr::mutate(!!!(.args[i]))
     }
 
-    dplyr::mutate(.data, !!!.args)
+    .out
 }

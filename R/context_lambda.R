@@ -69,8 +69,6 @@ context_lambda <- function(
         )
 
     do.call("rmap", args)
-
-    # return(rmap(.l, !!.f, ..., env = env, map_fn = map_fn, simplify = simplify, .i = .i))
 }
 
 concise_syntax <- function(expr) {
@@ -85,16 +83,16 @@ concise_syntax <- function(expr) {
             c(lhs, rhs)
         },
         `=` = function(lhs, rhs) {
-            out <- list(rlang::enexpr(rhs))
-            names(out) <- as.character(rlang::enexpr(lhs))
-            out
+            .out <- list(rlang::enexpr(rhs))
+            names(.out) <- as.character(rlang::enexpr(lhs))
+            .out
         },
-        chr = list(map_fn = rlang::expr(purrr::pmap_chr)),
-        dbl = list(map_fn = rlang::expr(purrr::pmap_dbl)),
-        df = list(map_fn = rlang::expr(purrr::pmap_df)),
-        int = list(map_fn = rlang::expr(purrr::pmap_int)),
-        lgl = list(map_fn = rlang::expr(purrr::pmap_lgl)),
-        list = list(simplify = FALSE)
+        chr = list(.map_fn = rlang::expr(purrr::pmap_chr)),
+        dbl = list(.map_fn = rlang::expr(purrr::pmap_dbl)),
+        df = list(.map_fn = rlang::expr(purrr::pmap_df)),
+        int = list(.map_fn = rlang::expr(purrr::pmap_int)),
+        lgl = list(.map_fn = rlang::expr(purrr::pmap_lgl)),
+        list = list(.map_fn = rlang::expr(purrr::pmap))
     )
 
     if (rlang::is_formula(expr)) {
@@ -102,4 +100,99 @@ concise_syntax <- function(expr) {
     } else {
         eval(rlang::enexpr(expr), e)
     }
+}
+
+parse_concise_expression <- function(.data, .arg) {
+    `%||%` <- rlang::`%||%`
+    .expr <- rlang::quo_get_expr(.arg)
+    .expr_components <- concise_syntax(!!.expr)
+    .f <- get_rhs(.expr_components$.f)
+    .f_names <- get_formula_names(.f)
+    .data_names <- names(.data)
+    .f_arg_names <- intersect(.data_names, .f_names)
+    .f_other_names <- setdiff(.f_names, .data_names)
+    .extra_args <- list()
+
+    name_references <- setdiff(
+        paste0(.data_names, ".nm"),
+        .data_names
+    ) |> intersect(.f_other_names)
+
+    for (nm_ref in name_references) {
+        nm <- rlang::sym(stringr::str_remove(nm_ref, "\\.nm$"))
+        .extra_args[[nm_ref]] <- rlang::expr(
+            names(!!nm) %||% !!rep_len(list(NULL), nrow(.data))
+        )
+    }
+
+    group_references <- setdiff(
+        paste0(.data_names, ".grp"),
+        .data_names
+    ) |> intersect(.f_other_names)
+
+    for (grp_ref in group_references) {
+        grp <- rlang::sym(stringr::str_remove(grp_ref, "\\.grp$"))
+        .extra_args[[grp_ref]] <- rlang::expr(list(!!grp))
+    }
+
+    if (
+        ".i" %in% .f_other_names ||
+        (
+            length(.f_arg_names) +
+            length(name_references) +
+            length(group_references) == 0
+        )
+    ) {
+        .extra_args[[".i"]] <- rlang::expr(dplyr::row_number())
+    }
+
+    col_references <- setdiff(
+        paste0(.data_names, ".col"),
+        .data_names
+    ) |> intersect(.f_other_names)
+
+    execution_environment_variables <- purrr::map(
+        .expr_components[-1],
+        ~ rlang::eval_tidy(.x, data = .data)
+    )
+
+    for (col_ref in col_references) {
+        col <- rlang::sym(stringr::str_remove(col_ref, "\\.col$"))
+        execution_environment_variables[[col_ref]] <- rlang::eval_tidy(col, data = .data)
+    }
+
+    .f_args <- purrr::map(
+        purrr::set_names(unique(c(.f_arg_names, names(.extra_args)))),
+        ~ rlang::missing_arg()
+    )
+
+    .map_fn <- execution_environment_variables$.map_fn %||% function(.l, .f) {
+        .out <- purrr::pmap(.l, .f)
+        if (length(unlist(.out)) == length(.out)) {
+            unlist(.out)
+        } else {
+            .out
+        }
+    }
+
+    execution_environment_variables$.map_fn <- NULL
+
+    .f_env <- rlang::env(
+        rlang::caller_env(),
+        !!!execution_environment_variables
+    )
+
+    rlang::env_bind_lazy(.f_env, .this = .this)
+
+    .this <- rlang::new_function(
+        args = .f_args,
+        body = .f[[2]],
+        env = .f_env
+    )
+
+    rlang::call2(
+        .map_fn,
+        rlang::call2("list", !!!(rlang::syms(.f_arg_names)), !!!.extra_args),
+        .this
+    )
 }
