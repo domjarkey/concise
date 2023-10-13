@@ -78,12 +78,12 @@ rmap <- function(
         )
     )
 
-    out <- map_fn(.l = .l[nms], .f = .this)
+    .out <- map_fn(.l = .l[nms], .f = .this)
 
-    if (simplify && length(out) == length(unlist(out))) {
-        unlist(out)
+    if (simplify && length(.out) == length(unlist(.out))) {
+        unlist(.out)
     } else {
-        out
+        .out
     }
 }
 
