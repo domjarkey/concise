@@ -1,18 +1,16 @@
 #' @import rlang
 #' @export
-cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simplify = FALSE ) {
+cmap <- function(
+        .l,
+        .f,
+        ...,
+        env = rlang::caller_env(),
+        map_fn = purrr::pmap,
+        simplify = FALSE
+) {
     # TODO: type checking of arguments with errors
-    # TODO: implement argument passing inside formula
 
     .f <- rlang::enexpr(.f)
-    .args <- rlang::enquos(...)
-
-    for (i in seq_along(.args)) {
-        assign(
-            names(.args)[i],
-            rlang::eval_tidy(.args[[i]])
-        )
-    }
 
     if (length(.f) == 3) {
         # ignore RHS
@@ -23,12 +21,23 @@ cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simpl
         .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
         .f <- insert_argument(.f, ".this", ".nm", rlang::sym(".nm"))
     }
+
     .l <- list(
         .x = .l,
         .i = seq_along(.l),
-        .nm = if(is.null(names(.l))) {rep_len(NA_character_, length(.l))} else {names(.l)}
+        .nm = if(is.null(names(.l))) {rep_len(list(NULL), length(.l))} else {names(.l)}
     )
+
+    # evaluate .args only after defining pronouns
+    .args <- purrr::map(
+        rlang::enquos(...),
+        ~ rlang::eval_tidy(.x, data = .l)
+    )
+
     nms <- names(.l)
+
+    env_bind_lazy(env, .this = .this)
+
     .this <- rlang::new_function(
         args = purrr::map(
             purrr::set_names(nms),
@@ -38,9 +47,15 @@ cmap <- function( .l, .f, ..., env = parent.frame(), map_fn = purrr::pmap, simpl
                 rlang::expr(rlang::missing_arg())
             }
         ),
-        body = .f[[2]]
+        body = .f[[2]],
+        env = rlang::env(
+            env,
+            !!!.args
+        )
     )
+
     out <- map_fn(.l, .f = .this)
+
     if (simplify && length(out) == length(unlist(out))) {
         unlist(out)
     } else {

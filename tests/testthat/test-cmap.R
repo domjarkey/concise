@@ -14,8 +14,7 @@ test_that("Atomic mapping", {
     )
     expect_equal(
         cmap(6:10, ~ .nm),
-        list(NA_character_, NA_character_, NA_character_, NA_character_,
-             NA_character_)
+        rep_len(list(NULL), 5)
     )
 
     # type casting
@@ -138,8 +137,35 @@ test_that("Constant functions", {
 })
 
 test_that("Use ... to pass additional values", {
+    # Pass constants
     expect_equal(
         cmap(1:3, ~ .x + z, z = 10),
         list(11, 12, 13)
+    )
+
+    # Pass transformation of data variable
+    expect_equal(
+        cmap(1:3, ~ .x + X, X = sum(.x)),
+        list(7, 8, 9)
+    )
+
+    # Dumb stuff
+    expect_equal(
+        cmap(1:3, ~ .x + X, X = sum(.x), `+` = `/`),
+        list(0.166666666666667, 0.333333333333333, 0.5)
+    )
+
+    .x <- 1:10
+
+    # Differentiate local variables using {{ embrace
+    expect_equal(
+        cmap(1:3, ~ .x + X, X = sum({{ .x }})),
+        list(56, 57, 58)
+    )
+
+    # Differentiate local variables using !! injection
+    expect_equal(
+        cmap(1:3, ~ .x + X, X = sum(!!.x)),
+        list(56, 57, 58)
     )
 })

@@ -3,7 +3,7 @@
 context_lambda <- function(
         .f,
         ...,
-        env = parent.frame(),
+        env = rlang::caller_env(),
         simplify = TRUE,
         .i = tryCatch(
             dplyr::row_number(),
@@ -56,7 +56,7 @@ context_lambda <- function(
 
     for (nm in name_references) {
         if (!nm %in% names(.l)) {
-            .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.i))
+            .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(list(NULL), length(.i))
         }
         if (recursive) {
             .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
@@ -75,6 +75,7 @@ context_lambda <- function(
 
 concise_syntax <- function(expr) {
     expr <- rlang::enexpr(expr)
+
     e <- rlang::env(
         rlang::caller_env(),
         `?` = function(lhs, rhs) {
@@ -95,6 +96,7 @@ concise_syntax <- function(expr) {
         lgl = list(map_fn = rlang::expr(purrr::pmap_lgl)),
         list = list(simplify = FALSE)
     )
+
     if (rlang::is_formula(expr)) {
         list(.f = eval(expr))
     } else {

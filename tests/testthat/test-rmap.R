@@ -78,7 +78,7 @@ test_that("Data frame mapping", {
     )
     expect_equal(
         rmap(tibble::tibble(x = c(1, 2)), ~ x.nm),
-        c(NA_character_, NA_character_)
+        list(NULL, NULL)
     )
 })
 
@@ -122,9 +122,55 @@ test_that("Groups hold", {
 })
 
 test_that("Use ... to pass additional values", {
+    # Pass constants
     expect_equal(
         tibble::tibble(x = 1:3) |>
             rmap(~ x + z, z = 10),
         11:13
+    )
+
+    # Pass transformations of data variable(s) and pronouns
+    expect_equal(
+        tibble::tibble(x = 1:3) |>
+            rmap(~ x + X, X = sum(x)),
+        7:9
+    )
+
+    expect_equal(
+        tibble::tibble(x = 1:3, y = 4:6) |>
+            rmap(~ x + X - Y, X = sum(x), Y = prod(y)),
+        (-113):(-111)
+    )
+
+    expect_equal(
+        tibble::tibble(x = 1:3, y = 4:6) |>
+                     rmap(~ x + I, I = sum(.i)),
+        7:9
+    )
+
+    expect_equal(
+        list(a = purrr::set_names(letters[1:3], LETTERS[1:3]), b = letters[1:3]) |>
+            tibble::as_tibble() |>
+            rmap(~ Z, Z = paste0(a.nm, collapse = '')),
+        c("ABC", "ABC", "ABC")
+    )
+
+    # Differentiate local variables using !! injection
+    x <- 1:10
+
+    expect_equal(
+        tibble::tibble(x = 1:3) |>
+            rmap(~ x + X, X = sum(!!x)),
+        56:58
+    )
+
+    # Specify other objects in lambda function's execution environment
+    expect_equal(
+        tibble::tibble(
+            determiner = c("the", "a", "those"),
+            adjective = c("quick", "slow", "naughty"),
+            noun = c("fox", "loris", "children")
+        ) |> rmap(~ determiner + adjective + noun, `+` = paste),
+        c("the quick fox", "a slow loris", "those naughty children")
     )
 })

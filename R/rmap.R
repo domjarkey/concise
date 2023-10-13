@@ -2,26 +2,17 @@
 #' @export
 rmap <- function(
         .l,
-        .f = NULL,
+        .f,
         ...,
-        env = parent.frame(),
+        env = rlang::caller_env(),
         map_fn = purrr::pmap,
         simplify = TRUE
 ) {
     # TODO: type checking of arguments with errors
     # TODO: implement .x for length(.l) == 1 / .l atomic
     # TODO: implement .x for name in rhs of .f
-    # TODO: implement argument passing inside formula
 
     .f <- rlang::enexpr(.f)
-    .args <- rlang::enquos(...)
-
-    for (i in seq_along(.args)) {
-        assign(
-            names(.args)[i],
-            rlang::eval_tidy(.args[[i]])
-        )
-    }
 
     if (length(.f) == 3) {
         # ignore RHS
@@ -35,41 +26,60 @@ rmap <- function(
     }
     if (is.list(.l) && !is.data.frame(.l)) {
         if (any(length(.l[[1]]) != lengths(.l))) {
+            # TODO: remove this error to allow argument recycling
             stop("All elements of .l must be of equal length")
         }
         .l <- tibble::as_tibble(.l)
     }
-    formula_names <- get_formula_names(.f)
+
+    formula_names <- c(
+        get_formula_names(.f),
+        purrr::map(rlang::enexprs(...), get_formula_names)
+    ) |> unlist() |> unique()
+
     recursive <- ".this" %in% formula_names
+
     if (!".i" %in% names(.l)) {
-        # if (is.null(.i)) {
-            .l <- dplyr::mutate(.l, .i = dplyr::row_number())
-        # } else {
-        #     .l$.i <- .i
-        # }
+        .l <- dplyr::mutate(.l, .i = dplyr::row_number())
         if (recursive) {
             .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
         }
     }
+
     name_references <- intersect(paste0(names(.l), ".nm"), formula_names) |>
         purrr::discard(~ .x %in% names(.l))
+
     for (nm in name_references) {
-        .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(NA_character_, length(.l[[1]]))
+        .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(list(NULL), length(.l[[1]]))
         if (recursive) {
             .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
         }
     }
-    # Always include .i so .l has at least one column
+
+    # evaluate .args only after defining pronouns
+    .args <- purrr::map(
+        rlang::enquos(...),
+        ~ rlang::eval_tidy(.x, data = .l)
+    )
+
     nms <- intersect(names(.l), c(formula_names, ".i"))
+
+    env_bind_lazy(env, .this = .this)
+
     .this <- rlang::new_function(
         args = purrr::map(
             purrr::set_names(nms),
-            ~ rlang::expr(rlang::missing_arg())
+            ~ rlang::missing_arg()
         ),
-        body = .f[[2]]
+        body = .f[[2]],
+        env = rlang::env(
+            env,
+            !!!.args
+        )
     )
+
     out <- map_fn(.l = .l[nms], .f = .this)
-    # TODO: add error detection/reporting if length(nms) == 0 and nrow(out) == 0
+
     if (simplify && length(out) == length(unlist(out))) {
         unlist(out)
     } else {
