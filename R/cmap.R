@@ -36,7 +36,7 @@ cmap <- function(
 
     nms <- names(.l)
 
-    env_bind_lazy(env, .this = .this)
+    rlang::env_bind_lazy(env, .this = .this)
 
     .this <- rlang::new_function(
         args = purrr::map(

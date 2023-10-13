@@ -64,7 +64,7 @@ rmap <- function(
 
     nms <- intersect(names(.l), c(formula_names, ".i"))
 
-    env_bind_lazy(env, .this = .this)
+    rlang::env_bind_lazy(env, .this = .this)
 
     .this <- rlang::new_function(
         args = purrr::map(
