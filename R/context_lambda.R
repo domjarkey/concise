@@ -1,5 +1,4 @@
 #' @import rlang
-#' @export
 context_lambda <- function(
         .f,
         ...,
