@@ -54,12 +54,12 @@ cmap <- function(
         )
     )
 
-    out <- map_fn(.l, .f = .this)
+    .out <- map_fn(.l, .f = .this)
 
-    if (simplify && length(out) == length(unlist(out))) {
-        unlist(out)
+    if (simplify && length(.out) == length(unlist(.out))) {
+        unlist(.out)
     } else {
-        out
+        .out
     }
 }
 
