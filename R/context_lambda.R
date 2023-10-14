@@ -102,9 +102,9 @@ concise_syntax <- function(expr) {
     }
 }
 
-parse_concise_expression <- function(.data, .arg) {
-    `%||%` <- rlang::`%||%`
-    .expr <- rlang::quo_get_expr(.arg)
+#' @import rlang
+parse_concise_expression <- function(.data, .expr) {
+    .expr <- rlang::enexpr(.expr)
     .expr_components <- concise_syntax(!!.expr)
     .f <- get_rhs(.expr_components$.f)
     .f_names <- get_formula_names(.f)
@@ -112,6 +112,11 @@ parse_concise_expression <- function(.data, .arg) {
     .f_arg_names <- intersect(.data_names, .f_names)
     .f_other_names <- setdiff(.f_names, .data_names)
     .extra_args <- list()
+
+    execution_environment_variables <- purrr::map(
+        .expr_components[-1],
+        ~ rlang::eval_tidy(.x, data = .data)
+    )
 
     name_references <- setdiff(
         paste0(.data_names, ".nm"),
@@ -135,26 +140,26 @@ parse_concise_expression <- function(.data, .arg) {
         .extra_args[[grp_ref]] <- rlang::expr(list(!!grp))
     }
 
-    if (
-        ".i" %in% .f_other_names ||
-        (
-            length(.f_arg_names) +
-            length(name_references) +
-            length(group_references) == 0
-        )
-    ) {
+    if (".i" %in% .f_other_names) {
         .extra_args[[".i"]] <- rlang::expr(dplyr::row_number())
+    }
+
+    if (".I" %in% .f_other_names || (length(.f_arg_names) + length(.extra_args) == 0)) {
+        .extra_args[[".I"]] <- rlang::expr(dplyr::cur_group_rows())
+    }
+
+    if (".n" %in% .f_other_names) {
+        .extra_args[[".n"]] <- rlang::expr(dplyr::n())
+    }
+
+    if (".N" %in% .f_other_names) {
+        execution_environment_variables[[".N"]] <- nrow(.data)
     }
 
     col_references <- setdiff(
         paste0(.data_names, ".col"),
         .data_names
     ) |> intersect(.f_other_names)
-
-    execution_environment_variables <- purrr::map(
-        .expr_components[-1],
-        ~ rlang::eval_tidy(.x, data = .data)
-    )
 
     for (col_ref in col_references) {
         col <- rlang::sym(stringr::str_remove(col_ref, "\\.col$"))
@@ -166,14 +171,7 @@ parse_concise_expression <- function(.data, .arg) {
         ~ rlang::missing_arg()
     )
 
-    .map_fn <- execution_environment_variables$.map_fn %||% function(.l, .f) {
-        .out <- purrr::pmap(.l, .f)
-        if (length(unlist(.out)) == length(.out)) {
-            unlist(.out)
-        } else {
-            .out
-        }
-    }
+    .map_fn <- execution_environment_variables$.map_fn %||% default_map_fn
 
     execution_environment_variables$.map_fn <- NULL
 
@@ -195,4 +193,16 @@ parse_concise_expression <- function(.data, .arg) {
         rlang::call2("list", !!!(rlang::syms(.f_arg_names)), !!!.extra_args),
         .this
     )
+}
+
+default_map_fn <- function(.l, .f) {
+    purrr::pmap(.l, .f)
+}
+
+try_simplify <- function(col) {
+    if (length(unlist(col)) == length(col)) {
+        unlist(col)
+    } else {
+        col
+    }
 }

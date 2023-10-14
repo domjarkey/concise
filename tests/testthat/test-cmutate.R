@@ -131,11 +131,79 @@ test_that("Groups hold", {
 
     expect_equal(
         df |>
+            dplyr::group_by(colour, shape) |>
+            cmutate(group_row_index ~ .i, overall_row_index ~ .I),
+        df |>
+            dplyr::group_by(colour, shape) |>
+            dplyr::mutate(
+                group_row_index = dplyr::row_number(),
+                overall_row_index = dplyr::cur_group_rows()
+            )
+    )
+
+    expect_equal(
+        df |>
             dplyr::group_by(colour) |>
             cmutate(x ~ sum(number.grp), y ~ sum(number.col)),
         df |>
             dplyr::group_by(colour) |>
             dplyr::mutate(x = sum(number), y = 36)
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            cmutate(x ~ number.grp),
+        df |>
+            dplyr::group_by(colour) |>
+            dplyr::mutate(
+                x = purrr::pmap(
+                    list(number.grp = list(number)),
+                    \(number.grp) number.grp
+                )
+            )
+    )
+
+    expect_equal(
+        df |> dplyr::group_by(colour) |>
+            cmutate(
+                avg ~ mean(number.col[max(1, .I - 1):.I]),
+                grp_avg ~ mean(number.grp[max(1, .i - 1):.i])
+            ),
+        df |> dplyr::group_by(colour) |>
+            dplyr::mutate(
+                avg = purrr::pmap_dbl(
+                    list(
+                        number.col = list(dplyr:::peek_mask()$get_current_data()$number),
+                        .I = dplyr::cur_group_rows()
+                    ),
+                    \(number.col, .I) {
+                        mean(number.col[max(1, .I - 1):.I])
+                    }
+                ),
+                grp_avg = purrr::pmap_dbl(
+                    list(
+                        number.grp = list(number),
+                        .i = dplyr::row_number()
+                    ),
+                    \(number.grp, .i) {
+                        mean(number.grp[max(1, .i - 1):.i])
+                    }
+                )
+            )
+    )
+
+    expect_equal(
+        df |> dplyr::group_by(colour, shape) |>
+            cmutate(
+                n ~ .n,
+                N ~ .N
+            ),
+        df |> dplyr::group_by(colour, shape) |>
+            dplyr::mutate(
+                n = dplyr::n(),
+                N = 8L
+            )
     )
 })
 
