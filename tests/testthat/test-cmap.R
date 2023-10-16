@@ -17,6 +17,12 @@ test_that("Atomic mapping", {
         rep_len(list(NULL), 5)
     )
 
+    # .col pronoun
+    expect_equal(
+        cmap_dbl(1:10, ~ mean(.col[max(.i - 3, 1):.i])),
+        c(1, 1.5, 2, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5)
+    )
+
     # type casting
     expect_type(cmap(6:10, ~ .x ^ 2), "list")
     expect_type(cmap_int(6:10, ~ .x ^ 2), "integer")

@@ -10,14 +10,11 @@ cmap <- function(
 ) {
     # TODO: type checking of arguments with errors
 
-    .f <- rlang::enexpr(.f)
+    .f <- get_rhs(rlang::enexpr(.f))
 
-    if (length(.f) == 3) {
-        # ignore RHS
-        .f <- .f[-2]
-    }
+    formula_names <- get_formula_names(.f)
 
-    if (".this" %in% get_formula_names(.f)) {
+    if (".this" %in% formula_names) {
         .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
         .f <- insert_argument(.f, ".this", ".nm", rlang::sym(".nm"))
     }
@@ -34,6 +31,10 @@ cmap <- function(
         ~ rlang::eval_tidy(.x, data = .l)
     )
 
+    if (".col" %in% formula_names) {
+        .args <- append(.args, list(.col = .l$.x))
+    }
+
     nms <- names(.l)
 
     rlang::env_bind_lazy(env, .this = .this)
@@ -47,7 +48,7 @@ cmap <- function(
                 rlang::expr(rlang::missing_arg())
             }
         ),
-        body = .f[[2]],
+        body = .f,
         env = rlang::env(
             env,
             !!!.args
