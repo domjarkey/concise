@@ -13,7 +13,7 @@ Imports:
     rlang (>= 1.1.1),
     stringr,
     tibble
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
