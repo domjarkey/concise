@@ -35,6 +35,10 @@ cmap <- function(
         .args <- append(.args, list(.col = .l$.x))
     }
 
+    if (".n" %in% formula_names) {
+        .args <- append(.args, list(.n = length(.l$.x)))
+    }
+
     nms <- names(.l)
 
     rlang::env_bind_lazy(env, .this = .this)

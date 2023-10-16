@@ -23,6 +23,12 @@ test_that("Atomic mapping", {
         c(1, 1.5, 2, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5)
     )
 
+    # .n pronoun
+    expect_equal(
+        cmap_lgl(1:10, ~ .x > .n / 2),
+        rep(c(FALSE, TRUE), each = 5)
+    )
+
     # type casting
     expect_type(cmap(6:10, ~ .x ^ 2), "list")
     expect_type(cmap_int(6:10, ~ .x ^ 2), "integer")
