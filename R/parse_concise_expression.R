@@ -10,8 +10,12 @@ parse_concise_expression <- function(.data, .expr) {
     .extra_args <- list()
 
     execution_environment_variables <- purrr::map(
-        .expr_components[-1],
-        ~ rlang::eval_tidy(.x, data = .data)
+        .expr_components |>
+            purrr::discard(names(.expr_components) %in% c(".f", "")),
+        ~ rlang::eval_tidy(
+            .x,
+            data = .data
+        )
     )
 
     name_references <- setdiff(
@@ -106,10 +110,26 @@ try_simplify <- function(col) {
 concise_syntax <- function(expr) {
     expr <- rlang::enexpr(expr)
 
+    .e <- rlang::env(
+        rlang::caller_env(),
+        `=` = function(lhs, rhs) {
+            .out <- list(rlang::enexpr(rhs))
+            names(.out) <- as.character(rlang::enexpr(lhs))
+            .out
+        },
+        chr = list(.map_fn = rlang::expr(purrr::pmap_chr)),
+        dbl = list(.map_fn = rlang::expr(purrr::pmap_dbl)),
+        df = list(.map_fn = rlang::expr(purrr::pmap_df)),
+        int = list(.map_fn = rlang::expr(purrr::pmap_int)),
+        lgl = list(.map_fn = rlang::expr(purrr::pmap_lgl)),
+        list = list(.map_fn = rlang::expr(purrr::pmap))
+    )
+
     e <- rlang::env(
         rlang::caller_env(),
         `?` = function(lhs, rhs) {
-            append(list(.f = lhs), eval(rlang::enexpr(rhs), e))
+            append(list(.f = lhs), eval(rlang::enexpr(rhs), e)) |>
+                purrr::list_flatten()
         },
         `&` = function(lhs, rhs) {
             c(lhs, rhs)
@@ -118,6 +138,10 @@ concise_syntax <- function(expr) {
             .out <- list(rlang::enexpr(rhs))
             names(.out) <- as.character(rlang::enexpr(lhs))
             .out
+        },
+        `{` = function(...) {
+            dots <- rlang::enexprs(...)
+            purrr::map(dots, ~ eval(.x, .e))
         },
         chr = list(.map_fn = rlang::expr(purrr::pmap_chr)),
         dbl = list(.map_fn = rlang::expr(purrr::pmap_dbl)),
