@@ -221,6 +221,12 @@ test_that("Argument passing with ?", {
         tibble::tibble(x = 3:1, y = 13:11)
     )
 
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            cmutate(y ~ x + z - w ? {int ; z = 10; w = 1}),
+        tibble::tibble(x = 3:1, y = 12:10)
+    )
+
     # Pass transformations of data variable(s) and pronouns
     expect_equal(
         tibble::tibble(x = 3:1) |>
