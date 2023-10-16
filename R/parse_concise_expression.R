@@ -84,7 +84,7 @@ parse_concise_expression <- function(.data, .expr) {
 
     .this <- rlang::new_function(
         args = .f_args,
-        body = .f[[2]],
+        body = .f,
         env = .f_env
     )
 

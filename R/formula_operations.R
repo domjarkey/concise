@@ -29,13 +29,14 @@ is_concise_formula <- function(.f) {
     length(.f) > 1 && length(as.character(.f[[1]])) == 1 && as.character(.f[[1]]) %in% c("~", "?")
 }
 
-# TODO: check get_lhs and get_rhs are necessary or can be removed
 get_lhs <- function(.f) {
     stopifnot(is_concise_formula(.f))
     if (.f[[1]] == rlang::sym("?")) {
         get_lhs(.f[[2]])
-    } else {
+    } else if (length(.f) == 3) {
         .f[[2]]
+    } else {
+        NULL
     }
 }
 
@@ -43,8 +44,10 @@ get_rhs <- function(.f) {
     stopifnot(is_concise_formula(.f))
     if (.f[[1]] == rlang::sym("?")) {
         get_rhs(.f[[2]])
+    } else if (length(.f) == 3) {
+        .f[[3]]
     } else {
-        .f[-2]
+        .f[[2]]
     }
 }
 
