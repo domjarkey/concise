@@ -9,6 +9,12 @@ test_that("Atomic mapping", {
     expect_equal(rmap(6:10, ~ .i ^ 2), c(1, 4, 9, 16, 25))
     expect_equal(rmap(6:10, ~ ...1 * .i), c(6L, 14L, 24L, 36L, 50L))
 
+    # .N pronoun
+    expect_equal(
+        rmap_lgl(1:10, ~ ...1 > .N / 2),
+        rep(c(FALSE, TRUE), each = 5)
+    )
+
     # TODO: test .i, test .i when .i exists in data columns
 
     # type casting
@@ -125,6 +131,34 @@ test_that("Groups hold", {
             dplyr::group_by(colour) |>
             rmap(~ .I),
         1:8
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            rmap(~ .n),
+        c(5L, 2L, 5L, 5L, 2L, 5L, 1L, 5L)
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            rmap(~ number.grp),
+        list(c(8, 1, 2, 7, 6),
+             c(5, 4),
+             c(8, 1, 2, 7, 6),
+             c(8, 1, 2, 7, 6),
+             c(5, 4),
+             c(8, 1, 2, 7, 6),
+             3,
+             c(8, 1, 2, 7, 6))
+    )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            rmap(~ mean(number.col[max(.I - 1, 1):.I])),
+        c(8, 6.5, 3, 1.5, 3, 5.5, 5, 4.5)
     )
 })
 

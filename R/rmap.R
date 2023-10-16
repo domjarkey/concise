@@ -42,7 +42,7 @@ rmap <- function(
         }
     }
 
-    if (!".I" %in% names(.l)) {
+    if (!".I" %in% names(.l) && ".I" %in% formula_names) {
         .l <- dplyr::mutate(.l, .I = dplyr::cur_group_rows())
         if (recursive) {
             .f <- insert_argument(.f, ".this", ".I", rlang::sym(".I"))
@@ -59,11 +59,39 @@ rmap <- function(
         }
     }
 
+    group_references <- intersect(paste0(names(.l), ".grp"), formula_names) |>
+        purrr::discard(~ .x %in% names(.l))
+
+    for (grp in group_references) {
+        .l <- .l |> cmutate(!!grp ~ !!rlang::sym(grp))
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", grp, rlang::sym(grp))
+        }
+    }
+
+    if (!".n" %in% names(.l) && ".n" %in% formula_names) {
+        .l <- .l |> dplyr::mutate(.n = dplyr::n())
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", ".n", rlang::sym(".n"))
+        }
+    }
+
     # evaluate .args only after defining pronouns
     .args <- purrr::map(
         rlang::enquos(...),
         ~ rlang::eval_tidy(.x, data = .l)
     )
+
+    col_references <- intersect(paste0(names(.l), ".col"), formula_names) |>
+        purrr::discard(~ .x %in% names(.l))
+
+    for (col in col_references) {
+        .args <- append(.args, rlang::list2(!!col := .l[[stringr::str_remove(col, ".col$")]]))
+    }
+
+    if (".N" %in% formula_names) {
+        .args <- append(.args, list(.N = nrow(.l)))
+    }
 
     nms <- intersect(names(.l), c(formula_names, ".i"))
 
