@@ -119,6 +119,13 @@ test_that("Groups hold", {
             rmap(~ .i),
         c(1L, 1L, 2L, 1L, 1L, 2L, 1L, 3L)
     )
+
+    expect_equal(
+        df |>
+            dplyr::group_by(colour) |>
+            rmap(~ .I),
+        1:8
+    )
 })
 
 test_that("Use ... to pass additional values", {

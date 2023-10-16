@@ -12,12 +12,8 @@ rmap <- function(
     # TODO: implement .x for length(.l) == 1 / .l atomic
     # TODO: implement .x for name in rhs of .f
 
-    .f <- rlang::enexpr(.f)
+    .f <- get_rhs(rlang::enexpr(.f))
 
-    if (length(.f) == 3) {
-        # ignore RHS
-        .f <- .f[-2]
-    }
     if (is.atomic(.l)) {
         .l <- tibble::tibble(`...1` = .l)
     }
@@ -46,6 +42,13 @@ rmap <- function(
         }
     }
 
+    if (!".I" %in% names(.l)) {
+        .l <- dplyr::mutate(.l, .I = dplyr::cur_group_rows())
+        if (recursive) {
+            .f <- insert_argument(.f, ".this", ".I", rlang::sym(".I"))
+        }
+    }
+
     name_references <- intersect(paste0(names(.l), ".nm"), formula_names) |>
         purrr::discard(~ .x %in% names(.l))
 
@@ -71,7 +74,7 @@ rmap <- function(
             purrr::set_names(nms),
             ~ rlang::missing_arg()
         ),
-        body = .f[[2]],
+        body = .f,
         env = rlang::env(
             env,
             !!!.args
