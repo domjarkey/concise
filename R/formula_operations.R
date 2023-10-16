@@ -10,7 +10,7 @@ atomise_formula <- function(.f) {
 
 substitute_name <- function(.f, nm_old, nm_new) {
     if (length(.f) == 1) {
-        if (as.character(.f == nm_old)) {
+        if (.f == nm_old) {
             .f <- as.name(nm_new)
         }
     } else {
