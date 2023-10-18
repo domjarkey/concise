@@ -53,26 +53,28 @@ to a vector where possible (if "unlisting" is not possible, say, in the case of
 a list of lists of length > 1, the original output in list form will be returned).}
 }
 \value{
-A list or vector of the same length as \code{.l}. By default a list, unless
-\code{cmap_} suffixes are used to specify the output vector type, or if \code{simplify=TRUE}
-a vector of whichever type uniformly matches the unlisted outputs.
+Returns a list (or vector) of the same length as \code{.l}. By default a
+list, unless \code{cmap_} suffixes are used to specify the output vector type, or
+if \code{simplify=TRUE} a vector of whichever type uniformly fits the unlisted
+outputs.
 }
 \description{
 \code{cmap} works very similarly to \code{purrr::map} when specifying the formula of the
-anonymous function using tilde (\code{~}) formula notation, but includes extra custom pronouns
-to refer to related objects such as element names, element indeces, and the
-function itself, so as to permit recursive function definitions.
+anonymous function using tilde (\code{~}) formula notation, but includes extra custom
+pronouns to refer to related objects such as element names, element indeces,
+and the function itself, so as to permit recursive function definitions.
 
 \code{cmap_chr}, \code{cmap_dbl}, \code{cmap_df}, \code{cmap_int}, and \code{cmap_lgl} work like their
 \code{purrr::map_etc} equivalents, attempting to output a vector of the specified type (or
 a data.frame in the case of \code{cmap_df}) instead of a list.
 }
 \section{Pronouns}{
-\code{cmap} supports reference to a set of useful "pronouns"
-that allow you to refer to other objects within the formula \code{.f} as though they
-were locally defined as variables. Note these are not pronouns in the \code{rlang}
-sense, but a convenient short hand to provide additional functionality in a
-readable format. See Examples for further clarification. Supported pronouns are:
+\code{cmap} supports reference to a set of useful "pronouns" that allow you to refer
+to other objects within the formula \code{.f} as though they were locally defined
+as variables. Note these are not pronouns in the \code{rlang} sense of the tem, but
+a convenient short hand to provide additional functionality in a readable format.
+See Examples for further clarification on the usage of each. Supported pronouns
+are:
 \itemize{
 \item \code{.x} -- as in \code{purrr::map}, this refers to an individual element of the list
 \code{.l}.
