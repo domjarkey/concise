@@ -31,7 +31,7 @@ cmap_lgl(.l, .f, ..., env = parent.frame())
 \arguments{
 \item{.l}{A list or atomic vector.}
 
-\item{.f}{a formula defining the anonymous function to be applied to every
+\item{.f}{A formula defining the anonymous function to be applied to every
 element of \code{.l}, in which \code{.x} refers to the given element. See Examples for
 how this differs from formulas in \code{purrr::map}.}
 
@@ -71,8 +71,8 @@ a data.frame in the case of \code{cmap_df}) instead of a list.
 \section{Pronouns}{
 \code{cmap} supports reference to a set of useful "pronouns" that allow you to refer
 to other objects within the formula \code{.f} as though they were locally defined
-as variables. Note these are not pronouns in the \code{rlang} sense of the tem, but
-a convenient short hand to provide additional functionality in a readable format.
+as variables. Note these are not pronouns in the \code{rlang} sense of the term, but
+a convenient shorthand to provide additional functionality in a readable format.
 See Examples for further clarification on the usage of each. Supported pronouns
 are:
 \itemize{
