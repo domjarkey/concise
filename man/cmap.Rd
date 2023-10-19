@@ -10,7 +10,7 @@
 \title{Apply an anonymous function to each element of a vector}
 \usage{
 cmap(
-  .l,
+  .x,
   .f,
   ...,
   env = rlang::caller_env(),
@@ -18,26 +18,26 @@ cmap(
   simplify = FALSE
 )
 
-cmap_chr(.l, .f, ..., env = parent.frame())
+cmap_chr(.x, .f, ..., env = parent.frame())
 
-cmap_dbl(.l, .f, ..., env = parent.frame())
+cmap_dbl(.x, .f, ..., env = parent.frame())
 
-cmap_df(.l, .f, ..., env = parent.frame())
+cmap_df(.x, .f, ..., env = parent.frame())
 
-cmap_int(.l, .f, ..., env = parent.frame())
+cmap_int(.x, .f, ..., env = parent.frame())
 
-cmap_lgl(.l, .f, ..., env = parent.frame())
+cmap_lgl(.x, .f, ..., env = parent.frame())
 }
 \arguments{
-\item{.l}{A list or atomic vector.}
+\item{.x}{A list or atomic vector.}
 
 \item{.f}{A formula defining the anonymous function to be applied to every
-element of \code{.l}, in which \code{.x} refers to the given element. See Examples for
+element of \code{.x}, in which \code{.x} refers to the given element. See Examples for
 how this differs from formulas in \code{purrr::map}.}
 
 \item{...}{Additional named arguments are passed directly to the execution
 environment of the anonymous function as variables. These variables may include
-transformations on the entire \code{.l} object as well as any variables local to the
+transformations on the entire \code{.x} object as well as any variables local to the
 calling environment of the \code{cmap} function.}
 
 \item{env}{Specify the parent environment of the execution environment of the
@@ -53,7 +53,7 @@ to a vector where possible (if "unlisting" is not possible, say, in the case of
 a list of lists of length > 1, the original output in list form will be returned).}
 }
 \value{
-Returns a list (or vector) of the same length as \code{.l}. By default a
+Returns a list (or vector) of the same length as \code{.x}. By default a
 list, unless \code{cmap_} suffixes are used to specify the output vector type, or
 if \code{simplify=TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
@@ -77,11 +77,11 @@ See Examples for further clarification on the usage of each. Supported pronouns
 are:
 \itemize{
 \item \code{.x} -- as in \code{purrr::map}, this refers to an individual element of the list
-\code{.l}.
+\code{.x}.
 \item \code{.i} -- the position of the element \code{.x} in a list.
-\item \code{.nm} -- if \code{.l} is named, this returns the name corresponding to the element
-\code{.x}; If \code{.l} is unnamed, returns \code{NULL}.
-\item \code{.n} -- the value of the final position of the list, equivalent to \code{length(.l)}.
+\item \code{.nm} -- if \code{.x} is named, this returns the name corresponding to the element
+\code{.x}; If \code{.x} is unnamed, returns \code{NULL}.
+\item \code{.n} -- the value of the final position of the list, equivalent to \code{length(.x)}.
 \item \code{.col} -- the entire input list object or vector, as opposed to just the single
 element refered to in .x.
 \item \code{.this} -- the anonymous function itself, to be used in cases where recursion
