@@ -234,6 +234,12 @@ test_that("Argument passing with ?", {
         tibble::tibble(x = 3:1, y = 9:7)
     )
 
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            cmutate(y ~ x + X ? {int; X = sum(x)}),
+        tibble::tibble(x = 3:1, y = 9:7)
+    )
+
     # expect_equal(
     #     tibble::tibble(x = 3:1) |>
     #         cmutate(y ~ x + I ? int & (I = sum(.i))),
@@ -255,6 +261,12 @@ test_that("Argument passing with ?", {
     expect_equal(
         tibble::tibble(x = 3:1) |>
             cmutate(y ~ x + X ? int & (X = sum(!!x))),
+        tibble::tibble(x = 3:1, y = 58:56)
+    )
+
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            cmutate(y ~ x + X ? {int; X = sum(!!x)}),
         tibble::tibble(x = 3:1, y = 58:56)
     )
 
@@ -288,7 +300,7 @@ test_that("Recursion", {
         tibble::tibble(
             value = 6:1
         ) |> cmutate(
-            fib ~ if (value <= 2) {z} else {.this(value - 1) + .this(value - 2)} ? int & (z = 1)
+            fib ~ if (value <= 2) {z} else {.this(value - 1) + .this(value - 2)} ? {int ; z = 1}
         ),
         tibble::tibble(value = 6:1, fib = c(8L, 5L, 3L, 2L, 1L, 1L))
     )
