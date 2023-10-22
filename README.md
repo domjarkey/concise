@@ -41,7 +41,8 @@ devtools::install_github("domjarkey/concise")
 `cmutate` performs the same role as `dplyr::mutate` but with the option
 of evaluating column definitions as iterative lambda functions.
 
-This allows for the easy use of non-vectorised functions.
+This allows for the easy application of non-vectorised functions on a
+row-by-row basis.
 
 ``` r
 library(concise)
@@ -72,9 +73,7 @@ df <- tibble(
     z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
 )
 
-df |> mutate(
-    naive_largest = max(x, y, z)
-)
+df |> mutate(naive_largest = max(x, y, z))
 #> # A tibble: 10 × 4
 #>        x     y     z naive_largest
 #>    <int> <int> <int>         <int>
