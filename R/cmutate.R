@@ -1,8 +1,5 @@
 #' @export
 cmutate <- function(.data, ...) {
-    # TODO: is tidyselect possible inside formula; if not possible use list.
-    #       Maybe needs another argument to pass cols
-
     .args <- rlang::enquos(...)
     .out <- .data
     for (i in seq_along(.args)) {
