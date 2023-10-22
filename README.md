@@ -89,9 +89,9 @@ df |> mutate(naive_largest = max(x, y, z))
 #> 10    39    69    71            98
 ```
 
-Clearly this fails because `max` lumps the values of all the rows in
-`x`, `y`, and `z` instead of evaluating the function row by row. We
-might use `dplyr::rowwise` to overcome this problem, but this is an
+Clearly this fails because `max` lumps together the values of all the
+rows in `x`, `y`, and `z` instead of evaluating the function row by row.
+We might use `dplyr::rowwise` to overcome this problem, but this is an
 undesirable alternative for a couple of reasons. First, `rowwise` is
 very slow, especially for larger data frames. Second, `rowwise`
 effectively works by grouping every row into its own separate group,
@@ -124,7 +124,7 @@ computation taking multiple data columns as inputs is with the
 `purrr::pmap` function. `pmap` can either take a formula to specify the
 expression of the lambda function, referring to each input column by its
 position, or (in more recent versions of R) an anonymous function
-defined using `\\\\(x, y, z) expr` notation. These look like this:
+defined using `\(x, y, z) expr` notation. These look like this:
 
 ``` r
 df |>
