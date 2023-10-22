@@ -139,6 +139,39 @@ test_that("Recursion", {
         cmap_chr(purrr::set_names(1:4, letters[1:4]), ~ ifelse(.x == 1, "1", paste(.nm, .this(.x - 1)))),
         c(a = "1", b = "b 1", c = "c c 1", d = "d d d 1")
     )
+
+    tree <- list(
+        a = list(
+            b = 1,
+            c = list(
+                d = 2,
+                e = 3
+            )
+        ),
+        f = 4,
+        g = list(h = 5)
+    )
+
+    expect_equal(
+        cmap_df(
+            tree,
+            ~ if (is.list(.x)) {
+                purrr::pmap_df(
+                    list(.x, .nm = names(.x)),
+                    .this,
+                    path = paste0(path, "/", .nm)
+                )
+            } else {
+                tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+            },
+            path = "root"
+        ),
+        tibble::tibble(
+            path = c("root/a/b", "root/a/c/d", "root/a/c/e", "root/f", "root/g/h"),
+            value = 1:5
+        )
+    )
+
 })
 
 test_that("Constant functions", {
