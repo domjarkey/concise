@@ -7,9 +7,9 @@ parse_concise_expression <- function(.data, .expr) {
     .data_names <- names(.data)
     .f_arg_names <- intersect(.data_names, .f_names)
     .f_other_names <- setdiff(.f_names, .data_names)
-    .extra_args <- list()
+    execution_environment_variables <- list()
 
-    execution_environment_variables <- purrr::map(
+    .extra_args <- purrr::map(
         .expr_components |>
             purrr::discard(names(.expr_components) %in% c(".f", "")),
         ~ rlang::eval_tidy(
@@ -66,14 +66,9 @@ parse_concise_expression <- function(.data, .expr) {
         execution_environment_variables[[col_ref]] <- rlang::eval_tidy(col, data = .data)
     }
 
-    .f_args <- purrr::map(
-        purrr::set_names(unique(c(.f_arg_names, names(.extra_args)))),
-        ~ rlang::missing_arg()
-    )
+    .map_fn <- .extra_args$.map_fn %||% default_map_fn
 
-    .map_fn <- execution_environment_variables$.map_fn %||% default_map_fn
-
-    execution_environment_variables$.map_fn <- NULL
+    .extra_args$.map_fn <- NULL
 
     .f_env <- rlang::env(
         rlang::caller_env(),
@@ -81,6 +76,14 @@ parse_concise_expression <- function(.data, .expr) {
     )
 
     rlang::env_bind_lazy(.f_env, .this = .this)
+
+    .f_args <- append(
+        purrr::map(
+            purrr::set_names(unique(c(.f_arg_names))),
+            ~ rlang::missing_arg()
+        ),
+        .extra_args
+    )
 
     .this <- rlang::new_function(
         args = .f_args,

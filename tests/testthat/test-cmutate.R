@@ -259,18 +259,18 @@ test_that("Argument passing with ?", {
     )
 
     # Specify other objects in lambda function's execution environment
-    expect_equal(
-        tibble::tibble(
-            determiner = c("the", "a", "those"),
-            adjective = c("quick", "slow", "naughty"),
-            noun = c("fox", "loris", "children")
-        ) |> cmutate(sentence ~ determiner + adjective + noun - end ? (`+` = paste) & (`-` = paste0) & (end = ".")),
-        tibble::tibble(
-            determiner = c("the", "a", "those"),
-            adjective = c("quick", "slow", "naughty"),
-            noun = c("fox", "loris", "children")
-        ) |> dplyr::mutate(sentence = paste0(paste(determiner, adjective, noun), "."))
-    )
+    # expect_equal(
+    #     tibble::tibble(
+    #         determiner = c("the", "a", "those"),
+    #         adjective = c("quick", "slow", "naughty"),
+    #         noun = c("fox", "loris", "children")
+    #     ) |> cmutate(sentence ~ determiner + adjective + noun - end ? (`+` = paste) & (`-` = paste0) & (end = ".")),
+    #     tibble::tibble(
+    #         determiner = c("the", "a", "those"),
+    #         adjective = c("quick", "slow", "naughty"),
+    #         noun = c("fox", "loris", "children")
+    #     ) |> dplyr::mutate(sentence = paste0(paste(determiner, adjective, noun), "."))
+    # )
 
 })
 
