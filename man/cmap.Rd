@@ -89,3 +89,51 @@ is needed.
 }
 }
 
+\examples{
+# Simplify to vector using `simplify=TRUE` or specify output type with function suffix
+cmap(1:5, ~ .x^2)
+cmap(1:5, ~ .x^2, simplify = TRUE)
+cmap_int(1:5, ~ .x^2)
+
+# Refer to index with .i
+cmap_chr(letters, ~ ifelse(.i \%\% 2 == 0, toupper(.x), .x))
+
+# Refer to column names with .nm
+cmap_df(
+    list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
+    ~ c(name = .nm, species = .x)
+)
+
+# Refer to entire column using .col
+# This can be useful for creating window functions like moving averages
+cmap_dbl(c(5:1, 1:5), ~ mean(.col[max(1, .i - 2):.i]))
+
+# Refer to the anonymous function recursively using .this
+cmap_int(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
+
+# Recursive functions can be useful for tree traversal
+tree <- list(
+    a = list(
+        b = 1,
+        c = list(
+            d = 2,
+            e = 3
+        )
+    ),
+    f = 4,
+    g = list(h = 5)
+)
+cmap_df(
+    tree,
+    ~ if (is.list(.x)) {
+        purrr::pmap_df(
+            list(.x, .nm = names(.x)),
+            .this,
+            path = paste0(path, "/", .nm)
+        )
+    } else {
+        tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+    },
+    path = "root"
+)
+}
