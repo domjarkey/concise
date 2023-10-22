@@ -56,10 +56,6 @@
 #' @import rlang
 #' @export
 cmap <- function(.x, .f, ..., env = rlang::caller_env(), map_fn = purrr::pmap, simplify = FALSE) {
-    # TODO: type checking of arguments with errors
-    # TODO: change .args from execution environment variables to function arguments
-    # TODO: look at pmap_vec for simplifying
-
     .f <- get_rhs(rlang::enexpr(.f))
 
     formula_names <- get_formula_names(.f)
@@ -79,39 +75,40 @@ cmap <- function(.x, .f, ..., env = rlang::caller_env(), map_fn = purrr::pmap, s
         }
     )
 
-    # evaluate .args only after defining pronouns
     .args <- purrr::map(
         rlang::enquos(...),
         \(dot) rlang::eval_tidy(dot, data = .x)
     )
 
+    execution_environment_variables <- list()
+
     if (".col" %in% formula_names) {
-        .args <- append(.args, list(.col = .x$.x))
+        execution_environment_variables[[".col"]] <- .x$.x
     }
 
     if (".n" %in% formula_names) {
-        .args <- append(.args, list(.n = length(.x$.x)))
+        execution_environment_variables[[".n"]] <- length(.x$.x)
     }
 
     nms <- names(.x)
 
     rlang::env_bind_lazy(env, .this = .this)
 
-    .this <- rlang::new_function(
-        args = purrr::map(
-            purrr::set_names(nms),
-            \(nm) {
-                if (nm %in% c(".i", ".nm")) {
-                    rlang::call2(rlang::expr("rlang::`!!`"), rlang::sym(nm))
-                } else {
-                    rlang::expr(rlang::missing_arg())
-                }
-            }
+    .args <- append(
+        list(
+            .x = rlang::missing_arg(),
+            .i = rlang::missing_arg(),
+            .nm = rlang::missing_arg()
         ),
+        .args
+    )
+
+    .this <- rlang::new_function(
+        args = .args,
         body = .f,
         env = rlang::env(
             env,
-            !!!.args
+            !!!execution_environment_variables
         )
     )
 
