@@ -88,6 +88,42 @@ test_that("Data frame mapping", {
     )
 })
 
+test_that("Recursion", {
+    df <- tibble::tibble(
+        tree = list(
+            a = list(
+                b = 1,
+                c = list(
+                    d = 2,
+                    e = 3
+                )
+            ),
+            f = 4,
+            g = list(h = 5)
+        )
+    )
+
+    expect_equal(
+        rmap_df(
+            df,
+            ~ if (is.list(tree)) {
+                purrr::pmap_df(
+                    list(tree, tree.nm = names(tree)),
+                    .this,
+                    path = paste0(path, "/", tree.nm)
+                )
+            } else {
+                tibble::tibble(path = paste0(path, "/", tree.nm), value = tree)
+            },
+            path = "root"
+        ),
+        tibble::tibble(
+            path = c("root/a/b", "root/a/c/d", "root/a/c/e", "root/f", "root/g/h"),
+            value = 1:5
+        )
+    )
+})
+
 # TODO: test recursion with single arg function on first column in data, second
 #       second column in data, w. and w/o explicit argument names in .this call
 
