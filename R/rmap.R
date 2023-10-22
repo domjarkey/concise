@@ -86,14 +86,6 @@ rmap <- function(
         map_fn = purrr::pmap,
         simplify = TRUE
 ) {
-    # TODO: type checking of arguments with errors
-    # TODO: implement .x for length(.l) == 1 / .l atomic
-    # TODO: implement .x for name in rhs of .f
-    # TODO: add .row pronoun as a 1-row tibble with all columns
-    # TODO: add pronoun to check group membership maybe? Does this make sense?
-    # TODO: change .l to .data maybe?
-    # TODO: remove map_fn & simplify args from suffix functions
-
     .f <- get_rhs(rlang::enexpr(.f))
 
     if (is.atomic(.l)) {
@@ -158,36 +150,45 @@ rmap <- function(
         }
     }
 
-    # evaluate .args only after defining pronouns
     .args <- purrr::map(
         rlang::enquos(...),
         ~ rlang::eval_tidy(.x, data = .l)
     )
 
+    execution_environment_variables <- list()
+
     col_references <- intersect(paste0(names(.l), ".col"), formula_names) |>
         purrr::discard(~ .x %in% names(.l))
 
     for (col in col_references) {
-        .args <- append(.args, rlang::list2(!!col := .l[[stringr::str_remove(col, ".col$")]]))
+        execution_environment_variables <- append(
+            execution_environment_variables,
+            rlang::list2(!!col := .l[[stringr::str_remove(col, ".col$")]])
+        )
     }
 
     if (".N" %in% formula_names) {
-        .args <- append(.args, list(.N = nrow(.l)))
+        execution_environment_variables[[".N"]] <- nrow(.l)
     }
 
     nms <- intersect(names(.l), c(formula_names, ".i"))
 
     rlang::env_bind_lazy(env, .this = .this)
 
-    .this <- rlang::new_function(
-        args = purrr::map(
+    .args <- append(
+        purrr::map(
             purrr::set_names(nms),
             ~ rlang::missing_arg()
         ),
+        .args
+    )
+
+    .this <- rlang::new_function(
+        args = .args,
         body = .f,
         env = rlang::env(
             env,
-            !!!.args
+            !!!execution_environment_variables
         )
     )
 
@@ -201,26 +202,26 @@ rmap <- function(
 }
 
 #' @export
-rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_chr) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
 #' @export
-rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_dbl) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
 #' @export
-rmap_df <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_df) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+rmap_df <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
 #' @export
-rmap_int <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_int) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+rmap_int <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
 #' @export
-rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame(), map_fn = purrr::pmap_lgl) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = map_fn)
+rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }
