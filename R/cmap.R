@@ -1,7 +1,7 @@
 #' Apply an anonymous function to each element of a vector
 #'
 #' @description
-#' `cmap` works very similarly to `purrr::map` when specifying the formula of the
+#' `cmap` works very similarly to [purrr::map] when specifying the formula of the
 #' anonymous function using tilde (`~`) formula notation, but includes extra custom
 #' pronouns to refer to related objects such as element names, element indeces,
 #' and the function itself, so as to permit recursive function definitions.
@@ -13,7 +13,7 @@
 #' @param .x A list or atomic vector.
 #' @param .f A formula defining the anonymous function to be applied to every
 #' element of `.x`, in which `.x` refers to the given element. See Examples for
-#' how this differs from formulas in `purrr::map`.
+#' how this differs from formulas in [purrr::map].
 #' @param ... Additional named arguments are passed directly to the execution
 #' environment of the anonymous function as variables. These variables may include
 #' transformations on the entire `.x` object as well as any variables local to the
@@ -37,7 +37,7 @@
 #' See Examples for further clarification on the usage of each. Supported pronouns
 #' are:
 #'
-#' * `.x` -- as in `purrr::map`, this refers to an individual element of the list
+#' * `.x` -- as in [purrr::map], this refers to an individual element of the list
 #' `.x`.
 #' * `.i` -- the position of the element `.x` in a list.
 #' * `.nm` -- if `.x` is named, this returns the name corresponding to the element

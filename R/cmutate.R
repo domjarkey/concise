@@ -1,10 +1,10 @@
 #' Create, modify, and delete columns with Concise notation
 #'
 #' @description
-#' `cmutate` functions exactly like `dplyr::mutate` with the additional feature
+#' `cmutate` functions exactly like [dplyr::mutate] with the additional feature
 #' that column definitions specified using a `~` instead of `=` are iteratively
 #' evaluated as a lambda function. In practise, this works similarly to using
-#' `dplyr::rowwise` before `dplyr::mutate`, except the result is calculated much
+#' [dplyr::rowwise] before [dplyr::mutate], except the result is calculated much
 #' faster and is less computationally expensive, and does so without overwriting
 #' the existing groupings of the data.
 #'
@@ -19,10 +19,10 @@
 #'
 #' @param .data A data frame
 #' @param ... Any combination of one or more name-value pairs to be evaluated as
-#' columns in the same fashion as in `dplyr::mutate` and two-sided formula of the
+#' columns in the same fashion as in [dplyr::mutate] and two-sided formula of the
 #' form `x ~ expr` where `x` gives the new name of the column, and `expr` denotes
 #' the anonymous function to be iteratively evaluated to create the new column.
-#' As with `dplyr::mutate`, the expression `expr` can refer to data columns in
+#' As with [dplyr::mutate], the expression `expr` can refer to data columns in
 #' `.data` as though they were variables defined in the local scope.
 #'
 #' @details
@@ -59,17 +59,17 @@
 #' * `<column_name>` -- in the formula, this refers to an individual element of
 #' the named data column.
 #' * `.i` -- the row index, or, if `.l` is grouped, the row index within the group.
-#' Equivalent to `dplyr::row_number()`.
+#' Equivalent to [dplyr::row_number()].
 #' * `.I` -- the absolute row index; whether or not `.l` is grouped, this will
 #' return the overall position of the current row. Equivalent to
-#' `dplyr::cur_group_rows()`.
+#' [dplyr::cur_group_rows()].
 #' * `<column_name>.nm` -- if the column `<column_name>` in `.l` is named, this
 #' returns the name corresponding to the current element of `<column_name>`; If
 #' this column of `.l` is unnamed, returns `NULL`. Note that columns in `tibble`
 #' data frames retain their `names` attribute, but ordinary base R data frames
 #' do not.
 #' * `.n` -- the index of the final row in `.l`, or, if `.l` is grouped, the final
-#' row in the given group. Equivalent to `dplyr::n()`.
+#' row in the given group. Equivalent to [dplyr::n()].
 #' * `.N` -- the index of the final row in `.l`, whether or not `.l` is grouped.
 #' Equivalent to `nrow(.l)`.
 #' * `<column_name>.grp` -- all elements in the current group as a list object.

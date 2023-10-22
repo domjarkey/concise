@@ -18,7 +18,7 @@ rmap(
 
 \item{.f}{A formula defining the anonymous function to be applied to every
 element of \code{.l}, in which \code{.x} refers to the given element. See Examples for
-how this differs from formulas in \code{purrr::map}.}
+how this differs from formulas in \link[purrr:map]{purrr::map}.}
 
 \item{...}{Additional named arguments are passed directly to the execution
 environment of the anonymous function as variables. These variables may include
@@ -45,14 +45,14 @@ outputs.
 }
 \description{
 \code{rmap} iteratively applies an anonymous function to rows of a data frame or a
-named list of lists of equal length. \code{rmap} works similarly to \code{purrr::pmap},
+named list of lists of equal length. \code{rmap} works similarly to \link[purrr:pmap]{purrr::pmap},
 except the data frame does not need to be subset to only those columns used by
 the function, and columns can be directly referred to by name inside the definition
 of the anonymous function.
 
 \code{rmap} also permits the usage of additional "pronouns" to concisely refer to
 related objects or properties of the data columns, such as row number, grouping
-(if the data frame is grouped using \code{dplyr::group_by} or similar), as well as
+(if the data frame is grouped using \link[dplyr:group_by]{dplyr::group_by} or similar), as well as
 the anonymous function itself for use in recursion.
 
 \code{rmap_chr}, \code{rmap_dbl}, \code{rmap_df}, \code{rmap_int}, and \code{rmap_lgl} work like their
@@ -73,17 +73,17 @@ are:
 \item \verb{<column_name>} -- in the formula, this refers to an individual element of
 the named data column.
 \item \code{.i} -- the row index, or, if \code{.l} is grouped, the row index within the group.
-Equivalent to \code{dplyr::row_number()}.
+Equivalent to \code{\link[dplyr:row_number]{dplyr::row_number()}}.
 \item \code{.I} -- the absolute row index; whether or not \code{.l} is grouped, this will
 return the overall position of the current row. Equivalent to
-\code{dplyr::cur_group_rows()}.
+\code{\link[dplyr:context]{dplyr::cur_group_rows()}}.
 \item \verb{<column_name>.nm} -- if the column \verb{<column_name>} in \code{.l} is named, this
 returns the name corresponding to the current element of \verb{<column_name>}; If
 this column of \code{.l} is unnamed, returns \code{NULL}. Note that columns in \code{tibble}
 data frames retain their \code{names} attribute, but ordinary base R data frames
 do not.
 \item \code{.n} -- the index of the final row in \code{.l}, or, if \code{.l} is grouped, the final
-row in the given group. Equivalent to \code{dplyr::n()}.
+row in the given group. Equivalent to \code{\link[dplyr:context]{dplyr::n()}}.
 \item \code{.N} -- the index of the final row in \code{.l}, whether or not \code{.l} is grouped.
 Equivalent to \code{nrow(.l)}.
 \item \verb{<column_name>.grp} -- all elements in the current group as a list object.

@@ -33,7 +33,7 @@ cmap_lgl(.x, .f, ..., env = parent.frame())
 
 \item{.f}{A formula defining the anonymous function to be applied to every
 element of \code{.x}, in which \code{.x} refers to the given element. See Examples for
-how this differs from formulas in \code{purrr::map}.}
+how this differs from formulas in \link[purrr:map]{purrr::map}.}
 
 \item{...}{Additional named arguments are passed directly to the execution
 environment of the anonymous function as variables. These variables may include
@@ -59,7 +59,7 @@ if \code{simplify=TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
 }
 \description{
-\code{cmap} works very similarly to \code{purrr::map} when specifying the formula of the
+\code{cmap} works very similarly to \link[purrr:map]{purrr::map} when specifying the formula of the
 anonymous function using tilde (\code{~}) formula notation, but includes extra custom
 pronouns to refer to related objects such as element names, element indeces,
 and the function itself, so as to permit recursive function definitions.
@@ -76,7 +76,7 @@ a convenient shorthand to provide additional functionality in a readable format.
 See Examples for further clarification on the usage of each. Supported pronouns
 are:
 \itemize{
-\item \code{.x} -- as in \code{purrr::map}, this refers to an individual element of the list
+\item \code{.x} -- as in \link[purrr:map]{purrr::map}, this refers to an individual element of the list
 \code{.x}.
 \item \code{.i} -- the position of the element \code{.x} in a list.
 \item \code{.nm} -- if \code{.x} is named, this returns the name corresponding to the element

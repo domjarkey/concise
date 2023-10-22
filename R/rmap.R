@@ -2,14 +2,14 @@
 #'
 #' @description
 #' `rmap` iteratively applies an anonymous function to rows of a data frame or a
-#' named list of lists of equal length. `rmap` works similarly to `purrr::pmap`,
+#' named list of lists of equal length. `rmap` works similarly to [purrr::pmap],
 #' except the data frame does not need to be subset to only those columns used by
 #' the function, and columns can be directly referred to by name inside the definition
 #' of the anonymous function.
 #'
 #' `rmap` also permits the usage of additional "pronouns" to concisely refer to
 #' related objects or properties of the data columns, such as row number, grouping
-#' (if the data frame is grouped using `dplyr::group_by` or similar), as well as
+#' (if the data frame is grouped using [dplyr::group_by] or similar), as well as
 #' the anonymous function itself for use in recursion.
 #'
 #' `rmap_chr`, `rmap_dbl`, `rmap_df`, `rmap_int`, and `rmap_lgl` work like their
@@ -19,7 +19,7 @@
 #' @param .l A data frame or named list of lists/vectors of equal length.
 #' @param .f A formula defining the anonymous function to be applied to every
 #' element of `.l`, in which `.x` refers to the given element. See Examples for
-#' how this differs from formulas in `purrr::map`.
+#' how this differs from formulas in [purrr::map].
 #' @param ... Additional named arguments are passed directly to the execution
 #' environment of the anonymous function as variables. These variables may include
 #' transformations on the entire `.l` object as well as any variables local to the
@@ -49,17 +49,17 @@
 #' * `<column_name>` -- in the formula, this refers to an individual element of
 #' the named data column.
 #' * `.i` -- the row index, or, if `.l` is grouped, the row index within the group.
-#' Equivalent to `dplyr::row_number()`.
+#' Equivalent to [dplyr::row_number()].
 #' * `.I` -- the absolute row index; whether or not `.l` is grouped, this will
 #' return the overall position of the current row. Equivalent to
-#' `dplyr::cur_group_rows()`.
+#' [dplyr::cur_group_rows()].
 #' * `<column_name>.nm` -- if the column `<column_name>` in `.l` is named, this
 #' returns the name corresponding to the current element of `<column_name>`; If
 #' this column of `.l` is unnamed, returns `NULL`. Note that columns in `tibble`
 #' data frames retain their `names` attribute, but ordinary base R data frames
 #' do not.
 #' * `.n` -- the index of the final row in `.l`, or, if `.l` is grouped, the final
-#' row in the given group. Equivalent to `dplyr::n()`.
+#' row in the given group. Equivalent to [dplyr::n()].
 #' * `.N` -- the index of the final row in `.l`, whether or not `.l` is grouped.
 #' Equivalent to `nrow(.l)`.
 #' * `<column_name>.grp` -- all elements in the current group as a list object.

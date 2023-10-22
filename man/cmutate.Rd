@@ -10,10 +10,10 @@ cmutate(.data, ...)
 \item{.data}{A data frame}
 
 \item{...}{Any combination of one or more name-value pairs to be evaluated as
-columns in the same fashion as in \code{dplyr::mutate} and two-sided formula of the
+columns in the same fashion as in \link[dplyr:mutate]{dplyr::mutate} and two-sided formula of the
 form \code{x ~ expr} where \code{x} gives the new name of the column, and \code{expr} denotes
 the anonymous function to be iteratively evaluated to create the new column.
-As with \code{dplyr::mutate}, the expression \code{expr} can refer to data columns in
+As with \link[dplyr:mutate]{dplyr::mutate}, the expression \code{expr} can refer to data columns in
 \code{.data} as though they were variables defined in the local scope.}
 }
 \value{
@@ -23,11 +23,12 @@ are preserved. Groups are preserved unless grouping variables are mutated, in
 which case they will be recomputed.
 }
 \description{
-\code{cmutate} functions exactly like \code{dplyr::mutate} with the additional feature
+\code{cmutate} functions exactly like \link[dplyr:mutate]{dplyr::mutate} with the additional feature
 that column definitions specified using a \code{~} instead of \code{=} are iteratively
-evaluated as a lambda function. This works similarly to \code{dplyr::rowwise}-grouped
-data frames, except much faster and less computationally expensive, and without
-overwriting the existing groupings of the data.
+evaluated as a lambda function. In practise, this works similarly to using
+\link[dplyr:rowwise]{dplyr::rowwise} before \link[dplyr:mutate]{dplyr::mutate}, except the result is calculated much
+faster and is less computationally expensive, and does so without overwriting
+the existing groupings of the data.
 
 Columns defined using a \code{~} also allow for  the usage of additional "pronouns"
 to concisely refer to related objects or properties of the data columns, such
@@ -54,7 +55,6 @@ can be defined inside parentheses after a \verb{?} following the column definiti
 In this case the column definition is of the form \code{x ~ expr ? (arg = value)}.
 If multiple arguments need to be specified, they can be chained together inside
 curly braces and separated by semi-colons. This takes the following form:
-
 \code{x ~ expr ? {arg1 = val1; arg2 = val2; ...}} or if type needs to be specified,
 \code{x ~ expr ? {type; arg1 = val1; arg2 = val2; ...}}. See examples for further
 clarification.
@@ -74,17 +74,17 @@ are:
 \item \verb{<column_name>} -- in the formula, this refers to an individual element of
 the named data column.
 \item \code{.i} -- the row index, or, if \code{.l} is grouped, the row index within the group.
-Equivalent to \code{dplyr::row_number()}.
+Equivalent to \code{\link[dplyr:row_number]{dplyr::row_number()}}.
 \item \code{.I} -- the absolute row index; whether or not \code{.l} is grouped, this will
 return the overall position of the current row. Equivalent to
-\code{dplyr::cur_group_rows()}.
+\code{\link[dplyr:context]{dplyr::cur_group_rows()}}.
 \item \verb{<column_name>.nm} -- if the column \verb{<column_name>} in \code{.l} is named, this
 returns the name corresponding to the current element of \verb{<column_name>}; If
 this column of \code{.l} is unnamed, returns \code{NULL}. Note that columns in \code{tibble}
 data frames retain their \code{names} attribute, but ordinary base R data frames
 do not.
 \item \code{.n} -- the index of the final row in \code{.l}, or, if \code{.l} is grouped, the final
-row in the given group. Equivalent to \code{dplyr::n()}.
+row in the given group. Equivalent to \code{\link[dplyr:context]{dplyr::n()}}.
 \item \code{.N} -- the index of the final row in \code{.l}, whether or not \code{.l} is grouped.
 Equivalent to \code{nrow(.l)}.
 \item \verb{<column_name>.grp} -- all elements in the current group as a list object.
