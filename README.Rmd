@@ -61,63 +61,45 @@ tibble(value = list("a", "b", NULL, "d", NULL)) |>
     cmutate(value_exists ~ !is.null(value))
 ```
 
-This can side-step the problem of having to use mapping functions that obfuscate
-the intent of your code. Consider the problem of picking the largest element from
-amongst three columns. Naively, we might try a simple application of the `max`
-function:
+#### Examples
+
+Find the largest value out of three columns...
 
 ```{r}
-df <- tibble(
+df <- tibble::tibble(
     x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
     y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
     z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
 )
-
-df |> mutate(naive_largest = max(x, y, z))
 ```
 
-Clearly this fails because `max` lumps together the values of all the rows in `x`, `y`,
-and `z` instead of evaluating the function row by row. We might use `dplyr::rowwise`
-to overcome this problem, but this is an undesirable alternative for a couple of 
-reasons. First, `rowwise` is very slow, especially for larger data frames. Second, 
-`rowwise` effectively works by grouping every row into its own separate group,
-meaning existing groups are lost, and the data may need to be ungrouped afterwards
-if further mutations need to be performed.
+:::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"}
+
+::: {}
+
+`concise` syntax:
 
 ```{r}
-# More like slowwise
-df |> 
-    rowwise() |>
-    mutate(rowwise_largest = max(x, y, z)) |>
-    ungroup()
+library(concise)
+df |> cmutate(
+    largest ~ max(x, y, z)
+)
 ```
+:::
 
-The better way to perform this operation that requires row-by-row computation
-taking multiple data columns as inputs is with the `purrr::pmap` function. `pmap`
-can either take a formula to specify the expression of the lambda function,
-referring to each input column by its position, or (in more recent versions of R)
-an anonymous function defined using `\(x, y, z) expr` notation. These look like
-this:
+::: {}
 
-```{r}
-df |>
-    mutate(
-        pmap_largest_v1 = pmap_int(list(x, y, z), ~ max(..1, ..2, ..3)),
-        pmap_largest_v2 = pmap_int(list(x, y, z), \(x, y, z) max(x, y, z))
-    )
+Equivalent code:
+
+```{r message=FALSE}
+library(tidyverse)
+df |> mutate(
+    largest = pmap_int(list(x, y, z), \(x, y, z) max(x, y, z))
+)
 ```
+:::
 
-Of course these work a lot faster than `rowwise` (the second version is fastest),
-but what they gain in speed they lose in brevity. Both end up being much longer
-than might initially be expected for a relatively simple operation, and the first
-is particularly hard to understand at a glance as the `..x` pronouns obscure which
-variables they are actually referring to. The purpose of the `cmutate` function is
-to avoid this trade-off between speed and intelligibility, as can be seen below:
-
-```{r}
-df |> cmutate(concise_largest ~ max(x, y, z))
-```
-
+::::
 
 ### `rmap`
 
