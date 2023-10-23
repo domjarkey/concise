@@ -108,7 +108,10 @@ Equivalent code:
 ``` r
 library(tidyverse)
 df |> mutate(
-    largest = pmap_int(list(x, y, z), \(x, y, z) max(x, y, z))
+    largest = pmap_int(
+        list(x, y, z),
+        \(x, y, z) max(x, y, z)
+    )
 )
 #> # A tibble: 10 × 4
 #>        x     y     z largest
