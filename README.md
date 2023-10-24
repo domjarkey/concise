@@ -73,7 +73,7 @@ df <- tibble::tibble(
 )
 ```
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;">
+<div style="display: flex;">
 
 <div>
 
