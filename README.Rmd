@@ -100,7 +100,7 @@ library(tidyverse)
 df |> mutate(
     largest = pmap_int(
         list(x, y, z),
-        \\(x, y, z) max(x, y, z)
+        \\\\(x, y, z) max(x, y, z)
     )
 )
 #> # A tibble: 10 × 4
@@ -123,7 +123,6 @@ library(gt)
 tibble::tibble(x = t1, y = t2) |>
     gt() |>
     fmt_markdown()
-
 ```
 
 ### `rmap`
