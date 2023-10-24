@@ -73,7 +73,7 @@ df <- tibble::tibble(
 )
 ```
 
-![](man/figures/table1.png){#id .class width=50% height=50%}
+![](man/figures/table1.png){#id .class width=332px height=224px}
 
 
 

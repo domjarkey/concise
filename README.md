@@ -73,8 +73,8 @@ df <- tibble::tibble(
 )
 ```
 
-<img src="man/figures/table1.png" id="id" class="class"
-style="width:50.0%;height:50.0%" />
+<img src="man/figures/table1.png" id="id" class="class" width="332"
+height="224" />
 
 ### `rmap`
 
