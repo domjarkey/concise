@@ -73,8 +73,9 @@ df <- tibble::tibble(
 )
 ```
 
-![](man/figures/table1.png){#id .class width=332px height=224px}
-
+::: {align="center"}
+![](man/figures/table1.png){#id .class width=664px height=448px}
+:::
 
 
 ### `rmap`
