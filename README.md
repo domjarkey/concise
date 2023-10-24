@@ -73,60 +73,8 @@ df <- tibble::tibble(
 )
 ```
 
-<div id="itcvgajlzv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    &#10;    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="x">x</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="y">y</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="x" class="gt_row gt_left"><div class='gt_from_md'><pre><code class="language-r">library(concise)
-df |&gt; cmutate(
-    largest ~ max(x, y, z)
-)
-#&gt; # A tibble: 10 × 4
-#&gt;        x     y     z largest
-#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
-#&gt;  1    29    38    31      38
-#&gt;  2    11    80    83      83
-#&gt;  3    72    98    91      98
-#&gt;  4    81    93    69      93
-#&gt;  5    27    34    82      82
-#&gt;  6    61    26    65      65
-#&gt;  7    42     4    75      75
-#&gt;  8    26    31     3      31
-#&gt;  9    57    18    20      57
-#&gt; 10    39    69    71      71
-</code></pre>
-</div></td>
-<td headers="y" class="gt_row gt_left"><div class='gt_from_md'><pre><code class="language-r">library(tidyverse)
-df |&gt; mutate(
-    largest = pmap_int(
-        list(x, y, z),
-        \\(x, y, z) max(x, y, z)
-    )
-)
-#&gt; # A tibble: 10 × 4
-#&gt;        x     y     z largest
-#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
-#&gt;  1    29    38    31      38
-#&gt;  2    11    80    83      83
-#&gt;  3    72    98    91      98
-#&gt;  4    81    93    69      93
-#&gt;  5    27    34    82      82
-#&gt;  6    61    26    65      65
-#&gt;  7    42     4    75      75
-#&gt;  8    26    31     3      31
-#&gt;  9    57    18    20      57
-#&gt; 10    39    69    71      71
-</code></pre>
-</div></td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+<img src="man/figures/table1.png" id="id" class="class"
+style="width:50.0%;height:50.0%" />
 
 ### `rmap`
 
