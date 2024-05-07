@@ -48,7 +48,7 @@ notation, the column definition is of the form \code{x ~ expr ? type}. See Examp
 for further clarification.
 }
 
-\section{Additional lambda funciton arguments with \verb{?}}{
+\section{Additional lambda function arguments with \verb{?}}{
 Occasionally it is helpful to pass additional arguments to be used in the
 evaluation of the lambda function. Like the type specification above, these
 can be defined inside parentheses after a \verb{?} following the column definition.

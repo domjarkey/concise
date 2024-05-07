@@ -34,7 +34,7 @@
 #' notation, the column definition is of the form `x ~ expr ? type`. See Examples
 #' for further clarification.
 #'
-#' # Additional lambda funciton arguments with `?`
+#' # Additional lambda function arguments with `?`
 #' Occasionally it is helpful to pass additional arguments to be used in the
 #' evaluation of the lambda function. Like the type specification above, these
 #' can be defined inside parentheses after a `?` following the column definition.
