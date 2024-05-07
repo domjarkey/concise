@@ -8,7 +8,7 @@
 #' faster and is less computationally expensive, and does so without overwriting
 #' the existing groupings of the data.
 #'
-#' Columns defined using a `~` also allow for  the usage of additional "pronouns"
+#' Columns defined using a `~` also allow for the usage of additional "pronouns"
 #' to concisely refer to related objects or properties of the data columns, such
 #' as row number, groups, as well as the anonymous function itself for use in
 #' recursion.
