@@ -58,7 +58,7 @@ library(dplyr)
 library(purrr)
 
 tibble(value = list("a", "b", NULL, "d", NULL)) |>
-    cmutate(value_exists ~ !is.null(value))
+    cmutate(value_exists ~ is.null(value))
 ```
 
 #### Examples

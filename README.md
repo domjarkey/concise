@@ -50,15 +50,15 @@ library(dplyr)
 library(purrr)
 
 tibble(value = list("a", "b", NULL, "d", NULL)) |>
-    cmutate(value_exists ~ !is.null(value))
+    cmutate(value_exists ~ is.null(value))
 #> # A tibble: 5 × 2
 #>   value     value_exists
 #>   <list>    <lgl>       
-#> 1 <chr [1]> TRUE        
-#> 2 <chr [1]> TRUE        
-#> 3 <NULL>    FALSE       
-#> 4 <chr [1]> TRUE        
-#> 5 <NULL>    FALSE
+#> 1 <chr [1]> FALSE       
+#> 2 <chr [1]> FALSE       
+#> 3 <NULL>    TRUE        
+#> 4 <chr [1]> FALSE       
+#> 5 <NULL>    TRUE
 ```
 
 #### Examples
