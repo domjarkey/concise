@@ -25,6 +25,8 @@ anonymous functions that condense a paragraph's worth of code into a single line
 
 * Refer to data columns directly -- avoid placeholder pronouns like `.x` or `..1`
 and instead refer to your data by name.
+* Leverages `purrr`'s mapping functions to outperform slow `dplyr::rowwise` operations
+and facilitate non-rowwise column mutations in the same call.
 * Helpful shorthand gives access to vector properties like row number, vector length
 and the vector names inside the iterative function.
 * Interact with and preserve groups created by `dplyr::group_by`.
@@ -54,19 +56,34 @@ basis.
 
 ```{r cmutate, message=FALSE}
 library(concise)
-library(dplyr)
-library(purrr)
 
-tibble(value = list("a", "b", NULL, "d", NULL)) |>
+tibble::tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
     cmutate(value_exists ~ is.null(value))
+```
+
+As with `dplyr::mutate`, ordinary column mutations can also be called with `=`,
+and multiple mutations can be called at once, able to make reference to columns
+created within the same function call:
+
+```{r cmutate2, message=FALSE}
+library(tidyverse)
+
+expand_grid(
+    word = c('banana', 'canal barge'),
+    expression = c('.an', 'ba.')
+) |> cmutate(
+    substring ~ str_extract(word, expression),
+    first_three = str_extract(word, "^\\w{3}"),
+    concat = paste(word, first_three, sep = substring)
+)
 ```
 
 #### Examples
 
-Find the largest value out of three columns...
+##### Find the mean of multiple columns:
 
 ```{r}
-df <- tibble::tibble(
+numbers <- tibble(
     x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
     y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
     z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
@@ -76,6 +93,18 @@ df <- tibble::tibble(
 ::: {align="center"}
 ![](man/figures/table1.png){#id .class width=664px height=448px}
 :::
+
+##### Calculate a moving average of the three latest entries:
+
+`concise` allows the use of special pronouns to refer to things like the row index
+(`.i`), the final row index of the data (`.n`), or the entire column as a vector
+(`<column_name>.col`). These can be used to make simple, intelligible window functions.
+
+```{r}
+numbers |> cmutate(
+    avg_x ~ mean(x.col[max(.i - 3, 1):.i])
+)
+```
 
 
 ### `rmap`
