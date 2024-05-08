@@ -57,24 +57,22 @@ basis.
 ```{r cmutate, message=FALSE}
 library(concise)
 
-tibble::tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
+tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
     cmutate(value_exists ~ is.null(value))
 ```
 
 As with `dplyr::mutate`, ordinary column mutations can also be called with `=`,
 and multiple mutations can be called at once, able to make reference to columns
-created within the same function call:
+created or modified within the same function call:
 
 ```{r cmutate2, message=FALSE}
-library(tidyverse)
-
-expand_grid(
+tidyr::expand_grid(
     word = c('banana', 'canal barge'),
     expression = c('.an', 'ba.')
 ) |> cmutate(
-    substring ~ str_extract(word, expression),
-    first_three = str_extract(word, "^\\w{3}"),
-    concat = paste(word, first_three, sep = substring)
+    substring ~ stringr::str_extract(word, expression),
+    first_three = stringr::str_extract(word, "^\\w{3}"),
+    concat = paste(first_three, substring)
 )
 ```
 
@@ -106,6 +104,30 @@ numbers |> cmutate(
 )
 ```
 
+##### Use pronouns in combination with data groupings
+
+When data is grouped, the `<column_name>.grp` pronoun refers to all elements of the
+data in the same group as a vector, while `<column_name>.col` will refer to the
+entire, ungrouped column. Similarly, `.i` will refer to the index of the elemenent
+in the group, while `.I` will refer to the absolute index.
+
+```{r}
+numbers$letter <- rep(c('A', 'B'), each = 5)
+
+numbers |>
+    select(letter, x) |>
+    group_by(letter) |>
+    cmutate(
+        proportion_of_group ~ x / sum(x.grp),
+        proportion_of_whole ~ x / sum(x.col),
+        group_row_index ~ .i,
+        columns_row_index ~ .I
+    )
+```
+
+N.B. Similarly to `.i`/`.I`, when grouped, `.n` refers to the row index of the 
+final entry in the group (or equally, the cardinality of the group), and `.N` to
+the number of rows in the ungrouped data.
 
 ### `rmap`
 

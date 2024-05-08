@@ -50,7 +50,7 @@ row-by-row basis.
 ``` r
 library(concise)
 
-tibble::tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
+tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
     cmutate(value_exists ~ is.null(value))
 #> # A tibble: 5 × 2
 #>   value     value_exists
@@ -64,26 +64,24 @@ tibble::tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
 
 As with `dplyr::mutate`, ordinary column mutations can also be called
 with `=`, and multiple mutations can be called at once, able to make
-reference to columns created within the same function call:
+reference to columns created or modified within the same function call:
 
 ``` r
-library(tidyverse)
-
-expand_grid(
+tidyr::expand_grid(
     word = c('banana', 'canal barge'),
     expression = c('.an', 'ba.')
 ) |> cmutate(
-    substring ~ str_extract(word, expression),
-    first_three = str_extract(word, "^\\w{3}"),
-    concat = paste(word, first_three, sep = substring)
+    substring ~ stringr::str_extract(word, expression),
+    first_three = stringr::str_extract(word, "^\\w{3}"),
+    concat = paste(first_three, substring)
 )
 #> # A tibble: 4 × 5
-#>   word        expression substring first_three concat           
-#>   <chr>       <chr>      <chr>     <chr>       <chr>            
-#> 1 banana      .an        ban       ban         bananabanban     
-#> 2 banana      ba.        ban       ban         bananabanban     
-#> 3 canal barge .an        can       can         canal bargebancan
-#> 4 canal barge ba.        bar       can         canal bargebancan
+#>   word        expression substring first_three concat 
+#>   <chr>       <chr>      <chr>     <chr>       <chr>  
+#> 1 banana      .an        ban       ban         ban ban
+#> 2 banana      ba.        ban       ban         ban ban
+#> 3 canal barge .an        can       can         can can
+#> 4 canal barge ba.        bar       can         can bar
 ```
 
 #### Examples
@@ -130,6 +128,47 @@ numbers |> cmutate(
 #>  9    57    18    20  46.5
 #> 10    39    69    71  41
 ```
+
+##### Use pronouns in combination with data groupings
+
+When data is grouped, the `<column_name>.grp` pronoun refers to all
+elements of the data in the same group as a vector, while
+`<column_name>.col` will refer to the entire, ungrouped column.
+Similarly, `.i` will refer to the index of the elemenent in the group,
+while `.I` will refer to the absolute index.
+
+``` r
+numbers$letter <- rep(c('A', 'B'), each = 5)
+
+numbers |>
+    select(letter, x) |>
+    group_by(letter) |>
+    cmutate(
+        proportion_of_group ~ x / sum(x.grp),
+        proportion_of_whole ~ x / sum(x.col),
+        group_row_index ~ .i,
+        columns_row_index ~ .I
+    )
+#> # A tibble: 10 × 6
+#> # Groups:   letter [2]
+#>    letter     x proportion_of_group proportion_of_whole group_row_index
+#>    <chr>  <int>               <dbl>               <dbl>           <int>
+#>  1 A         29               0.132              0.0652               1
+#>  2 A         11               0.05               0.0247               2
+#>  3 A         72               0.327              0.162                3
+#>  4 A         81               0.368              0.182                4
+#>  5 A         27               0.123              0.0607               5
+#>  6 B         61               0.271              0.137                1
+#>  7 B         42               0.187              0.0944               2
+#>  8 B         26               0.116              0.0584               3
+#>  9 B         57               0.253              0.128                4
+#> 10 B         39               0.173              0.0876               5
+#> # ℹ 1 more variable: columns_row_index <int>
+```
+
+N.B. Similarly to `.i`/`.I`, when grouped, `.n` refers to the row index
+of the final entry in the group (or equally, the cardinality of the
+group), and `.N` to the number of rows in the ungrouped data.
 
 ### `rmap`
 
