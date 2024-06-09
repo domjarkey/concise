@@ -148,7 +148,7 @@ select(x, y, z) |>
         max_int ~ max(x, y, z) ? int,
         max_dbl ~ max(x, y, z) ? dbl,
         max_chr ~ max(x, y, z) ? chr,
-       max_list ~ max(x, y, z) ? list,
+        max_list ~ max(x, y, z) ? list,
  )
 
 # Recursive functions can be implemented using the `.this` pronoun to refer
