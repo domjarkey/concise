@@ -86,7 +86,7 @@
 #' which case they will be recomputed.
 #'
 #' @examples
-#' # Apply functions row-by-row
+#' # Apply non-vectorised functions row-by-row
 #' tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
 #' cmutate(fruit_exists ~ !is.null(fruit))
 #'
@@ -137,6 +137,12 @@
 #'         max_chr ~ max(x, y, z) ? chr,
 #'        max_list ~ max(x, y, z) ? list,
 #'  )
+#'
+#' # Recursive functions can be implemented using the `.this` pronoun to refer
+#' # to the anonymous function
+#' tibble(n = 1:10) |> cmutate(
+#'     fibonacci ~ if (n <= 2) {1} else {.this(n - 1) + .this(n - 2)}
+#' )
 #'
 #' @export
 cmutate <- function(.data, ...) {
