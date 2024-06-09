@@ -282,8 +282,7 @@ reached. This is usually not ideal if avoidable, but in certain
 circumstances such as list traversal or web scraping, it can be handy to
 call a function inside itself to complete a task with an indefinite
 amount of steps. In `concise` functions, this can be accomplished using
-the `.this` pronoun. A simple example is given here but further
-elaboration will be given in an upcoming vignette.
+the `.this` pronoun.
 
 The canonical example of recursion is Fibonacci’s sequence, where the
 first two terms are defined as 1 and 1 (or sometimes 0 and 1), and the
@@ -293,4 +292,43 @@ can be succinctly computed using `cmap`:
 ``` r
 cmap_int(1:10, ~ if (.x <= 2) {1} else {.this(.x - 1) + .this(.x - 2)})
 #>  [1]  1  1  2  3  5  8 13 21 34 55
+```
+
+Tree-like structures or nested lists can be traversed recursively to
+collapse into a more intelligible format or locate leaf nodes.
+
+``` r
+tree <- list(
+    a = list(
+        b = 1,
+        c = list(
+            d = 2,
+            e = 3
+        )
+    ),
+    f = 4,
+    g = list(h = 5)
+)
+
+cmap_df(
+    tree,
+    ~ if (is.list(.x)) {
+        purrr::pmap_df(
+            list(.x, .nm = names(.x)),
+            .this,
+            path = paste0(path, "/", .nm)
+        )
+    } else {
+        tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+    },
+    path = "root"
+)
+#> # A tibble: 5 × 2
+#>   path       value
+#>   <chr>      <dbl>
+#> 1 root/a/b       1
+#> 2 root/a/c/d     2
+#> 3 root/a/c/e     3
+#> 4 root/f         4
+#> 5 root/g/h       5
 ```
