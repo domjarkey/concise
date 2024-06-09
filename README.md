@@ -221,17 +221,56 @@ N.B. As with `purrr`’s mapping functions, `?` won’t automatically coerce
 any data type, so it is recommended to use functions such as
 `as.integer` or `as.character` where appropriate.
 
-### `rmap`
+### `rmap` and `cmap`
+
+`rmap` applies an anonymous function to a data frame while allowing the
+columns to be referred to directly inside the function definition. As
+with `cmutate` and other `concise` functions, pronouns such as `.i` (the
+index or position in the element in the list) are able to be used.
 
 `rmap` works similarly to `purrr::pmap` except the input data frame does
-not need to be subset to only those columns used in the function, and
-the data columns can be directly referred to in the anonymous function.
+not need to be subset to only those columns used in the function. The
+data type of the output is specified in a similar fashion to other
+`purrr` map functions, e.g. `rmap_chr`, `rmap_dbl`, `rmap_df`, etc.
 
 ``` r
 numbers |>
-    rmap(~ paste0(letter, ": ", mean(c(x, y, z))))
-#>  [1] "A: 32.6666666666667" "A: 58"               "A: 87"              
-#>  [4] "A: 81"               "A: 47.6666666666667" "B: 50.6666666666667"
-#>  [7] "B: 40.3333333333333" "B: 20"               "B: 31.6666666666667"
-#> [10] "B: 59.6666666666667"
+    rmap_chr(~ paste0(letter, .i, ": ", mean(c(x, y, z))))
+#>  [1] "A1: 32.6666666666667"  "A2: 58"                "A3: 87"               
+#>  [4] "A4: 81"                "A5: 47.6666666666667"  "B6: 50.6666666666667" 
+#>  [7] "B7: 40.3333333333333"  "B8: 20"                "B9: 31.6666666666667" 
+#> [10] "B10: 59.6666666666667"
+```
+
+`cmap` works similarly to `purrr::map`, taking a single input vector or
+list, except it also allows for use of `concise` pronouns. In the below
+example, `.nm` is used to refer to the `names` attribute for each
+element in the input vector, and `.col` refers to the entire input
+vector.
+
+``` r
+state_areas <- state.area
+names(state_areas) <- state.name
+
+state_areas |>
+    cmap_df(
+        ~ c(
+            state = .nm,
+            larger_than_median_state = .x > median(.col)
+        )
+    )
+#> # A tibble: 50 × 2
+#>    state       larger_than_median_state
+#>    <chr>       <chr>                   
+#>  1 Alabama     FALSE                   
+#>  2 Alaska      TRUE                    
+#>  3 Arizona     TRUE                    
+#>  4 Arkansas    FALSE                   
+#>  5 California  TRUE                    
+#>  6 Colorado    TRUE                    
+#>  7 Connecticut FALSE                   
+#>  8 Delaware    FALSE                   
+#>  9 Florida     TRUE                    
+#> 10 Georgia     TRUE                    
+#> # ℹ 40 more rows
 ```

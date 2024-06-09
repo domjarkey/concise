@@ -160,13 +160,37 @@ N.B. As with `purrr`'s mapping functions, `?` won't automatically coerce any dat
 type, so it is recommended to use functions such as `as.integer` or `as.character`
 where appropriate.
 
-### `rmap`
+### `rmap` and `cmap`
+
+`rmap` applies an anonymous function to a data frame while allowing the columns
+to be referred to directly inside the function definition. As with `cmutate` and
+other `concise` functions, pronouns such as `.i` (the index or position in the
+element in the list) are able to be used.
 
 `rmap` works similarly to `purrr::pmap` except the input data frame does not need
-to be subset to only those columns used in the function, and the data columns can
-be directly referred to in the anonymous function.
+to be subset to only those columns used in the function. The data type of the
+output is specified in a similar fashion to other `purrr` map functions, e.g.
+`rmap_chr`, `rmap_dbl`, `rmap_df`, etc.
 
 ```{r}
 numbers |>
-    rmap(~ paste0(letter, ": ", mean(c(x, y, z))))
+    rmap_chr(~ paste0(letter, .i, ": ", mean(c(x, y, z))))
+```
+
+`cmap` works similarly to `purrr::map`, taking a single input vector or list,
+except it also allows for use of `concise` pronouns. In the below example, `.nm`
+is used to refer to the `names` attribute for each element in the input vector, 
+and `.col` refers to the entire input vector.
+
+```{r}
+state_areas <- state.area
+names(state_areas) <- state.name
+
+state_areas |>
+    cmap_df(
+        ~ c(
+            state = .nm,
+            larger_than_median_state = .x > median(.col)
+        )
+    )
 ```
