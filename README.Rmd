@@ -172,7 +172,7 @@ output is specified in a similar fashion to other `purrr` map functions, e.g.
 
 ```{r}
 numbers |>
-    rmap_chr(~ paste0(letter, .i, ": ", mean(c(x, y, z))))
+    rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
 ```
 
 `cmap` works similarly to `purrr::map`, taking a single input vector or list,

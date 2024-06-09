@@ -234,11 +234,12 @@ data type of the output is specified in a similar fashion to other
 
 ``` r
 numbers |>
-    rmap_chr(~ paste0(letter, .i, ": ", mean(c(x, y, z))))
-#>  [1] "A1: 32.6666666666667"  "A2: 58"                "A3: 87"               
-#>  [4] "A4: 81"                "A5: 47.6666666666667"  "B6: 50.6666666666667" 
-#>  [7] "B7: 40.3333333333333"  "B8: 20"                "B9: 31.6666666666667" 
-#> [10] "B10: 59.6666666666667"
+    rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
+#>  [1] "Row 1, Group A: 32.6666666666667"  "Row 2, Group A: 58"               
+#>  [3] "Row 3, Group A: 87"                "Row 4, Group A: 81"               
+#>  [5] "Row 5, Group A: 47.6666666666667"  "Row 6, Group B: 50.6666666666667" 
+#>  [7] "Row 7, Group B: 40.3333333333333"  "Row 8, Group B: 20"               
+#>  [9] "Row 9, Group B: 31.6666666666667"  "Row 10, Group B: 59.6666666666667"
 ```
 
 `cmap` works similarly to `purrr::map`, taking a single input vector or
