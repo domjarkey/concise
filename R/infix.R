@@ -18,6 +18,9 @@
 #' data("starwars", package = "dplyr")
 #' c("Han Solo", "R2-D2", "Chewbacca") %from% name %to% species %with% starwars
 #'
+#' # Find mean height of characters in the starwars dataset
+#' mean(height, na.rm = TRUE) %with% starwars
+#'
 #' @name concise-infixes
 NULL
 
