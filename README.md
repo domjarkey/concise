@@ -52,38 +52,37 @@ row-by-row basis.
 ``` r
 library(concise)
 
-tibble(value = list('a', 'b', NULL, 'd', NULL)) |>
-    cmutate(value_exists ~ is.null(value))
+tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
+    cmutate(fruit_exists ~ !is.null(fruit))
 #> # A tibble: 5 × 2
-#>   value     value_exists
+#>   fruit     fruit_exists
 #>   <list>    <lgl>       
-#> 1 <chr [1]> FALSE       
-#> 2 <chr [1]> FALSE       
-#> 3 <NULL>    TRUE        
-#> 4 <chr [1]> FALSE       
-#> 5 <NULL>    TRUE
+#> 1 <chr [1]> TRUE        
+#> 2 <chr [1]> TRUE        
+#> 3 <NULL>    FALSE       
+#> 4 <chr [1]> TRUE        
+#> 5 <NULL>    FALSE
 ```
 
 As with `dplyr::mutate`, ordinary column mutations can also be called
-with `=`, and multiple mutations can be called at once, able to make
+with `=`, and multiple mutations can be performed at once, able to make
 reference to columns created or modified within the same function call:
 
 ``` r
-tidyr::expand_grid(
-    word = c('banana', 'canal barge'),
-    expression = c('.an', 'ba.')
-) |> cmutate(
-    substring ~ stringr::str_extract(word, expression),
-    first_three = stringr::str_extract(word, "^\\w{3}"),
-    concat = paste(first_three, substring)
-)
-#> # A tibble: 4 × 5
-#>   word        expression substring first_three concat 
-#>   <chr>       <chr>      <chr>     <chr>       <chr>  
-#> 1 banana      .an        ban       ban         ban ban
-#> 2 banana      ba.        ban       ban         ban ban
-#> 3 canal barge .an        can       can         can can
-#> 4 canal barge ba.        bar       can         can bar
+tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
+    cmutate(
+        fruit_exists ~ !is.null(fruit),
+        fruit_name_length ~ ifelse(fruit_exists, stringr::str_length(fruit), 0),
+        fruit = as.character(ifelse(fruit_exists, fruit, "NO FRUIT FOUND"))
+    )
+#> # A tibble: 5 × 3
+#>   fruit          fruit_exists fruit_name_length
+#>   <chr>          <lgl>                    <dbl>
+#> 1 apple          TRUE                         5
+#> 2 banana         TRUE                         6
+#> 3 NO FRUIT FOUND FALSE                        0
+#> 4 dragonfruit    TRUE                        11
+#> 5 NO FRUIT FOUND FALSE                        0
 ```
 
 #### Examples
