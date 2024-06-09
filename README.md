@@ -289,7 +289,7 @@ elaboration will be given in an upcoming vignette.
 The canonical example of recursion is Fibonacci’s sequence, where the
 first two terms are defined as 1 and 1 (or sometimes 0 and 1), and the
 nth term is defined as the sum of the two previous terms. This sequence
-can be succinctly computed by `cmap` as follows:
+can be succinctly computed using `cmap`:
 
 ``` r
 cmap_int(1:10, ~ if (.x <= 2) {1} else {.this(.x - 1) + .this(.x - 2)})
