@@ -201,16 +201,19 @@ rmap <- function(
     }
 }
 
+#' @rdname rmap
 #' @export
 rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
+#' @rdname rmap
 #' @export
 rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
+#' @rdname rmap
 #' @export
 rmap_df <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
@@ -221,6 +224,7 @@ rmap_int <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
+#' @rdname rmap
 #' @export
 rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)

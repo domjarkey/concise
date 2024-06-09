@@ -2,6 +2,10 @@
 % Please edit documentation in R/rmap.R
 \name{rmap}
 \alias{rmap}
+\alias{rmap_chr}
+\alias{rmap_dbl}
+\alias{rmap_df}
+\alias{rmap_lgl}
 \title{Map over rows of a data frame}
 \usage{
 rmap(
@@ -12,6 +16,14 @@ rmap(
   map_fn = purrr::pmap,
   simplify = TRUE
 )
+
+rmap_chr(.l, .f = NULL, ..., env = parent.frame())
+
+rmap_dbl(.l, .f = NULL, ..., env = parent.frame())
+
+rmap_df(.l, .f = NULL, ..., env = parent.frame())
+
+rmap_lgl(.l, .f = NULL, ..., env = parent.frame())
 }
 \arguments{
 \item{.l}{A data frame or named list of lists/vectors of equal length.}
