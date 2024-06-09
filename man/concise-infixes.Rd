@@ -11,7 +11,22 @@ input \%from\% domain
 
 from \%to\% codomain
 
-lhs \%with\% rhs
+expr \%with\% data
+}
+\arguments{
+\item{input}{A vector of values to map (must contain only elements in domain vector)}
+
+\item{domain}{A domain vector of unique elements to map from}
+
+\item{from}{The output of \%from\% (see examples)}
+
+\item{codomain}{A codomain vector of elements to map the input to (must be of
+equal length to domain)}
+
+\item{expr}{Any simple R expression to be evaluated}
+
+\item{data}{A data frame or named list to be used as the local environment
+variables for evaluation of expr}
 }
 \description{
 Infix functions for mapping from one vector to another. \code{\%from\%} and

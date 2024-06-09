@@ -7,6 +7,15 @@
 #' follow an expression to evaluate that expression using a list or data frame
 #' as the environment for evaluation. See examples.
 #'
+#' @param input A vector of values to map (must contain only elements in domain vector)
+#' @param domain A domain vector of unique elements to map from
+#' @param from The output of %from% (see examples)
+#' @param codomain A codomain vector of elements to map the input to (must be of
+#' equal length to domain)
+#' @param expr Any simple R expression to be evaluated
+#' @param data A data frame or named list to be used as the local environment
+#' variables for evaluation of expr
+#'
 #' @examples
 #' # Map a sequence of letters to their numerical positions in the alphabet
 #' c('d', 'o', 'g') %from% letters %to% 1:26
@@ -38,7 +47,7 @@ NULL
 
 #' @rdname concise-infixes
 #' @export
-`%with%` <- function(lhs, rhs) {
-    lhs <- rlang::enquo(lhs)
-    rlang::eval_tidy(lhs, data = rhs)
+`%with%` <- function(expr, data) {
+    expr <- rlang::enquo(expr)
+    rlang::eval_tidy(expr, data = data)
 }
