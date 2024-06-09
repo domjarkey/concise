@@ -19,16 +19,18 @@ knitr::opts_chunk$set(
 
 ## Overview
 `concise` functions are designed to make clean, intelligible lambda functions
-to keep your code concise. They are modelled on common `tidyverse` functions like
-`purrr::map` and `dplyr::mutate`, but with a layer of syntactic sugar to make
-anonymous functions that condense a paragraph's worth of code into a single line.
+to keep your code concise and easily readable. They are modelled on common `tidyverse`
+functions like `purrr::map` and `dplyr::mutate`, but with a layer of syntactic
+sugar to make anonymous functions that can condense a paragraph's worth of code 
+into a single line.
 
 * Refer to data columns directly -- avoid placeholder pronouns like `.x` or `..1`
 and instead refer to your data by name.
 * Leverages `purrr`'s mapping functions to outperform slow `dplyr::rowwise` operations
 and facilitate non-rowwise column mutations in the same call.
-* Helpful shorthand gives access to vector properties like row number, vector length
-and the vector names inside the iterative function.
+* Helpful shorthand gives access to column properties like row number, the size 
+of grouped data (i.e. cardinality) and the names attribute inside the iterative
+function.
 * Interact with and preserve groups created by `dplyr::group_by`.
 * Access the entire data column as well as individual elements to write custom
 summary and window functions such as moving averages.
@@ -78,7 +80,13 @@ tidyr::expand_grid(
 
 #### Examples
 
-##### Find the mean of multiple columns:
+##### Find the largest element of multiple columns:
+
+`concise` handles expressions marked with a `~` using its own simplified syntax,
+but effectively it passes any columns called to `purrr`'s `pmap` function. This
+makes it computationally faster and more versatile than the equivalent operation
+using `dplyr::rowwise` while making your source code easier to write and clearer
+to read.
 
 ```{r}
 numbers <- tibble(
@@ -118,10 +126,10 @@ numbers |>
     select(letter, x) |>
     group_by(letter) |>
     cmutate(
-        proportion_of_group ~ x / sum(x.grp),
-        proportion_of_whole ~ x / sum(x.col),
+        prop_of_group ~ x / sum(x.grp),
+        prop_of_whole ~ x / sum(x.col),
         group_row_index ~ .i,
-        columns_row_index ~ .I
+        column_row_index ~ .I
     )
 ```
 
@@ -129,8 +137,36 @@ N.B. Similarly to `.i`/`.I`, when grouped, `.n` refers to the row index of the
 final entry in the group (or equally, the cardinality of the group), and `.N` to
 the number of rows in the ungrouped data.
 
+##### Specifying data type with `?`
+
+Under the surface, `cmutate` calls `purrr:pmap` but simplifies the output to the
+most suitible character type. On occassion, it may be useful to specify the data
+type of the output column, similar to calling `pmap_int` or `pmap_chr`. This can
+be done using the `?` operator as in the following example:
+
+```{r}
+numbers |>
+    select(x, y, z) |>
+    cmutate(
+        max ~ max(x, y, z),
+        max_int ~ max(x, y, z) ? int,
+        max_dbl ~ max(x, y, z) ? dbl,
+        max_chr ~ max(x, y, z) ? chr,
+        max_list ~ max(x, y, z) ? list,
+    )
+```
+
+N.B. As with `purrr`'s mapping functions, `?` won't automatically coerce any data
+type, so it is recommended to use functions such as `as.integer` or `as.character`
+where appropriate.
+
 ### `rmap`
 
 `rmap` works similarly to `purrr::pmap` except the input data frame does not need
 to be subset to only those columns used in the function, and the data columns can
 be directly referred to in the anonymous function.
+
+```{r}
+numbers |>
+    rmap(~ paste0(letter, ": ", mean(c(x, y, z))))
+```

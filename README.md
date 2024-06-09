@@ -9,18 +9,20 @@
 ## Overview
 
 `concise` functions are designed to make clean, intelligible lambda
-functions to keep your code concise. They are modelled on common
-`tidyverse` functions like `purrr::map` and `dplyr::mutate`, but with a
-layer of syntactic sugar to make anonymous functions that condense a
-paragraph’s worth of code into a single line.
+functions to keep your code concise and easily readable. They are
+modelled on common `tidyverse` functions like `purrr::map` and
+`dplyr::mutate`, but with a layer of syntactic sugar to make anonymous
+functions that can condense a paragraph’s worth of code into a single
+line.
 
 - Refer to data columns directly – avoid placeholder pronouns like `.x`
   or `..1` and instead refer to your data by name.
 - Leverages `purrr`’s mapping functions to outperform slow
   `dplyr::rowwise` operations and facilitate non-rowwise column
   mutations in the same call.
-- Helpful shorthand gives access to vector properties like row number,
-  vector length and the vector names inside the iterative function.
+- Helpful shorthand gives access to column properties like row number,
+  the size of grouped data (i.e. cardinality) and the names attribute
+  inside the iterative function.
 - Interact with and preserve groups created by `dplyr::group_by`.
 - Access the entire data column as well as individual elements to write
   custom summary and window functions such as moving averages.
@@ -86,7 +88,13 @@ tidyr::expand_grid(
 
 #### Examples
 
-##### Find the mean of multiple columns:
+##### Find the largest element of multiple columns:
+
+`concise` handles expressions marked with a `~` using its own simplified
+syntax, but effectively it passes any columns called to `purrr`’s `pmap`
+function. This makes it computationally faster and more versatile than
+the equivalent operation using `dplyr::rowwise` while making your source
+code easier to write and clearer to read.
 
 ``` r
 numbers <- tibble(
@@ -144,34 +152,86 @@ numbers |>
     select(letter, x) |>
     group_by(letter) |>
     cmutate(
-        proportion_of_group ~ x / sum(x.grp),
-        proportion_of_whole ~ x / sum(x.col),
+        prop_of_group ~ x / sum(x.grp),
+        prop_of_whole ~ x / sum(x.col),
         group_row_index ~ .i,
-        columns_row_index ~ .I
+        column_row_index ~ .I
     )
 #> # A tibble: 10 × 6
 #> # Groups:   letter [2]
-#>    letter     x proportion_of_group proportion_of_whole group_row_index
-#>    <chr>  <int>               <dbl>               <dbl>           <int>
-#>  1 A         29               0.132              0.0652               1
-#>  2 A         11               0.05               0.0247               2
-#>  3 A         72               0.327              0.162                3
-#>  4 A         81               0.368              0.182                4
-#>  5 A         27               0.123              0.0607               5
-#>  6 B         61               0.271              0.137                1
-#>  7 B         42               0.187              0.0944               2
-#>  8 B         26               0.116              0.0584               3
-#>  9 B         57               0.253              0.128                4
-#> 10 B         39               0.173              0.0876               5
-#> # ℹ 1 more variable: columns_row_index <int>
+#>    letter     x prop_of_group prop_of_whole group_row_index column_row_index
+#>    <chr>  <int>         <dbl>         <dbl>           <int>            <int>
+#>  1 A         29         0.132        0.0652               1                1
+#>  2 A         11         0.05         0.0247               2                2
+#>  3 A         72         0.327        0.162                3                3
+#>  4 A         81         0.368        0.182                4                4
+#>  5 A         27         0.123        0.0607               5                5
+#>  6 B         61         0.271        0.137                1                6
+#>  7 B         42         0.187        0.0944               2                7
+#>  8 B         26         0.116        0.0584               3                8
+#>  9 B         57         0.253        0.128                4                9
+#> 10 B         39         0.173        0.0876               5               10
 ```
 
 N.B. Similarly to `.i`/`.I`, when grouped, `.n` refers to the row index
 of the final entry in the group (or equally, the cardinality of the
 group), and `.N` to the number of rows in the ungrouped data.
 
+##### Specifying data type with `?`
+
+Under the surface, `cmutate` calls `purrr:pmap` but simplifies the
+output to the most suitible character type. On occassion, it may be
+useful to specify the data type of the output column, similar to calling
+`pmap_int` or `pmap_chr`. This can be done using the `?` operator as in
+the following example:
+
+``` r
+numbers |>
+    select(x, y, z) |>
+    cmutate(
+        max ~ max(x, y, z),
+        max_int ~ max(x, y, z) ? int,
+        max_dbl ~ max(x, y, z) ? dbl,
+        max_chr ~ max(x, y, z) ? chr,
+        max_list ~ max(x, y, z) ? list,
+    )
+#> Warning: There was 1 warning in `dplyr::mutate()`.
+#> ℹ In argument: `max_chr = (function (.l, .f, ..., .progress = FALSE) ...`.
+#> Caused by warning:
+#> ! Automatic coercion from integer to character was deprecated in purrr 1.0.0.
+#> ℹ Please use an explicit call to `as.character()` within `map_chr()` instead.
+#> ℹ The deprecated feature was likely used in the base package.
+#>   Please report the issue to the authors.
+#> # A tibble: 10 × 8
+#>        x     y     z   max max_int max_dbl max_chr max_list 
+#>    <int> <int> <int> <int>   <int>   <dbl> <chr>   <list>   
+#>  1    29    38    31    38      38      38 38      <int [1]>
+#>  2    11    80    83    83      83      83 83      <int [1]>
+#>  3    72    98    91    98      98      98 98      <int [1]>
+#>  4    81    93    69    93      93      93 93      <int [1]>
+#>  5    27    34    82    82      82      82 82      <int [1]>
+#>  6    61    26    65    65      65      65 65      <int [1]>
+#>  7    42     4    75    75      75      75 75      <int [1]>
+#>  8    26    31     3    31      31      31 31      <int [1]>
+#>  9    57    18    20    57      57      57 57      <int [1]>
+#> 10    39    69    71    71      71      71 71      <int [1]>
+```
+
+N.B. As with `purrr`’s mapping functions, `?` won’t automatically coerce
+any data type, so it is recommended to use functions such as
+`as.integer` or `as.character` where appropriate.
+
 ### `rmap`
 
 `rmap` works similarly to `purrr::pmap` except the input data frame does
 not need to be subset to only those columns used in the function, and
 the data columns can be directly referred to in the anonymous function.
+
+``` r
+numbers |>
+    rmap(~ paste0(letter, ": ", mean(c(x, y, z))))
+#>  [1] "A: 32.6666666666667" "A: 58"               "A: 87"              
+#>  [4] "A: 81"               "A: 47.6666666666667" "B: 50.6666666666667"
+#>  [7] "B: 40.3333333333333" "B: 20"               "B: 31.6666666666667"
+#> [10] "B: 59.6666666666667"
+```
