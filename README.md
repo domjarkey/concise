@@ -333,3 +333,44 @@ cmap_df(
 #> 4 root/f         4
 #> 5 root/g/h       5
 ```
+
+### `concise` infix operators
+
+The `concise` package also includes three infix operators designed to be
+used to make simple mappings clearer. These provide a more
+straightforward way of mapping from one set to another instead of using
+joins and cross-walk datasets.
+
+`%from%` and `%to%` are designed to work as a pair of ternary operators,
+mapping and input vector *from* a domain vector *to* a codomain or
+target vector.
+
+``` r
+# Map a sequence of letters to their numerical positions in the alphabet
+c('d', 'o', 'g') %from% letters %to% 1:26
+#> [1]  4 15  7
+```
+
+``` r
+# Map US states to their abbreviations
+c('California', 'Virginia', 'Texas') %from% state.name %to% state.abb
+#> [1] "CA" "VA" "TX"
+```
+
+The `%with%` operator allows a preceding expression to be evaluated
+*with* a data.frame or named list as the local environment:
+
+``` r
+# Find mean height of characters in the dplyr::starwars dataset
+data("starwars", package = "dplyr")
+mean(height, na.rm = TRUE) %with% starwars
+#> [1] 174.6049
+```
+
+`%with` can even be used in tandem with `%from%` and `%to%`:
+
+``` r
+# Map character names to species using the dplyr::starwars dataset
+c("Han Solo", "R2-D2", "Chewbacca") %from% name %to% species %with% starwars
+#> [1] "Human"   "Droid"   "Wookiee"
+```
