@@ -274,3 +274,24 @@ state_areas |>
 #> 10 Georgia     TRUE                    
 #> # ℹ 40 more rows
 ```
+
+### Recursion in `concise`
+
+Occasionally it can be useful to define a function recursively,
+performing the same computation on an output until a base case is
+reached. This is usually not ideal if avoidable, but in certain
+circumstances such as list traversal or web scraping, it can be handy to
+call a function inside itself to complete a task with an indefinite
+amount of steps. In `concise` functions, this can be accomplished using
+the `.this` pronoun. A simple example is given here but further
+elaboration will be given in an upcoming vignette.
+
+The canonical example of recursion is Fibonacci’s sequence, where the
+first two terms are defined as 1 and 1 (or sometimes 0 and 1), and the
+nth term is defined as the sum of the two previous terms. This sequence
+can be succinctly produced with `cmap` as follows:
+
+``` r
+cmap_int(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
+#>  [1]  1  1  2  3  5  8 13 21 34 55
+```
