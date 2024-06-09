@@ -140,7 +140,7 @@ the number of rows in the ungrouped data.
 ##### Specifying data type with `?`
 
 Under the surface, `cmutate` calls `purrr:pmap` but simplifies the output to the
-most suitible character type. On occassion, it may be useful to specify the data
+most suitable data type. On occasion, it may be useful to specify the data
 type of the output column, similar to calling `pmap_int` or `pmap_chr`. This can
 be done using the `?` operator as in the following example:
 
