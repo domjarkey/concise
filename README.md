@@ -172,9 +172,9 @@ numbers |>
 #> 10 B         39         0.173        0.0876               5               10
 ```
 
-N.B. Similarly to `.i`/`.I`, when grouped, `.n` refers to the row index
-of the final entry in the group (or equally, the cardinality of the
-group), and `.N` to the number of rows in the ungrouped data.
+N.B. Similar to `.i`/`.I`, when grouped, `.n` refers to the row index of
+the final entry in the group (or equally, the cardinality of the group),
+and `.N` to the number of rows in the ungrouped data.
 
 ##### Specifying data type with `?`
 
