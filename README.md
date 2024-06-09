@@ -35,8 +35,8 @@ You can install the development version of concise from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("domjarkey/concise")
+# install.packages("remotes")
+remotes::install_github("domjarkey/concise")
 ```
 
 ## Usage
