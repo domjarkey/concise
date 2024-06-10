@@ -28,8 +28,8 @@ condense a paragraph’s worth of code into a single line.
   the size of grouped data (i.e. cardinality) and the names attribute
   inside the iterative function.
 - Interact with and preserve groups created by `dplyr::group_by`.
-- Access the entire data column as well as individual elements to write
-  custom summary and window functions such as moving averages.
+- Access the entire data column alongside individual elements to write
+  custom summary and window functions like moving averages.
 - Refer to anonymous functions inside their own definitions to write
   recursive functions.
 
@@ -364,7 +364,7 @@ straightforward syntax for mapping from one set to another as an
 alternative to relying on joins and cross-walk datasets.
 
 `%from%` and `%to%` are designed to work as a pair of ternary operators,
-mapping and input vector *from* a set of keys *to* a set of values.
+mapping an input vector *from* a set of keys *to* a set of values.
 
 ``` r
 # Map a sequence of letters to their numerical positions in the alphabet
@@ -404,7 +404,7 @@ mean(height, na.rm = TRUE) %with% starwars
 #> [1] 174.6049
 ```
 
-`%with%` can even be used in tandem with `%from%` and `%to%`:
+`%with%` can even be used in combination with `%from%` and `%to%`:
 
 ``` r
 # Map character names to species using the starwars dataset
