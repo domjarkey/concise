@@ -11,7 +11,7 @@
 Writing impromptu functions to transform your data is one of the most
 common procedures in data science, but this can often lead to
 complicated and confusing code, even when performing relatively simple
-operations. `concise` gives you a set of tools to apply clean,
+operations. `concise` gives you a set of tools to apply clean and
 intelligible anonymous functions that transform your data while keeping
 your code concise and easily readable. `concise` functions are modelled
 on familiar `tidyverse` functions like `purrr::map` and `dplyr::mutate`,
@@ -36,7 +36,7 @@ condense a paragraph’s worth of code into a single line.
 ## Installation
 
 You can install the development version of concise from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/domjarkey/concise) with:
 
 ``` r
 # install.packages("remotes")
@@ -49,7 +49,7 @@ remotes::install_github("domjarkey/concise")
 
 `cmutate` is equivalent to `dplyr`’s `mutate` but with the additional
 option of evaluating column definitions as a lambda function iteratively
-applied to each row. Columnsdefined using `~` instead of `=` will be
+applied to each row. Columns defined using `~` instead of `=` will be
 evaluated as an anonymous function with special `concise` syntax.
 
 This allows for the easy application of non-vectorised functions on a
@@ -98,10 +98,10 @@ tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
 ##### Find the largest element of multiple columns:
 
 `concise` handles expressions marked with a `~` using its own simplified
-syntax, but effectively it passes any columns called to `purrr`’s `pmap`
-function. This makes it computationally faster and more versatile than
-the equivalent operation using `dplyr::rowwise` while making your source
-code easier to write and clearer to read.
+syntax, but behind the scenes it passes any columns called to `purrr`’s
+`pmap` function. This makes it computationally faster and more versatile
+than the equivalent operation using `dplyr::rowwise` while making your
+source code easier to write and clearer to read.
 
 ``` r
 # This data frame will be referred to in the next few examples
@@ -151,7 +151,7 @@ When data is grouped, the `<column_name>.grp` pronoun refers to all
 elements of the data in the same group as a vector, while
 `<column_name>.col` will refer to the entire, ungrouped column.
 Similarly, `.i` will refer to the index of the element in the group,
-while `.I` will refer to the absolute index.
+while `.I` will refer to the absolute row index.
 
 ``` r
 numbers$letter <- rep(c('A', 'B'), each = 5)
@@ -182,15 +182,16 @@ numbers |>
 ```
 
 Note: Similar to `.i`/`.I`, when data is grouped, `.n` refers to size of
-the group, and `.N` to the total number of rows in the ungrouped data.
+the group, while `.N` refers to the total number of rows in the entire
+data frame.
 
 ##### Specifying data type with `?`
 
 Under the surface, `cmutate` calls `purrr:pmap` but simplifies the
 output to the most suitable data type. On occasion, it may be necessary
-to specify the data type of the output column, similar to calling
-`pmap_int` or `pmap_chr`. This can be done using the `?` operator as in
-the following example:
+to explicitly specify the data type of the output column, similar to
+calling `pmap_int` or `pmap_chr`. This can be done using the `?`
+operator as in the following example:
 
 ``` r
 numbers |>
@@ -223,20 +224,21 @@ numbers |>
 
 ### `rmap` and `cmap`
 
-`rmap` applies an anonymous function to the rows of a data frame while
-allowing the columns to be referred to directly inside the function
-definition. As with `cmutate` and other `concise` functions, pronouns
-such as `.i` (the index or position in the element in the list) are able
-to be used.
+`rmap` (short for “row map”) applies an anonymous function to the rows
+of a data frame while allowing the columns to be referred to directly
+inside the function definition. As with `cmutate` and other `concise`
+functions, pronouns such as `.i` (the index or position in the element
+in the list) are able to be used.
 
 `rmap` works similarly to `purrr::pmap` except the input data frame does
-not need to be subsetted to only those columns used in the function. The
-data type of the output is specified in a similar fashion to other
-`purrr` map functions, e.g. `rmap_chr`, `rmap_dbl`, `rmap_df`, etc.
+not need to be subsetted to only those columns used in the function. By
+default, `rmap` returns a list, but the data type of the output vector
+can also specified with a suffix in a similar fashion to other `purrr`
+map functions, e.g. `rmap_chr`, `rmap_dbl`, `rmap_df`, etc.
 
 ``` r
 numbers |>
-    rmap_chr(~ paste0("\n\tRow ", .i, ", Group ", letter, ": ", mean(c(x, y, z)))) |>
+    rmap(~ paste0("\n\tRow ", .i, ", Group ", letter, ": ", mean(c(x, y, z)))) |>
     cat()
 #> 
 #>  Row 1, Group A: 32.6666666666667 
@@ -251,11 +253,11 @@ numbers |>
 #>  Row 10, Group B: 59.6666666666667
 ```
 
-`cmap` is equivalent to `purrr::map`, applying an anonymous function to
-a list input, except it also allows for use of `concise` pronouns. In
-the below example, `.nm` is used to refer to the `names` attribute for
-each element in the input vector, and `.col` refers to the entire input
-vector.
+`cmap` is equivalent to `purrr::map`, applying an anonymous function
+iteratively to a list input, except it also allows for use of `concise`
+pronouns. In the below example, `.nm` is used to refer to the `names`
+attribute for each element in the input vector, and `.col` refers to the
+entire input vector.
 
 ``` r
 state_areas <- state.area
@@ -291,7 +293,7 @@ state_areas |>
 #> # ℹ 40 more rows
 ```
 
-Note: If the column of an input data.frame is a named vector, the
+Note: If the column of an input data frame is a named vector, the
 `<column_name>.nm` pronoun can be used in `rmap` and `cmutate` function
 definitions in a similar fashion.
 
@@ -378,8 +380,8 @@ c('California', 'Virginia', 'Texas') %from% state.name %to% state.abb
 ```
 
 The `%with%` operator allows a preceding expression to be evaluated
-*with* a data.frame or named list as the local environment. Below we use
-`dplyr`’s `starwars` dataset as an example.
+*with* a data.frame or named list object as the local environment. Below
+we use `dplyr`’s `starwars` dataset as an example.
 
 ``` r
 data("starwars", package = "dplyr")
