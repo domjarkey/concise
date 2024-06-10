@@ -46,7 +46,8 @@ remotes::install_github("domjarkey/concise")
 
 `cmutate` is equivalent to `dplyr`’s `mutate` but with the additional
 option of evaluating column definitions as a lambda function iterated on
-each row.
+each row. Columns defined using a tilde (`~`) instead of `=` will be
+evaluated as ana anonymous function on each row.
 
 This allows for the easy application of non-vectorised functions on a
 row-by-row basis.
