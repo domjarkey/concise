@@ -48,9 +48,9 @@ remotes::install_github("domjarkey/concise")
 ### `cmutate`
 
 `cmutate` is equivalent to `dplyr`’s `mutate` but with the additional
-option of evaluating column definitions as a lambda function iterated on
-each row. Columns defined using `~` instead of `=` will be evaluated as
-an anonymous function on each row.
+option of evaluating column definitions as a lambda function iteratively
+applied to each row. Columnsdefined using `~` instead of `=` will be
+evaluated as an anonymous function with special `concise` syntax.
 
 This allows for the easy application of non-vectorised functions on a
 row-by-row basis.
@@ -58,6 +58,8 @@ row-by-row basis.
 ``` r
 library(concise)
 
+# The is.null function is not vectorised, so normally can't be called on an entire
+# column unless a function like purrr::map is used
 tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
     cmutate(fruit_exists ~ !is.null(fruit))
 #> # A tibble: 5 × 2
@@ -102,7 +104,7 @@ the equivalent operation using `dplyr::rowwise` while making your source
 code easier to write and clearer to read.
 
 ``` r
-# This data frame will be referred to in the following few examples
+# This data frame will be referred to in the next few examples
 numbers <- tibble(
     x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
     y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
@@ -126,21 +128,21 @@ simple, intelligible window functions.
 
 ``` r
 numbers |> cmutate(
-    avg_of_last_3_x_values ~ mean(x.col[max(.i - 3, 1):.i])
+    avg_of_last_3_z_values ~ mean(z.col[max(.i - 3, 1):.i])
 )
 #> # A tibble: 10 × 4
-#>        x     y     z avg_of_last_3_x_values
+#>        x     y     z avg_of_last_3_z_values
 #>    <int> <int> <int>                  <dbl>
-#>  1    29    38    31                   29  
-#>  2    11    80    83                   20  
-#>  3    72    98    91                   37.3
-#>  4    81    93    69                   48.2
-#>  5    27    34    82                   47.8
-#>  6    61    26    65                   60.2
-#>  7    42     4    75                   52.8
-#>  8    26    31     3                   39  
-#>  9    57    18    20                   46.5
-#> 10    39    69    71                   41
+#>  1    29    38    31                   31  
+#>  2    11    80    83                   57  
+#>  3    72    98    91                   68.3
+#>  4    81    93    69                   68.5
+#>  5    27    34    82                   81.2
+#>  6    61    26    65                   76.8
+#>  7    42     4    75                   72.8
+#>  8    26    31     3                   56.2
+#>  9    57    18    20                   40.8
+#> 10    39    69    71                   42.2
 ```
 
 ##### Use pronouns in combination with data groupings
@@ -185,8 +187,8 @@ the group, and `.N` to the total number of rows in the ungrouped data.
 ##### Specifying data type with `?`
 
 Under the surface, `cmutate` calls `purrr:pmap` but simplifies the
-output to the most suitable data type. On occasion, it may be useful to
-specify the data type of the output column, similar to calling
+output to the most suitable data type. On occasion, it may be necessary
+to specify the data type of the output column, similar to calling
 `pmap_int` or `pmap_chr`. This can be done using the `?` operator as in
 the following example:
 
@@ -234,17 +236,18 @@ data type of the output is specified in a similar fashion to other
 
 ``` r
 numbers |>
-    rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z)), "\n")) |>
+    rmap_chr(~ paste0("\n\tRow ", .i, ", Group ", letter, ": ", mean(c(x, y, z)))) |>
     cat()
-#> Row 1, Group A: 32.6666666666667
-#>  Row 2, Group A: 58
-#>  Row 3, Group A: 87
-#>  Row 4, Group A: 81
-#>  Row 5, Group A: 47.6666666666667
-#>  Row 6, Group B: 50.6666666666667
-#>  Row 7, Group B: 40.3333333333333
-#>  Row 8, Group B: 20
-#>  Row 9, Group B: 31.6666666666667
+#> 
+#>  Row 1, Group A: 32.6666666666667 
+#>  Row 2, Group A: 58 
+#>  Row 3, Group A: 87 
+#>  Row 4, Group A: 81 
+#>  Row 5, Group A: 47.6666666666667 
+#>  Row 6, Group B: 50.6666666666667 
+#>  Row 7, Group B: 40.3333333333333 
+#>  Row 8, Group B: 20 
+#>  Row 9, Group B: 31.6666666666667 
 #>  Row 10, Group B: 59.6666666666667
 ```
 
@@ -288,6 +291,10 @@ state_areas |>
 #> # ℹ 40 more rows
 ```
 
+Note: If the column of an input data.frame is a named vector, the
+`<column_name>.nm` pronoun can be used in `rmap` and `cmutate` function
+definitions in a similar fashion.
+
 ### Recursion in `concise`
 
 It can sometimes be useful to define a function recursively, performing
@@ -309,7 +316,7 @@ cmap_int(1:10, ~ if (.x <= 2) {1} else {.this(.x - 1) + .this(.x - 2)})
 ```
 
 Tree-like structures or nested lists can be traversed recursively to
-collapse into a more intelligible format or locate leaf nodes.
+extract leaf nodes or to collapse them into a standardised format.
 
 ``` r
 tree <- list(
@@ -333,7 +340,7 @@ cmap_df(
             path = paste0(path, "/", .nm)
         )
     } else {
-        tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+        tibble(path = paste0(path, "/", .nm), value = .x)
     },
     path = "root"
 )
@@ -372,7 +379,7 @@ c('California', 'Virginia', 'Texas') %from% state.name %to% state.abb
 
 The `%with%` operator allows a preceding expression to be evaluated
 *with* a data.frame or named list as the local environment. Below we use
-the `dplyr::starwars` dataset as an example.
+`dplyr`’s `starwars` dataset as an example.
 
 ``` r
 data("starwars", package = "dplyr")
