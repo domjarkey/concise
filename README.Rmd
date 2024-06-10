@@ -18,14 +18,14 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 ## Overview
-`concise` functions are designed to make clean, intelligible lambda functions
-to keep your code concise and easily readable. They are modelled on common `tidyverse`
-functions like `purrr::map` and `dplyr::mutate`, but with a layer of syntactic
-sugar to make anonymous functions that can condense a paragraph's worth of code 
-into a single line.
+`concise` allows you to apply clean, intelligible anonymous functions that
+transform your data while keeping your code concise and easily readable. `concise`
+functions are modelled on familiar `tidyverse` functions like `purrr::map` and 
+`dplyr::mutate`, but with a layer of syntactic sugar to make anonymous functions
+that can condense a paragraph's worth of code into a single line.
 
 * Refer to data columns directly -- avoid placeholder pronouns like `.x` or `..1`
-and instead refer to your data by name.
+and instead refer to your data by name inside function definitions.
 * Leverages `purrr`'s mapping functions to outperform slow `dplyr::rowwise` operations
 and facilitate non-rowwise column mutations in the same call.
 * Helpful shorthand gives access to column properties like row number, the size 
@@ -50,8 +50,8 @@ remotes::install_github("domjarkey/concise")
 
 ### `cmutate`
 
-`cmutate` performs the same role as `dplyr::mutate` but with the option of evaluating
-column definitions as iterative lambda functions.
+`cmutate` is equivalent to `dplyr`'s `mutate` but with the additional option of
+evaluating column definitions as a lambda function iterated on each row.
 
 This allows for the easy application of non-vectorised functions on a row-by-row
 basis.
@@ -106,7 +106,7 @@ numbers <- tibble(
 
 ```{r}
 numbers |> cmutate(
-    avg_x ~ mean(x.col[max(.i - 3, 1):.i])
+    avg_of_last_3_x_values ~ mean(x.col[max(.i - 3, 1):.i])
 )
 ```
 
@@ -114,7 +114,7 @@ numbers |> cmutate(
 
 When data is grouped, the `<column_name>.grp` pronoun refers to all elements of the
 data in the same group as a vector, while `<column_name>.col` will refer to the
-entire, ungrouped column. Similarly, `.i` will refer to the index of the elemenent
+entire, ungrouped column. Similarly, `.i` will refer to the index of the element
 in the group, while `.I` will refer to the absolute index.
 
 ```{r}
@@ -131,7 +131,7 @@ numbers |>
     )
 ```
 
-N.B. Similar to `.i`/`.I`, when grouped, `.n` refers to the row index of the 
+N.B. Similar to `.i`/`.I`, when data is grouped, `.n` refers to the row index of the 
 final entry in the group (or equally, the cardinality of the group), and `.N` to
 the number of rows in the ungrouped data.
 
@@ -142,7 +142,7 @@ most suitable data type. On occasion, it may be useful to specify the data
 type of the output column, similar to calling `pmap_int` or `pmap_chr`. This can
 be done using the `?` operator as in the following example:
 
-```{r}
+```{r warning=FALSE}
 numbers |>
     select(x, y, z) |>
     cmutate(
@@ -154,28 +154,29 @@ numbers |>
     )
 ```
 
-N.B. As with `purrr`'s mapping functions, `?` won't automatically coerce any data
-type, so it is recommended to use functions such as `as.integer` or `as.character`
-where appropriate.
+<!-- N.B. As with `purrr`'s mapping functions, `?` won't automatically coerce any data -->
+<!-- type, so it is recommended to use functions such as `as.integer` or `as.character` -->
+<!-- where appropriate. -->
 
 ### `rmap` and `cmap`
 
-`rmap` applies an anonymous function to a data frame while allowing the columns
-to be referred to directly inside the function definition. As with `cmutate` and
-other `concise` functions, pronouns such as `.i` (the index or position in the
-element in the list) are able to be used.
+`rmap` applies an anonymous function to the rows of a data frame while allowing 
+the columns to be referred to directly inside the function definition. As with
+`cmutate` and other `concise` functions, pronouns such as `.i` (the index or
+position in the element in the list) are able to be used.
 
 `rmap` works similarly to `purrr::pmap` except the input data frame does not need
-to be subset to only those columns used in the function. The data type of the
+to be subsetted to only those columns used in the function. The data type of the
 output is specified in a similar fashion to other `purrr` map functions, e.g.
 `rmap_chr`, `rmap_dbl`, `rmap_df`, etc.
 
 ```{r}
 numbers |>
-    rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
+    rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z)), "\n")) |>
+    cat()
 ```
 
-`cmap` works similarly to `purrr::map`, taking a single input vector or list,
+`cmap` is equivalent to `purrr::map`, applying an anonymous function to a list input,
 except it also allows for use of `concise` pronouns. In the below example, `.nm`
 is used to refer to the `names` attribute for each element in the input vector, 
 and `.col` refers to the entire input vector.
@@ -183,6 +184,8 @@ and `.col` refers to the entire input vector.
 ```{r}
 state_areas <- state.area
 names(state_areas) <- state.name
+
+head(state_areas)
 
 state_areas |>
     cmap_df(
@@ -195,7 +198,7 @@ state_areas |>
 
 ### Recursion in `concise`
 
-Occasionally it can be useful to define a function recursively, performing the
+It can sometimes be useful to define a function recursively, performing the
 same computation on an output until a base case is reached. This is usually not
 ideal if avoidable, but in certain circumstances such as list traversal or web
 scraping, it can be handy to call a function inside itself to complete a task 
@@ -245,33 +248,34 @@ cmap_df(
 ### `concise` infix operators
 
 The `concise` package also includes three infix operators designed to be used
-to make simple mappings clearer. These provide a more straightforward way of mapping
-from one set to another instead of using joins and cross-walk datasets.
+to make applying key-value or dictionary lookups easier to use and more understandable
+for readers of your code. These infixes provide a straightforward syntax for mapping
+from one set to another as an alternative to relying on joins and cross-walk
+datasets.
 
 `%from%` and `%to%` are designed to work as a pair of ternary operators, mapping
-and input vector *from* a domain vector *to* a codomain or target vector.
+and input vector *from* a set of keys *to* a set of values.
 
 ```{r}
 # Map a sequence of letters to their numerical positions in the alphabet
 c('d', 'o', 'g') %from% letters %to% 1:26
-```
-
-```{r}
-# Map US states to their abbreviations
+# Look up the abbreviations for US states
 c('California', 'Virginia', 'Texas') %from% state.name %to% state.abb
 ```
 
 The `%with%` operator allows a preceding expression to be evaluated *with* a data.frame
-or named list as the local environment:
+or named list as the local environment. Below we use the `dplyr::starwars` dataset
+as an example.
 
 ```{r}
-# Find mean height of characters in the dplyr::starwars dataset
 data("starwars", package = "dplyr")
+head(starwars)
+# Find mean height of characters in the starwars dataset
 mean(height, na.rm = TRUE) %with% starwars
 ```
 
-`%with` can even be used in tandem with `%from%` and `%to%`:
+`%with%` can even be used in tandem with `%from%` and `%to%`:
 ```{r}
-# Map character names to species using the dplyr::starwars dataset
+# Map character names to species using the starwars dataset
 c("Han Solo", "R2-D2", "Chewbacca") %from% name %to% species %with% starwars
 ```
