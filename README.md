@@ -187,11 +187,10 @@ data frame.
 
 ##### Specifying data type with `?`
 
-Under the surface, `cmutate` calls `purrr:pmap` but simplifies the
-output to the most suitable data type. On occasion, it may be necessary
-to explicitly specify the data type of the output column, similar to
-calling `pmap_int` or `pmap_chr`. This can be done using the `?`
-operator as in the following example:
+By default, `cmutate` simplifies the output to the most suitable data
+type. On occasion, it may be necessary to explicitly specify the data
+type of the output column, similar to calling `map_int` or `map_chr`.
+This can be done using the `?` operator as in the following example:
 
 ``` r
 numbers |>
