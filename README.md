@@ -175,9 +175,8 @@ numbers |>
 #> 10 B         39         0.173        0.0876               5               10
 ```
 
-N.B. Similar to `.i`/`.I`, when data is grouped, `.n` refers to the row
-index of the final entry in the group (or equally, the cardinality of
-the group), and `.N` to the number of rows in the ungrouped data.
+Note: Similar to `.i`/`.I`, when data is grouped, `.n` refers to size of
+the group, and `.N` to the total number of rows in the ungrouped data.
 
 ##### Specifying data type with `?`
 
@@ -289,10 +288,11 @@ state_areas |>
 
 It can sometimes be useful to define a function recursively, performing
 the same computation on an output until a base case is reached. This is
-usually not ideal if avoidable, but in certain circumstances such as
-list traversal or web scraping, it can be handy to call a function
-inside itself to complete a task with an indefinite amount of steps. In
-`concise` functions, this can be accomplished using the `.this` pronoun.
+not always the advisable, but in certain circumstances such as list
+traversal or web scraping, it can be handy to call a function inside
+itself to complete a task with an indeterminate amount of steps. In
+`concise` function definitions, this can be accomplished using the
+`.this` pronoun.
 
 The canonical example of recursion is Fibonacci’s sequence, where the
 first two terms are defined as 1 and 1 (or sometimes 0 and 1), and the
