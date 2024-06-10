@@ -8,12 +8,15 @@
 
 ## Overview
 
-`concise` allows you to apply clean, intelligible anonymous functions
-that transform your data while keeping your code concise and easily
-readable. `concise` functions are modelled on familiar `tidyverse`
-functions like `purrr::map` and `dplyr::mutate`, but with a layer of
-syntactic sugar to make anonymous functions that can condense a
-paragraph’s worth of code into a single line.
+Writing impromptu functions to transform your data is one of the most
+common procedures in data science, but this can often lead to
+complicated and confusing code, even when performing relatively simple
+operations. `concise` gives you a set of tools to apply clean,
+intelligible anonymous functions that transform your data while keeping
+your code concise and easily readable. `concise` functions are modelled
+on familiar `tidyverse` functions like `purrr::map` and `dplyr::mutate`,
+but with a layer of syntactic sugar to make anonymous functions that can
+condense a paragraph’s worth of code into a single line.
 
 - Refer to data columns directly – avoid placeholder pronouns like `.x`
   or `..1` and instead refer to your data by name inside function
@@ -99,6 +102,7 @@ the equivalent operation using `dplyr::rowwise` while making your source
 code easier to write and clearer to read.
 
 ``` r
+# This data frame will be referred to in the following few examples
 numbers <- tibble(
     x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
     y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
