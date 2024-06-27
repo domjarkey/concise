@@ -4,12 +4,15 @@
 \alias{concise-infixes}
 \alias{\%from\%}
 \alias{\%to\%}
+\alias{\%to_NA\%}
 \alias{\%with\%}
 \title{Infix functions}
 \usage{
 input \%from\% domain
 
 from \%to\% codomain
+
+from \%to_NA\% codomain
 
 expr \%with\% data
 }

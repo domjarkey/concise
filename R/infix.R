@@ -42,6 +42,16 @@ NULL
 #' @rdname concise-infixes
 #' @export
 `%to%` <- function(from, codomain) {
+    ifelse(
+        from$input %in% from$domain,
+        codomain[match(from$input, from$domain)],
+        from$input
+    )
+}
+
+#' @rdname concise-infixes
+#' @export
+`%to_NA%` <- function(from, codomain) {
     codomain[match(from$input, from$domain)]
 }
 
