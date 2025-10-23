@@ -17,6 +17,13 @@
 #' @param expr Any simple R expression to be evaluated.
 #' @param data A data frame or named list to be used as the local environment
 #' for evaluating `expr`.
+#' @param x A list or vector to be coerced to another type.
+#' @param type The desired output type for `x`. May be provided as a bare name
+#' (e.g. `dbl`), a character string (e.g. "double"), or any other expression
+#' that evaluates to a single string understood by [base::as.vector()]. In
+#' addition to the `mode` values supported by [base::as.vector()], this
+#' function recognises the shortcuts `lgl`, `int`, `dbl`, `chr`, `list`, `df`,
+#' `dfc`, and `dfr`.
 #'
 #' @examples
 #' # Map a sequence of letters to their numerical positions in the alphabet
@@ -25,6 +32,10 @@
 #'
 #' # Map US states to their abbreviations
 #' c("California", "Virginia", "Texas") %from% state.name %to% state.abb
+#'
+#'
+#' # Coerce an object to a different type using `%as%`
+#' list(a = 1:3, b = 4:6) %as% dfc
 #'
 #'
 #' # Map character names to species using the dplyr::starwars dataset
@@ -52,6 +63,77 @@ NULL
     codomain[match(from$input, from$domain)],
     from$input
   )
+}
+
+#' @rdname concise-infixes
+#' @export
+`%as%` <- function(x, type) {
+    type_expr <- rlang::enexpr(type)
+
+    type_string <- if (rlang::is_symbol(type_expr)) {
+        rlang::as_name(type_expr)
+    } else {
+        evaluated <- rlang::eval_tidy(type_expr)
+
+        if (!rlang::is_string(evaluated)) {
+            rlang::abort("`type` must be a single string or bare name specifying the target type.")
+        }
+
+        evaluated
+    }
+
+    type_string <- tolower(type_string)
+
+    aliases <- c(
+        lgl = "logical",
+        int = "integer",
+        dbl = "double",
+        chr = "character",
+        df = "tibble",
+        data.frame = "data.frame",
+        dfc = "dfc",
+        dfr = "dfr"
+    )
+
+    if (type_string %in% names(aliases)) {
+        type_string <- aliases[[type_string]]
+    }
+
+    if (type_string %in% c("tibble", "dfc")) {
+        return(tibble::as_tibble(x, .name_repair = "check_unique"))
+    }
+
+    if (type_string == "dfr") {
+        if (is.data.frame(x)) {
+            return(tibble::as_tibble(x))
+        }
+
+        if (rlang::is_bare_list(x)) {
+            if (!length(x)) {
+                return(tibble::tibble())
+            }
+
+            rows <- purrr::map(x, function(el) {
+                if (is.data.frame(el)) {
+                    tibble::as_tibble(el)
+                } else if (rlang::is_bare_list(el)) {
+                    tibble::as_tibble_row(el)
+                } else {
+                    tibble::tibble(value = el)
+                }
+            })
+
+            return(purrr::list_rbind(rows))
+        }
+
+        return(tibble::tibble(value = x))
+    }
+
+    if (type_string == "data.frame") {
+        return(as.data.frame(x, stringsAsFactors = FALSE))
+    }
+
+    as.vector(x, mode = type_string)
 }
 
 #' @rdname concise-infixes

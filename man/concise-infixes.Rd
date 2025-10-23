@@ -4,6 +4,7 @@
 \alias{concise-infixes}
 \alias{\%from\%}
 \alias{\%to\%}
+\alias{\%as\%}
 \alias{\%to_na\%}
 \alias{\%with\%}
 \title{Infix functions}
@@ -11,6 +12,8 @@
 input \%from\% domain
 
 from \%to\% codomain
+
+x \%as\% type
 
 from \%to_na\% codomain
 
@@ -26,6 +29,15 @@ domain vector).}
 
 \item{codomain}{A codomain vector of elements to map the input to (must be of
 equal length to \code{domain}).}
+
+\item{x}{A list or vector to be coerced to another type.}
+
+\item{type}{The desired output type for \code{x}. May be provided as a bare name
+(e.g. \code{dbl}), a character string (e.g. "double"), or any other expression
+that evaluates to a single string understood by \code{\link[base:vector]{base::as.vector()}}. In
+addition to the \code{mode} values supported by \code{\link[base:vector]{base::as.vector()}}, this
+function recognises the shortcuts \code{lgl}, \code{int}, \code{dbl}, \code{chr}, \code{list}, \code{df},
+\code{dfc}, and \code{dfr}.}
 
 \item{expr}{Any simple R expression to be evaluated.}
 
@@ -47,6 +59,10 @@ c("d", "o", "g") \%from\% letters \%to\% 1:26
 
 # Map US states to their abbreviations
 c("California", "Virginia", "Texas") \%from\% state.name \%to\% state.abb
+
+
+# Coerce an object to a different type using `\%as\%`
+list(a = 1:3, b = 4:6) \%as\% dfc
 
 
 # Map character names to species using the dplyr::starwars dataset
