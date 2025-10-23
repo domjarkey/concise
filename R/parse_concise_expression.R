@@ -7,7 +7,7 @@ parse_concise_expression <- function(.data, .expr) {
   .data_names <- names(.data)
   .f_arg_names <- intersect(.data_names, .f_names)
   .f_other_names <- setdiff(.f_names, .data_names)
-  execution_environment_variables <- list()
+  exec_env_variables <- list()
 
   .extra_args <- purrr::map(
     .expr_components |>
@@ -56,7 +56,7 @@ parse_concise_expression <- function(.data, .expr) {
   }
 
   if (".N" %in% .f_other_names) {
-    execution_environment_variables[[".N"]] <- nrow(.data)
+    exec_env_variables[[".N"]] <- nrow(.data)
   }
 
   col_references <- setdiff(
@@ -66,7 +66,7 @@ parse_concise_expression <- function(.data, .expr) {
 
   for (col_ref in col_references) {
     col <- rlang::sym(stringr::str_remove(col_ref, "\\.col$"))
-    execution_environment_variables[[col_ref]] <- rlang::eval_tidy(
+    exec_env_variables[[col_ref]] <- rlang::eval_tidy(
       col,
       data = .data
     )
@@ -78,7 +78,7 @@ parse_concise_expression <- function(.data, .expr) {
 
   .f_env <- rlang::env(
     rlang::caller_env(),
-    !!!execution_environment_variables
+    !!!exec_env_variables
   )
 
   rlang::env_bind_lazy(.f_env, .this = .this)

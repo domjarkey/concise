@@ -135,14 +135,14 @@ cmap <- function(.x,
     \(dot) rlang::eval_tidy(dot, data = .x)
   )
 
-  execution_environment_variables <- list()
+  exec_env_variables <- list()
 
   if (".col" %in% formula_names) {
-    execution_environment_variables[[".col"]] <- .x$.x
+    exec_env_variables[[".col"]] <- .x$.x
   }
 
   if (".n" %in% formula_names) {
-    execution_environment_variables[[".n"]] <- length(.x$.x)
+    exec_env_variables[[".n"]] <- length(.x$.x)
   }
 
   nms <- names(.x)
@@ -163,7 +163,7 @@ cmap <- function(.x,
     body = .f,
     env = rlang::env(
       env,
-      !!!execution_environment_variables
+      !!!exec_env_variables
     )
   )
 

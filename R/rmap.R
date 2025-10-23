@@ -168,20 +168,20 @@ rmap <- function(.l,
     ~ rlang::eval_tidy(.x, data = .l)
   )
 
-  execution_environment_variables <- list()
+  exec_env_variables <- list()
 
   col_references <- intersect(paste0(names(.l), ".col"), formula_names) |>
     purrr::discard(~ .x %in% names(.l))
 
   for (col in col_references) {
-    execution_environment_variables <- append(
-      execution_environment_variables,
+    exec_env_variables <- append(
+      exec_env_variables,
       rlang::list2(!!col := .l[[stringr::str_remove(col, ".col$")]])
     )
   }
 
   if (".N" %in% formula_names) {
-    execution_environment_variables[[".N"]] <- nrow(.l)
+    exec_env_variables[[".N"]] <- nrow(.l)
   }
 
   nms <- intersect(names(.l), c(formula_names, ".i"))
@@ -201,7 +201,7 @@ rmap <- function(.l,
     body = .f,
     env = rlang::env(
       env,
-      !!!execution_environment_variables
+      !!!exec_env_variables
     )
   )
 
