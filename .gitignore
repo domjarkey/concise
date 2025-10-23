@@ -50,4 +50,5 @@ po/*~
 rsconnect/
 .Rproj.user
 
-inst/
+# Developer Makefile
+Makefile
