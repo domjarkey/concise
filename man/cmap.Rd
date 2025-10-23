@@ -36,21 +36,22 @@ element of \code{.x}, in which \code{.x} refers to the given element. See Exampl
 how this differs from formulas in \link[purrr:map]{purrr::map}.}
 
 \item{...}{Additional named arguments are passed directly to the execution
-environment of the anonymous function as variables. These variables may include
-transformations on the entire \code{.x} object as well as any variables local to the
-calling environment of the \code{cmap} function.}
+environment of the anonymous function as variables. These variables may
+include transformations on the entire \code{.x} object as well as any variables
+local to the calling environment of the \code{cmap} function.}
 
 \item{env}{Specify the parent environment of the execution environment of the
 anonymous function to be created. By default, this will be the environment in
 which \code{cmap} is called.}
 
-\item{map_fn}{The underlying function used to perform the mapping - this should
-not be chosen directly as safe options are prespecified by the defaults of the
-\verb{_chr}, \verb{_dbl}, \verb{_df}, \verb{_int}, and \verb{_lgl} variants of \code{cmap}.}
+\item{map_fn}{The underlying function used to perform the mapping - this
+should not be chosen directly as safe options are pre0specified by the
+defaults of the \verb{_chr}, \verb{_dbl}, \verb{_df}, \verb{_int}, and \verb{_lgl} variants of \code{cmap}.}
 
 \item{simplify}{If \code{TRUE}, the function will attempt to flatten list outputs
-to a vector where possible (if "unlisting" is not possible, say, in the case of
-a list of lists of length > 1, the original output in list form will be returned).}
+to a vector where possible (if "unlisting" is not possible, say, in the case
+of' a list of lists of length > 1, the original output in list form will be
+returned).}
 }
 \value{
 Returns a list (or vector) of the same length as \code{.x}. By default a
@@ -59,38 +60,41 @@ if \code{simplify=TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
 }
 \description{
-\code{cmap} works very similarly to \link[purrr:map]{purrr::map} when specifying the formula of the
-anonymous function using tilde (\code{~}) formula notation, but includes extra custom
-pronouns to refer to related objects such as element names, element indeces,
-and the function itself, so as to permit recursive function definitions.
+\code{cmap} works very similarly to \link[purrr:map]{purrr::map} when specifying the formula of
+the anonymous function using tilde (\code{~}) formula notation, but includes extra
+custom pronouns to refer to related objects such as element names, element
+indeces, and the function itself, so as to permit recursive function
+definitions.
 
 \code{cmap_chr}, \code{cmap_dbl}, \code{cmap_df}, \code{cmap_int}, and \code{cmap_lgl} work like their
-\code{purrr::map_etc} equivalents, attempting to output a vector of the specified type (or
-a data.frame in the case of \code{cmap_df}) instead of a list.
+\code{purrr::map_etc} equivalents, attempting to output a vector of the specified
+type (or a data.frame in the case of \code{cmap_df}) instead of a list.
 }
 \section{Pronouns}{
-\code{cmap} supports reference to a set of useful "pronouns" that allow you to refer
-to other objects within the formula \code{.f} as though they were locally defined
-as variables. Note these are not pronouns in the \code{rlang} sense of the term, but
-a convenient shorthand to provide additional functionality in a readable format.
-See Examples for further clarification on the usage of each. Supported pronouns
-are:
+\code{cmap} supports reference to a set of useful "pronouns" that allow you to
+refer to other objects within the formula \code{.f} as though they were locally
+defined as variables. Note these are not pronouns in the \code{rlang} sense of
+the term, but a convenient shorthand to provide additional functionality in
+a readable format. See Examples for further clarification on the usage of
+each. Supported pronouns are:
 \itemize{
-\item \code{.x} -- as in \link[purrr:map]{purrr::map}, this refers to an individual element of the list
-\code{.x}.
+\item \code{.x} -- as in \link[purrr:map]{purrr::map}, this refers to an individual element of the
+list \code{.x}.
 \item \code{.i} -- the position of the element \code{.x} in a list.
-\item \code{.nm} -- if \code{.x} is named, this returns the name corresponding to the element
-\code{.x}; If \code{.x} is unnamed, returns \code{NULL}.
-\item \code{.n} -- the value of the final position of the list, equivalent to \code{length(.x)}.
-\item \code{.col} -- the entire input list object or vector, as opposed to just the single
-element refered to in .x.
-\item \code{.this} -- the anonymous function itself, to be used in cases where recursion
-is needed.
+\item \code{.nm} -- if \code{.x} is named, this returns the name corresponding to the
+element \code{.x}; If \code{.x} is unnamed, returns \code{NULL}.
+\item \code{.n} -- the value of the final position of the list, equivalent to
+\code{length(.x)}.
+\item \code{.col} -- the entire input list object or vector, as opposed to just the
+single element refered to in .x.
+\item \code{.this} -- the anonymous function itself, to be used in cases where
+recursion is needed.
 }
 }
 
 \examples{
-# Simplify to vector using `simplify=TRUE` or specify output type with function suffix
+# Simplify to vector using `simplify=TRUE` or specify output type with
+# function suffix
 cmap(1:5, ~ .x^2)
 cmap(1:5, ~ .x^2, simplify = TRUE)
 cmap_int(1:5, ~ .x^2)
@@ -100,8 +104,8 @@ cmap_chr(letters, ~ ifelse(.i \%\% 2 == 0, toupper(.x), .x))
 
 # Refer to column names with .nm
 cmap_df(
-    list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
-    ~ c(name = .nm, species = .x)
+  list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
+  ~ c(name = .nm, species = .x)
 )
 
 # Refer to entire column using .col
@@ -113,27 +117,27 @@ cmap_int(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
 
 # Recursive functions can be useful for tree traversal
 tree <- list(
-    a = list(
-        b = 1,
-        c = list(
-            d = 2,
-            e = 3
-        )
-    ),
-    f = 4,
-    g = list(h = 5)
+  a = list(
+    b = 1,
+    c = list(
+      d = 2,
+      e = 3
+    )
+  ),
+  f = 4,
+  g = list(h = 5)
 )
 cmap_df(
-    tree,
-    ~ if (is.list(.x)) {
-        purrr::pmap_df(
-            list(.x, .nm = names(.x)),
-            .this,
-            path = paste0(path, "/", .nm)
-        )
-    } else {
-        tibble::tibble(path = paste0(path, "/", .nm), value = .x)
-    },
-    path = "root"
+  tree,
+  ~ if (is.list(.x)) {
+    purrr::pmap_df(
+      list(.x, .nm = names(.x)),
+      .this,
+      path = paste0(path, "/", .nm)
+    )
+  } else {
+    tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+  },
+  path = "root"
 )
 }

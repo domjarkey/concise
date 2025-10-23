@@ -7,7 +7,8 @@
 #' follow an expression to evaluate that expression using a list or data frame
 #' as the environment for evaluation. See examples.
 #'
-#' @param input A vector of values to map (must contain only elements in domain vector)
+#' @param input A vector of values to map (must contain only elements in domain
+#' vector)
 #' @param domain A domain vector of unique elements to map from
 #' @param from The output of %from% (see examples)
 #' @param codomain A codomain vector of elements to map the input to (must be of

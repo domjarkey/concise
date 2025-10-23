@@ -26,7 +26,9 @@ get_formula_names <- function(.f) {
 }
 
 is_concise_formula <- function(.f) {
-  length(.f) > 1 && length(as.character(.f[[1]])) == 1 && as.character(.f[[1]]) %in% c("~", "?")
+  length(.f) > 1 &&
+    length(as.character(.f[[1]])) == 1 &&
+    as.character(.f[[1]]) %in% c("~", "?")
 }
 
 get_lhs <- function(.f) {

@@ -36,21 +36,22 @@ element of \code{.l}, in which \code{.x} refers to the given element. See Exampl
 how this differs from formulas in \link[purrr:map]{purrr::map}.}
 
 \item{...}{Additional named arguments are passed directly to the execution
-environment of the anonymous function as variables. These variables may include
-transformations on the entire \code{.l} object as well as any variables local to the
-calling environment of the \code{rmap} function.}
+environment of the anonymous function as variables. These variables may
+include transformations on the entire \code{.l} object as well as any variables
+local to the calling environment of the \code{rmap} function.}
 
-\item{env}{Specify the parent environment of the execution environment of the
-anonymous function to be created. By default, this will be the environment in
-which \code{rmap} is called.}
+\item{env}{Specify the parent environment of the execution environment of
+the anonymous function to be created. By default, this will be the
+environment in which \code{rmap} is called.}
 
-\item{map_fn}{The underlying function used to perform the mapping - this should
-not be chosen directly as safe options are prespecified by the defaults of the
-\verb{_chr}, \verb{_dbl}, \verb{_df}, \verb{_int}, and \verb{_lgl} variants of \code{rmap}.}
+\item{map_fn}{The underlying function used to perform the mapping - this
+should not be chosen directly as safe options are prespecified by the
+defaults of the \verb{_chr}, \verb{_dbl}, \verb{_df}, \verb{_int}, and \verb{_lgl} variants of \code{rmap}.}
 
 \item{simplify}{If \code{TRUE}, the function will attempt to flatten list outputs
-to a vector where possible (if "unlisting" is not possible, say, in the case of
-a list of lists of length > 1, the original output in list form will be returned).}
+to a vector where possible (if "unlisting" is not possible, say, in the case
+of a list of lists of length > 1, the original output in list form will be
+returned).}
 }
 \value{
 Returns a list (or vector) of the same length as \code{.l}. By default a
@@ -61,34 +62,35 @@ outputs.
 \description{
 \code{rmap} iteratively applies an anonymous function to rows of a data frame or a
 named list of lists of equal length. \code{rmap} works similarly to \link[purrr:pmap]{purrr::pmap},
-except the data frame does not need to be subset to only those columns used by
-the function, and columns can be directly referred to by name inside the definition
-of the anonymous function.
+except the data frame does not need to be subset to only those columns used
+by the function, and columns can be directly referred to by name inside the
+definition of the anonymous function.
 
 \code{rmap} also permits the usage of additional "pronouns" to concisely refer to
-related objects or properties of the data columns, such as row number, grouping
-(if the data frame is grouped using \link[dplyr:group_by]{dplyr::group_by} or similar), as well as
-the anonymous function itself for use in recursion.
+related objects or properties of the data columns, such as row number,
+grouping (if the data frame is grouped using \link[dplyr:group_by]{dplyr::group_by} or similar),
+as well as the anonymous function itself for use in recursion.
 
 \code{rmap_chr}, \code{rmap_dbl}, \code{rmap_df}, \code{rmap_int}, and \code{rmap_lgl} work like their
 \code{purrr::pmap_etc} equivalents, attempting to output a vector of the specified
 type (or a data.frame in the case of \code{rmap_df}) instead of a list.
 }
 \section{Pronouns}{
-\code{rmap} supports reference to a set of useful "pronouns" that allow you to refer
-to other objects within the formula \code{.f} as though they were locally defined
-as variables. Note these are not pronouns in the \code{rlang} sense of the term, but
-a convenient shorthand to provide additional functionality in a readable format.
-Unlike its sister function \code{cmap}, \code{rmap} takes multiple named inputs, so row
-elements a referred to by the name of the column (here indicated as \verb{<column_name>})
-instead of \code{.x}.
-See Examples for further clarification on the usage of each. Supported pronouns
-are:
+\code{rmap} supports reference to a set of useful "pronouns" that allow you to
+refer to other objects within the formula \code{.f} as though they were locally
+defined as variables. Note these are not pronouns in the \code{rlang} sense of the
+term, but a convenient shorthand to provide additional functionality in a
+readable format. Unlike its sister function \code{cmap}, \code{rmap} takes multiple
+named inputs, so row elements a referred to by the name of the column (here
+indicated as \verb{<column_name>}) instead of \code{.x}.
+
+See Examples for further clarification on the usage of each. Supported
+pronouns are:
 \itemize{
 \item \verb{<column_name>} -- in the formula, this refers to an individual element of
 the named data column.
-\item \code{.i} -- the row index, or, if \code{.l} is grouped, the row index within the group.
-Equivalent to \code{\link[dplyr:row_number]{dplyr::row_number()}}.
+\item \code{.i} -- the row index, or, if \code{.l} is grouped, the row index within the
+group. Equivalent to \code{\link[dplyr:row_number]{dplyr::row_number()}}.
 \item \code{.I} -- the absolute row index; whether or not \code{.l} is grouped, this will
 return the overall position of the current row. Equivalent to
 \code{\link[dplyr:context]{dplyr::cur_group_rows()}}.
@@ -97,30 +99,30 @@ returns the name corresponding to the current element of \verb{<column_name>}; I
 this column of \code{.l} is unnamed, returns \code{NULL}. Note that columns in \code{tibble}
 data frames retain their \code{names} attribute, but ordinary base R data frames
 do not.
-\item \code{.n} -- the index of the final row in \code{.l}, or, if \code{.l} is grouped, the final
-row in the given group. Equivalent to \code{\link[dplyr:context]{dplyr::n()}}.
+\item \code{.n} -- the index of the final row in \code{.l}, or, if \code{.l} is grouped, the
+final row in the given group. Equivalent to \code{\link[dplyr:context]{dplyr::n()}}.
 \item \code{.N} -- the index of the final row in \code{.l}, whether or not \code{.l} is grouped.
 Equivalent to \code{nrow(.l)}.
 \item \verb{<column_name>.grp} -- all elements in the current group as a list object.
-If \code{.l} is not grouped, returns the same as \verb{<column_name>.col}, i.e. the entire
-column \verb{<column_name>} as a list object.
+If \code{.l} is not grouped, returns the same as \verb{<column_name>.col}, i.e. the
+entire column \verb{<column_name>} as a list object.
 \item \verb{<column_name>.col} -- the entire data column \verb{<column_name>} in \code{.l}, as
-opposed to just the current element. Returns the full column whether or not \code{.l}
-is grouped.
-\item \code{.this} -- the anonymous function itself, to be used in cases where recursion
-is needed.
+opposed to just the current element. Returns the full column whether or not
+\code{.l} is grouped.
+\item \code{.this} -- the anonymous function itself, to be used in cases where
+recursion is needed.
 }
 }
 
 \examples{
 numbers <- tibble::tibble(
-x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
-y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
-z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
-letter = rep(c('A', 'B'), each = 5)
+  x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
+  y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
+  z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
+  letter = rep(c("A", "B"), each = 5)
 )
 
 numbers |>
-rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
+  rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
 
 }

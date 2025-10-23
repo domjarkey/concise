@@ -17,7 +17,8 @@ from \%to_NA\% codomain
 expr \%with\% data
 }
 \arguments{
-\item{input}{A vector of values to map (must contain only elements in domain vector)}
+\item{input}{A vector of values to map (must contain only elements in domain
+vector)}
 
 \item{domain}{A domain vector of unique elements to map from}
 
@@ -40,10 +41,10 @@ as the environment for evaluation. See examples.
 }
 \examples{
 # Map a sequence of letters to their numerical positions in the alphabet
-c('d', 'o', 'g') \%from\% letters \%to\% 1:26
+c("d", "o", "g") \%from\% letters \%to\% 1:26
 
 # Map US states to their abbreviations
-c('California', 'Virginia', 'Texas') \%from\% state.name \%to\% state.abb
+c("California", "Virginia", "Texas") \%from\% state.name \%to\% state.abb
 
 # Map character names to species using the dplyr::starwars dataset
 data("starwars", package = "dplyr")

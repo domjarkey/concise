@@ -44,7 +44,10 @@ parse_concise_expression <- function(.data, .expr) {
     .extra_args[[".i"]] <- rlang::expr(dplyr::row_number())
   }
 
-  if (".I" %in% .f_other_names || (length(.f_arg_names) + length(.extra_args) == 0)) {
+  if (
+    ".I" %in% .f_other_names ||
+      (length(.f_arg_names) + length(.extra_args) == 0)
+  ) {
     .extra_args[[".I"]] <- rlang::expr(dplyr::cur_group_rows())
   }
 
@@ -63,7 +66,10 @@ parse_concise_expression <- function(.data, .expr) {
 
   for (col_ref in col_references) {
     col <- rlang::sym(stringr::str_remove(col_ref, "\\.col$"))
-    execution_environment_variables[[col_ref]] <- rlang::eval_tidy(col, data = .data)
+    execution_environment_variables[[col_ref]] <- rlang::eval_tidy(
+      col,
+      data = .data
+    )
   }
 
   .map_fn <- .extra_args$.map_fn %||% default_map_fn

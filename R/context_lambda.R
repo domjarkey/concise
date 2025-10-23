@@ -54,7 +54,8 @@ context_lambda <- function(.f,
 
   for (nm in name_references) {
     if (!nm %in% names(.l)) {
-      .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||% rep_len(list(NULL), length(.i))
+      .l[[nm]] <- names(env$.data[[sub(".nm$", "", nm)]]) %||%
+        rep_len(list(NULL), length(.i))
     }
     if (recursive) {
       .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
