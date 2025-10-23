@@ -87,20 +87,22 @@
 #'
 #' @examples
 #' # Apply non-vectorised functions row-by-row
-#' tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
+#' tibble::tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
 #' cmutate(fruit_exists ~ !is.null(fruit))
 #'
 #' # Perform multiple column mutations, including standard (non-rowwise) column
 #' # mutations using `=` instead of `~`. Mutations may depend on earlier changes
 #' # made in the same `cmutate` call, and may modify existing columns in place
-#' tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
+#' tibble::tibble(
+#'     fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)
+#' ) |>
 #' cmutate(
 #'     fruit_exists ~ !is.null(fruit),
 #'     fruit_name_length ~ ifelse(fruit_exists, stringr::str_length(fruit), 0),
 #'     fruit = as.character(ifelse(fruit_exists, fruit, "NO FRUIT FOUND"))
 #' )
 #'
-#' numbers <- tibble(
+#' numbers <- tibble::tibble(
 #' x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
 #' y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
 #' z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
@@ -117,8 +119,8 @@
 #' numbers$letter <- rep(c('A', 'B'), each = 5)
 #'
 #' numbers |>
-#'     select(letter, x) |>
-#'     group_by(letter) |>
+#'     dplyr::select(letter, x) |>
+#'     dplyr::group_by(letter) |>
 #'     cmutate(
 #'         prop_of_group ~ x / sum(x.grp),
 #'         prop_of_whole ~ x / sum(x.col),
@@ -129,7 +131,7 @@
 #' # The `?` operator can be used after an expression to indicate the expected
 #' # data type of the column
 #' numbers |>
-#' select(x, y, z) |>
+#' dplyr::select(x, y, z) |>
 #'     cmutate(
 #'         max ~ max(x, y, z),
 #'         max_int ~ max(x, y, z) ? int,
@@ -140,7 +142,7 @@
 #'
 #' # Recursive functions can be implemented using the `.this` pronoun to refer
 #' # to the anonymous function
-#' tibble(n = 1:10) |> cmutate(
+#' tibble::tibble(n = 1:10) |> cmutate(
 #'     fibonacci ~ if (n <= 2) {1} else {.this(n - 1) + .this(n - 2)}
 #' )
 #'

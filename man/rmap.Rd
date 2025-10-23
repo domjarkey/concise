@@ -113,7 +113,7 @@ is needed.
 }
 
 \examples{
-numbers <- tibble(
+numbers <- tibble::tibble(
 x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
 y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
 z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
