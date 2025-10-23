@@ -52,7 +52,7 @@ NULL
 
 #' @rdname concise-infixes
 #' @export
-`%to_NA%` <- function(from, codomain) {
+`%to_na%` <- function(from, codomain) {
   codomain[match(from$input, from$domain)]
 }
 

@@ -2,7 +2,7 @@
 
 export("%from%")
 export("%to%")
-export("%to_NA%")
+export("%to_na%")
 export("%with%")
 export("%||%")
 export(cmap)

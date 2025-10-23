@@ -4,7 +4,7 @@
 \alias{concise-infixes}
 \alias{\%from\%}
 \alias{\%to\%}
-\alias{\%to_NA\%}
+\alias{\%to_na\%}
 \alias{\%with\%}
 \title{Infix functions}
 \usage{
@@ -12,7 +12,7 @@ input \%from\% domain
 
 from \%to\% codomain
 
-from \%to_NA\% codomain
+from \%to_na\% codomain
 
 expr \%with\% data
 }
