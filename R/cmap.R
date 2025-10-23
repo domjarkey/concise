@@ -145,8 +145,6 @@ cmap <- function(.x,
     exec_env_variables[[".n"]] <- length(.x$.x)
   }
 
-  nms <- names(.x)
-
   rlang::env_bind_lazy(env, .this = .this)
 
   .args <- append(
