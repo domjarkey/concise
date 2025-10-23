@@ -9,6 +9,11 @@ test_that("Input modes", {
 
     # copying an existing column works like dplyr::mutate
     expect_equal(
+        df |> cmutate(z = x),
+        df |> dplyr::mutate(z = x)
+    )
+
+    expect_equal(
         df |> cmutate(z = y),
         df |> dplyr::mutate(z = y)
     )
