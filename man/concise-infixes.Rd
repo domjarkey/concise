@@ -2,6 +2,8 @@
 % Please edit documentation in R/infix.R
 \name{concise-infixes}
 \alias{concise-infixes}
+\alias{\%?\%}
+\alias{\%:\%}
 \alias{\%from\%}
 \alias{\%to\%}
 \alias{\%as\%}
@@ -9,6 +11,10 @@
 \alias{\%with\%}
 \title{Infix functions}
 \usage{
+condition \%?\% if_true
+
+partial \%:\% if_false
+
 input \%from\% domain
 
 from \%to\% codomain
@@ -72,5 +78,13 @@ c("Han Solo", "R2-D2", "Chewbacca") \%from\% name \%to\% species \%with\% starwa
 
 # Find mean height of characters in the starwars dataset
 mean(height, na.rm = TRUE) \%with\% starwars
+
+
+# Use the concise ternary operator to branch on a condition
+(1:3) \%\% 2 == 0 \%?\% "even" \%:\% "odd"
+
+
+# Return objects of different types depending on the condition
+TRUE \%?\% list(value = 1) \%:\% "no value"
 
 }
