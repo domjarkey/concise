@@ -100,30 +100,18 @@ NULL
     }
 
     if (type_string %in% c("tibble", "dfc")) {
-        return(tibble::as_tibble(x, .name_repair = "check_unique"))
+        return(
+            tibble::as_tibble(tibble::repair_names(x))
+        )
     }
 
     if (type_string == "dfr") {
-        if (is.data.frame(x)) {
-            return(tibble::as_tibble(x))
-        }
-
-        if (rlang::is_bare_list(x)) {
-            if (!length(x)) {
-                return(tibble::tibble())
-            }
-
-            rows <- purrr::map(x, function(el) {
-                if (is.data.frame(el)) {
-                    tibble::as_tibble(el)
-                } else if (rlang::is_bare_list(el)) {
-                    tibble::as_tibble_row(el)
-                } else {
-                    tibble::tibble(value = el)
-                }
-            })
-
-            return(purrr::list_rbind(rows))
+        if (rlang::is_bare_list(x) || is.data.frame(x)) {
+            return(
+                purrr::map(x, as.list) |>
+                    data.table::rbindlist(use.names = FALSE, fill = TRUE) |>
+                    tibble::as_tibble()
+            )
         }
 
         return(tibble::tibble(value = x))

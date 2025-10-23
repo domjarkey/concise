@@ -7,6 +7,7 @@ Description: Augmented functional programming tools for iterative application of
     concise, easy-to-read anonymous functions when working with lists and data frames.
 Depends: R (>= 4.1.0)
 Imports:
+    data.table,
     dplyr,
     purrr,
     rlang (>= 1.1.1),
