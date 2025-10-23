@@ -3,30 +3,34 @@
 #' @description
 #' Infix functions for mapping from one vector to another. \code{%from%} and
 #' \code{%to%} should be used in sequence as ternary operators to map an input
-#' from a domain vector to a codomain vector by position. \code{%with%} can
-#' follow an expression to evaluate that expression using a list or data frame
-#' as the environment for evaluation. See examples.
+#' from a domain vector to a codomain vector by position. \code{%to_na%} follows
+#' the same syntax but returns `NA` when the input is not present in the domain.
+#' \code{%with%} can follow an expression to evaluate that expression using a
+#' list or data frame as the environment for evaluation. See examples.
 #'
-#' @param input A vector of values to map (must contain only elements in domain
-#' vector)
-#' @param domain A domain vector of unique elements to map from
-#' @param from The output of %from% (see examples)
+#' @param input A vector of values to map (must contain only elements in the
+#' domain vector).
+#' @param domain A domain vector of unique elements to map from.
+#' @param from The output of `%from%` (see examples).
 #' @param codomain A codomain vector of elements to map the input to (must be of
-#' equal length to domain)
-#' @param expr Any simple R expression to be evaluated
+#' equal length to `domain`).
+#' @param expr Any simple R expression to be evaluated.
 #' @param data A data frame or named list to be used as the local environment
-#' variables for evaluation of expr
+#' for evaluating `expr`.
 #'
 #' @examples
 #' # Map a sequence of letters to their numerical positions in the alphabet
 #' c("d", "o", "g") %from% letters %to% 1:26
 #'
+#'
 #' # Map US states to their abbreviations
 #' c("California", "Virginia", "Texas") %from% state.name %to% state.abb
+#'
 #'
 #' # Map character names to species using the dplyr::starwars dataset
 #' data("starwars", package = "dplyr")
 #' c("Han Solo", "R2-D2", "Chewbacca") %from% name %to% species %with% starwars
+#'
 #'
 #' # Find mean height of characters in the starwars dataset
 #' mean(height, na.rm = TRUE) %with% starwars

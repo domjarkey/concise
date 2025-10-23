@@ -4,12 +4,12 @@
 #' `cmap` works very similarly to [purrr::map] when specifying the formula of
 #' the anonymous function using tilde (`~`) formula notation, but includes extra
 #' custom pronouns to refer to related objects such as element names, element
-#' indeces, and the function itself, so as to permit recursive function
+#' indices, and the function itself, so as to permit recursive function
 #' definitions.
 #'
 #' `cmap_chr`, `cmap_dbl`, `cmap_df`, `cmap_int`, and `cmap_lgl` work like their
 #' `purrr::map_etc` equivalents, attempting to output a vector of the specified
-#' type (or a data.frame in the case of `cmap_df`) instead of a list.
+#' type (or a data frame in the case of `cmap_df`) instead of a list.
 #'
 #' @param .x A list or atomic vector.
 #' @param .f A formula defining the anonymous function to be applied to every
@@ -23,11 +23,11 @@
 #' anonymous function to be created. By default, this will be the environment in
 #' which `cmap` is called.
 #' @param map_fn The underlying function used to perform the mapping - this
-#' should not be chosen directly as safe options are pre0specified by the
+#' should not be chosen directly as safe options are pre-specified by the
 #' defaults of the `_chr`, `_dbl`, `_df`, `_int`, and `_lgl` variants of `cmap`.
 #' @param simplify If `TRUE`, the function will attempt to flatten list outputs
 #' to a vector where possible (if "unlisting" is not possible, say, in the case
-#' of' a list of lists of length > 1, the original output in list form will be
+#' of a list of lists of length > 1, the original output in list form will be
 #' returned).
 #'
 #' @details
@@ -47,12 +47,12 @@
 #' * `.n` -- the value of the final position of the list, equivalent to
 #' `length(.x)`.
 #' * `.col` -- the entire input list object or vector, as opposed to just the
-#' single element refered to in .x.
+#' single element referred to in .x.
 #' * `.this` -- the anonymous function itself, to be used in cases where
 #' recursion is needed.
 #' @returns Returns a list (or vector) of the same length as `.x`. By default a
 #' list, unless `cmap_` suffixes are used to specify the output vector type, or
-#' if `simplify=TRUE` a vector of whichever type uniformly fits the unlisted
+#' if `simplify = TRUE` a vector of whichever type uniformly fits the unlisted
 #' outputs.
 #'
 #' @examples

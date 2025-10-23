@@ -7,7 +7,7 @@
 cmutate(.data, ...)
 }
 \arguments{
-\item{.data}{A data frame}
+\item{.data}{A data frame.}
 
 \item{...}{Any combination of one or more name-value pairs to be evaluated
 as columns in the same fashion as in \link[dplyr:mutate]{dplyr::mutate} and two-sided formula
@@ -25,7 +25,7 @@ mutated, in which case they will be recomputed.
 \description{
 \code{cmutate} functions exactly like \link[dplyr:mutate]{dplyr::mutate} with the additional feature
 that column definitions specified using a \code{~} instead of \code{=} are iteratively
-evaluated as a lambda function. In practise, this works similarly to using
+evaluated as a lambda function. In practice, this works similarly to using
 \link[dplyr:rowwise]{dplyr::rowwise} before \link[dplyr:mutate]{dplyr::mutate}, except the result is calculated much
 faster and is less computationally expensive, and does so without overwriting
 the existing groupings of the data.
@@ -55,7 +55,7 @@ evaluation of the lambda function. Like the type specification above, these
 can be defined inside parentheses after a \verb{?} following the column
 definition. In this case the column definition is of the form
 \code{x ~ expr ? (arg = value)}. If multiple arguments need to be specified, they
-can be chained together inside curly braces and separated by semi-colons.
+can be chained together inside curly braces and separated by semicolons.
 This takes the following form: \code{x ~ expr ? {arg1 = val1; arg2 = val2; ...}}
 or if type needs to be specified,
 \code{x ~ expr ? {type; arg1 = val1; arg2 = val2; ...}}. See examples for further
@@ -76,26 +76,26 @@ pronouns are:
 \itemize{
 \item \verb{<column_name>} -- in the formula, this refers to an individual element of
 the named data column.
-\item \code{.i} -- the row index, or, if \code{.l} is grouped, the row index within the
+\item \code{.i} -- the row index, or, if \code{.data} is grouped, the row index within the
 group. Equivalent to \code{\link[dplyr:row_number]{dplyr::row_number()}}.
 \item \code{.I} -- the absolute row index; whether or not \code{.l} is grouped, this will
 return the overall position of the current row. Equivalent to
 \code{\link[dplyr:context]{dplyr::cur_group_rows()}}.
-\item \verb{<column_name>.nm} -- if the column \verb{<column_name>} in \code{.l} is named, this
-returns the name corresponding to the current element of \verb{<column_name>}; If
-this column of \code{.l} is unnamed, returns \code{NULL}. Note that columns in \code{tibble}
-data frames retain their \code{names} attribute, but ordinary base R data frames
-do not.
-\item \code{.n} -- the index of the final row in \code{.l}, or, if \code{.l} is grouped, the
-final row in the given group. Equivalent to \code{\link[dplyr:context]{dplyr::n()}}.
-\item \code{.N} -- the index of the final row in \code{.l}, whether or not \code{.l} is grouped.
-Equivalent to \code{nrow(.l)}.
+\item \verb{<column_name>.nm} -- if the column \verb{<column_name>} in \code{.data} is named,
+this returns the name corresponding to the current element of
+\verb{<column_name>}; if this column of \code{.data} is unnamed, returns \code{NULL}. Note
+that columns in \code{tibble} data frames retain their \code{names} attribute, but
+ordinary base R data frames do not.
+\item \code{.n} -- the index of the final row in \code{.data}, or, if \code{.data} is grouped,
+the final row in the given group. Equivalent to \code{\link[dplyr:context]{dplyr::n()}}.
+\item \code{.N} -- the index of the final row in \code{.data}, whether or not \code{.data} is
+grouped. Equivalent to \code{nrow(.l)}.
 \item \verb{<column_name>.grp} -- all elements in the current group as a list object.
-If \code{.l} is not grouped, returns the same as \verb{<column_name>.col}, i.e. the
+If \code{.data} is not grouped, returns the same as \verb{<column_name>.col}, i.e. the
 entire column \verb{<column_name>} as a list object.
-\item \verb{<column_name>.col} -- the entire data column \verb{<column_name>} in \code{.l}, as
-opposed to just the current element. Returns the full column whether or not
-\code{.l} is grouped.
+\item \verb{<column_name>.col} -- the entire data column \verb{<column_name>} in \code{.data},
+as opposed to just the current element. Returns the full column whether or
+not \code{.data} is grouped.
 \item \code{.this} -- the anonymous function itself, to be used in cases where
 recursion is needed.
 }

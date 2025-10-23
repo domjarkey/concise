@@ -45,30 +45,30 @@ anonymous function to be created. By default, this will be the environment in
 which \code{cmap} is called.}
 
 \item{map_fn}{The underlying function used to perform the mapping - this
-should not be chosen directly as safe options are pre0specified by the
+should not be chosen directly as safe options are pre-specified by the
 defaults of the \verb{_chr}, \verb{_dbl}, \verb{_df}, \verb{_int}, and \verb{_lgl} variants of \code{cmap}.}
 
 \item{simplify}{If \code{TRUE}, the function will attempt to flatten list outputs
 to a vector where possible (if "unlisting" is not possible, say, in the case
-of' a list of lists of length > 1, the original output in list form will be
+of a list of lists of length > 1, the original output in list form will be
 returned).}
 }
 \value{
 Returns a list (or vector) of the same length as \code{.x}. By default a
 list, unless \code{cmap_} suffixes are used to specify the output vector type, or
-if \code{simplify=TRUE} a vector of whichever type uniformly fits the unlisted
+if \code{simplify = TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
 }
 \description{
 \code{cmap} works very similarly to \link[purrr:map]{purrr::map} when specifying the formula of
 the anonymous function using tilde (\code{~}) formula notation, but includes extra
 custom pronouns to refer to related objects such as element names, element
-indeces, and the function itself, so as to permit recursive function
+indices, and the function itself, so as to permit recursive function
 definitions.
 
 \code{cmap_chr}, \code{cmap_dbl}, \code{cmap_df}, \code{cmap_int}, and \code{cmap_lgl} work like their
 \code{purrr::map_etc} equivalents, attempting to output a vector of the specified
-type (or a data.frame in the case of \code{cmap_df}) instead of a list.
+type (or a data frame in the case of \code{cmap_df}) instead of a list.
 }
 \section{Pronouns}{
 \code{cmap} supports reference to a set of useful "pronouns" that allow you to
@@ -86,7 +86,7 @@ element \code{.x}; If \code{.x} is unnamed, returns \code{NULL}.
 \item \code{.n} -- the value of the final position of the list, equivalent to
 \code{length(.x)}.
 \item \code{.col} -- the entire input list object or vector, as opposed to just the
-single element refered to in .x.
+single element referred to in .x.
 \item \code{.this} -- the anonymous function itself, to be used in cases where
 recursion is needed.
 }

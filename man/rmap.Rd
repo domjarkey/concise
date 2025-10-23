@@ -32,8 +32,8 @@ rmap_lgl(.l, .f = NULL, ..., env = parent.frame())
 \item{.l}{A data frame or named list of lists/vectors of equal length.}
 
 \item{.f}{A formula defining the anonymous function to be applied to every
-element of \code{.l}, in which \code{.x} refers to the given element. See Examples for
-how this differs from formulas in \link[purrr:map]{purrr::map}.}
+row of \code{.l}, in which columns are referred to directly by name. See Examples
+for how this differs from formulas in \link[purrr:map]{purrr::map}.}
 
 \item{...}{Additional named arguments are passed directly to the execution
 environment of the anonymous function as variables. These variables may
@@ -56,15 +56,15 @@ returned).}
 \value{
 Returns a list (or vector) of the same length as \code{.l}. By default a
 list, unless \code{rmap_} suffixes are used to specify the output vector type, or
-if \code{simplify=TRUE} a vector of whichever type uniformly fits the unlisted
+if \code{simplify = TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
 }
 \description{
 \code{rmap} iteratively applies an anonymous function to rows of a data frame or a
 named list of lists of equal length. \code{rmap} works similarly to \link[purrr:pmap]{purrr::pmap},
-except the data frame does not need to be subset to only those columns used
-by the function, and columns can be directly referred to by name inside the
-definition of the anonymous function.
+except the data frame does not need to be subsetted to only those columns
+used by the function, and columns can be directly referred to by name inside
+the definition of the anonymous function.
 
 \code{rmap} also permits the usage of additional "pronouns" to concisely refer to
 related objects or properties of the data columns, such as row number,
@@ -81,7 +81,7 @@ refer to other objects within the formula \code{.f} as though they were locally
 defined as variables. Note these are not pronouns in the \code{rlang} sense of the
 term, but a convenient shorthand to provide additional functionality in a
 readable format. Unlike its sister function \code{cmap}, \code{rmap} takes multiple
-named inputs, so row elements a referred to by the name of the column (here
+named inputs, so row elements are referred to by the name of the column (here
 indicated as \verb{<column_name>}) instead of \code{.x}.
 
 See Examples for further clarification on the usage of each. Supported

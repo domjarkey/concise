@@ -3,9 +3,9 @@
 #' @description
 #' `rmap` iteratively applies an anonymous function to rows of a data frame or a
 #' named list of lists of equal length. `rmap` works similarly to [purrr::pmap],
-#' except the data frame does not need to be subset to only those columns used
-#' by the function, and columns can be directly referred to by name inside the
-#' definition of the anonymous function.
+#' except the data frame does not need to be subsetted to only those columns
+#' used by the function, and columns can be directly referred to by name inside
+#' the definition of the anonymous function.
 #'
 #' `rmap` also permits the usage of additional "pronouns" to concisely refer to
 #' related objects or properties of the data columns, such as row number,
@@ -18,8 +18,8 @@
 #'
 #' @param .l A data frame or named list of lists/vectors of equal length.
 #' @param .f A formula defining the anonymous function to be applied to every
-#' element of `.l`, in which `.x` refers to the given element. See Examples for
-#' how this differs from formulas in [purrr::map].
+#' row of `.l`, in which columns are referred to directly by name. See Examples
+#' for how this differs from formulas in [purrr::map].
 #' @param ... Additional named arguments are passed directly to the execution
 #' environment of the anonymous function as variables. These variables may
 #' include transformations on the entire `.l` object as well as any variables
@@ -42,7 +42,7 @@
 #' defined as variables. Note these are not pronouns in the `rlang` sense of the
 #' term, but a convenient shorthand to provide additional functionality in a
 #' readable format. Unlike its sister function `cmap`, `rmap` takes multiple
-#' named inputs, so row elements a referred to by the name of the column (here
+#' named inputs, so row elements are referred to by the name of the column (here
 #' indicated as `<column_name>`) instead of `.x`.
 #'
 #' See Examples for further clarification on the usage of each. Supported
@@ -72,9 +72,9 @@
 #' `.l` is grouped.
 #' * `.this` -- the anonymous function itself, to be used in cases where
 #' recursion is needed.
-#' @returns Returns a list (or vector) of the same length as `.l`. By default a
+#' @return Returns a list (or vector) of the same length as `.l`. By default a
 #' list, unless `rmap_` suffixes are used to specify the output vector type, or
-#' if `simplify=TRUE` a vector of whichever type uniformly fits the unlisted
+#' if `simplify = TRUE` a vector of whichever type uniformly fits the unlisted
 #' outputs.
 #'
 #' @examples

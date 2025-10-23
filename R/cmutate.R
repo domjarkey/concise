@@ -3,7 +3,7 @@
 #' @description
 #' `cmutate` functions exactly like [dplyr::mutate] with the additional feature
 #' that column definitions specified using a `~` instead of `=` are iteratively
-#' evaluated as a lambda function. In practise, this works similarly to using
+#' evaluated as a lambda function. In practice, this works similarly to using
 #' [dplyr::rowwise] before [dplyr::mutate], except the result is calculated much
 #' faster and is less computationally expensive, and does so without overwriting
 #' the existing groupings of the data.
@@ -17,7 +17,7 @@
 #' arguments to pass to the lambda function, as well as the output type of the
 #' column, e.g. integer, character, list, etc.
 #'
-#' @param .data A data frame
+#' @param .data A data frame.
 #' @param ... Any combination of one or more name-value pairs to be evaluated
 #' as columns in the same fashion as in [dplyr::mutate] and two-sided formula
 #' of the form `x ~ expr` where `x` gives the new name of the column, and `expr`
@@ -41,7 +41,7 @@
 #' can be defined inside parentheses after a `?` following the column
 #' definition. In this case the column definition is of the form
 #' `x ~ expr ? (arg = value)`. If multiple arguments need to be specified, they
-#' can be chained together inside curly braces and separated by semi-colons.
+#' can be chained together inside curly braces and separated by semicolons.
 #' This takes the following form: `x ~ expr ? {arg1 = val1; arg2 = val2; ...}`
 #' or if type needs to be specified,
 #' `x ~ expr ? {type; arg1 = val1; arg2 = val2; ...}`. See examples for further
@@ -61,29 +61,29 @@
 #'
 #' * `<column_name>` -- in the formula, this refers to an individual element of
 #' the named data column.
-#' * `.i` -- the row index, or, if `.l` is grouped, the row index within the
+#' * `.i` -- the row index, or, if `.data` is grouped, the row index within the
 #' group. Equivalent to [dplyr::row_number()].
 #' * `.I` -- the absolute row index; whether or not `.l` is grouped, this will
 #' return the overall position of the current row. Equivalent to
 #' [dplyr::cur_group_rows()].
-#' * `<column_name>.nm` -- if the column `<column_name>` in `.l` is named, this
-#' returns the name corresponding to the current element of `<column_name>`; If
-#' this column of `.l` is unnamed, returns `NULL`. Note that columns in `tibble`
-#' data frames retain their `names` attribute, but ordinary base R data frames
-#' do not.
-#' * `.n` -- the index of the final row in `.l`, or, if `.l` is grouped, the
-#' final row in the given group. Equivalent to [dplyr::n()].
-#' * `.N` -- the index of the final row in `.l`, whether or not `.l` is grouped.
-#' Equivalent to `nrow(.l)`.
+#' * `<column_name>.nm` -- if the column `<column_name>` in `.data` is named,
+#' this returns the name corresponding to the current element of
+#' `<column_name>`; if this column of `.data` is unnamed, returns `NULL`. Note
+#' that columns in `tibble` data frames retain their `names` attribute, but
+#' ordinary base R data frames do not.
+#' * `.n` -- the index of the final row in `.data`, or, if `.data` is grouped,
+#' the final row in the given group. Equivalent to [dplyr::n()].
+#' * `.N` -- the index of the final row in `.data`, whether or not `.data` is
+#' grouped. Equivalent to `nrow(.l)`.
 #' * `<column_name>.grp` -- all elements in the current group as a list object.
-#' If `.l` is not grouped, returns the same as `<column_name>.col`, i.e. the
+#' If `.data` is not grouped, returns the same as `<column_name>.col`, i.e. the
 #' entire column `<column_name>` as a list object.
-#' * `<column_name>.col` -- the entire data column `<column_name>` in `.l`, as
-#' opposed to just the current element. Returns the full column whether or not
-#' `.l` is grouped.
+#' * `<column_name>.col` -- the entire data column `<column_name>` in `.data`,
+#' as opposed to just the current element. Returns the full column whether or
+#' not `.data` is grouped.
 #' * `.this` -- the anonymous function itself, to be used in cases where
 #' recursion is needed.
-#' @returns Returns a data frame with new columns for each name-value pair
+#' @return Returns a data frame with new columns for each name-value pair
 #' and/or formula specified in ... arguments. Number of rows and data frame
 #' attributes are preserved. Groups are preserved unless grouping variables are
 #' mutated, in which case they will be recomputed.
