@@ -18,10 +18,10 @@
 #'
 #' @examples
 #' # Map a sequence of letters to their numerical positions in the alphabet
-#' c('d', 'o', 'g') %from% letters %to% 1:26
+#' c("d", "o", "g") %from% letters %to% 1:26
 #'
 #' # Map US states to their abbreviations
-#' c('California', 'Virginia', 'Texas') %from% state.name %to% state.abb
+#' c("California", "Virginia", "Texas") %from% state.name %to% state.abb
 #'
 #' # Map character names to species using the dplyr::starwars dataset
 #' data("starwars", package = "dplyr")
@@ -36,28 +36,28 @@ NULL
 #' @rdname concise-infixes
 #' @export
 `%from%` <- function(input, domain) {
-    list(input = input, domain = domain)
+  list(input = input, domain = domain)
 }
 
 #' @rdname concise-infixes
 #' @export
 `%to%` <- function(from, codomain) {
-    ifelse(
-        from$input %in% from$domain,
-        codomain[match(from$input, from$domain)],
-        from$input
-    )
+  ifelse(
+    from$input %in% from$domain,
+    codomain[match(from$input, from$domain)],
+    from$input
+  )
 }
 
 #' @rdname concise-infixes
 #' @export
 `%to_NA%` <- function(from, codomain) {
-    codomain[match(from$input, from$domain)]
+  codomain[match(from$input, from$domain)]
 }
 
 #' @rdname concise-infixes
 #' @export
 `%with%` <- function(expr, data) {
-    expr <- rlang::enquo(expr)
-    rlang::eval_tidy(expr, data = data)
+  expr <- rlang::enquo(expr)
+  rlang::eval_tidy(expr, data = data)
 }

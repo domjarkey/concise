@@ -63,8 +63,8 @@
 #'
 #' # Refer to column names with .nm
 #' cmap_df(
-#'     list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
-#'     ~ c(name = .nm, species = .x)
+#'   list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
+#'   ~ c(name = .nm, species = .x)
 #' )
 #'
 #' # Refer to entire column using .col
@@ -76,123 +76,123 @@
 #'
 #' # Recursive functions can be useful for tree traversal
 #' tree <- list(
-#'     a = list(
-#'         b = 1,
-#'         c = list(
-#'             d = 2,
-#'             e = 3
-#'         )
-#'     ),
-#'     f = 4,
-#'     g = list(h = 5)
+#'   a = list(
+#'     b = 1,
+#'     c = list(
+#'       d = 2,
+#'       e = 3
+#'     )
+#'   ),
+#'   f = 4,
+#'   g = list(h = 5)
 #' )
 #' cmap_df(
-#'     tree,
-#'     ~ if (is.list(.x)) {
-#'         purrr::pmap_df(
-#'             list(.x, .nm = names(.x)),
-#'             .this,
-#'             path = paste0(path, "/", .nm)
-#'         )
-#'     } else {
-#'         tibble::tibble(path = paste0(path, "/", .nm), value = .x)
-#'     },
-#'     path = "root"
+#'   tree,
+#'   ~ if (is.list(.x)) {
+#'     purrr::pmap_df(
+#'       list(.x, .nm = names(.x)),
+#'       .this,
+#'       path = paste0(path, "/", .nm)
+#'     )
+#'   } else {
+#'     tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+#'   },
+#'   path = "root"
 #' )
 #' @import rlang
 #' @export
 cmap <- function(.x, .f, ..., env = rlang::caller_env(), map_fn = purrr::pmap, simplify = FALSE) {
-    .f <- get_rhs(rlang::enexpr(.f))
+  .f <- get_rhs(rlang::enexpr(.f))
 
-    formula_names <- get_formula_names(.f)
+  formula_names <- get_formula_names(.f)
 
-    if (".this" %in% formula_names) {
-        .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
-        .f <- insert_argument(.f, ".this", ".nm", rlang::sym(".nm"))
-    }
+  if (".this" %in% formula_names) {
+    .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
+    .f <- insert_argument(.f, ".this", ".nm", rlang::sym(".nm"))
+  }
 
-    .x <- list(
-        .x = .x,
-        .i = seq_along(.x),
-        .nm = if (is.null(names(.x))) {
-            rep_len(list(NULL), length(.x))
-        } else {
-            names(.x)
-        }
-    )
-
-    .args <- purrr::map(
-        rlang::enquos(...),
-        \(dot) rlang::eval_tidy(dot, data = .x)
-    )
-
-    execution_environment_variables <- list()
-
-    if (".col" %in% formula_names) {
-        execution_environment_variables[[".col"]] <- .x$.x
-    }
-
-    if (".n" %in% formula_names) {
-        execution_environment_variables[[".n"]] <- length(.x$.x)
-    }
-
-    nms <- names(.x)
-
-    rlang::env_bind_lazy(env, .this = .this)
-
-    .args <- append(
-        list(
-            .x = rlang::missing_arg(),
-            .i = rlang::missing_arg(),
-            .nm = rlang::missing_arg()
-        ),
-        .args
-    )
-
-    .this <- rlang::new_function(
-        args = .args,
-        body = .f,
-        env = rlang::env(
-            env,
-            !!!execution_environment_variables
-        )
-    )
-
-    .out <- map_fn(.x, .f = .this)
-
-    if (simplify && length(.out) == length(unlist(.out))) {
-        unlist(.out)
+  .x <- list(
+    .x = .x,
+    .i = seq_along(.x),
+    .nm = if (is.null(names(.x))) {
+      rep_len(list(NULL), length(.x))
     } else {
-        .out
+      names(.x)
     }
+  )
+
+  .args <- purrr::map(
+    rlang::enquos(...),
+    \(dot) rlang::eval_tidy(dot, data = .x)
+  )
+
+  execution_environment_variables <- list()
+
+  if (".col" %in% formula_names) {
+    execution_environment_variables[[".col"]] <- .x$.x
+  }
+
+  if (".n" %in% formula_names) {
+    execution_environment_variables[[".n"]] <- length(.x$.x)
+  }
+
+  nms <- names(.x)
+
+  rlang::env_bind_lazy(env, .this = .this)
+
+  .args <- append(
+    list(
+      .x = rlang::missing_arg(),
+      .i = rlang::missing_arg(),
+      .nm = rlang::missing_arg()
+    ),
+    .args
+  )
+
+  .this <- rlang::new_function(
+    args = .args,
+    body = .f,
+    env = rlang::env(
+      env,
+      !!!execution_environment_variables
+    )
+  )
+
+  .out <- map_fn(.x, .f = .this)
+
+  if (simplify && length(.out) == length(unlist(.out))) {
+    unlist(.out)
+  } else {
+    .out
+  }
 }
 
 #' @rdname cmap
 #' @export
 cmap_chr <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
+  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
 #' @rdname cmap
 #' @export
 cmap_dbl <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
+  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
 #' @rdname cmap
 #' @export
 cmap_df <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
+  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
 #' @rdname cmap
 #' @export
 cmap_int <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
+  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
 #' @rdname cmap
 #' @export
 cmap_lgl <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
+  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }

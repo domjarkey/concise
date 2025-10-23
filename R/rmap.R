@@ -77,166 +77,166 @@
 #'
 #' @examples
 #' numbers <- tibble::tibble(
-#' x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
-#' y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
-#' z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
-#' letter = rep(c('A', 'B'), each = 5)
+#'   x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
+#'   y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
+#'   z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
+#'   letter = rep(c("A", "B"), each = 5)
 #' )
 #'
 #' numbers |>
-#' rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
+#'   rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
 #'
 #' @import rlang
 #' @export
-rmap <- function(
-        .l,
-        .f,
-        ...,
-        env = rlang::caller_env(),
-        map_fn = purrr::pmap,
-        simplify = TRUE
-) {
-    .f <- get_rhs(rlang::enexpr(.f))
+rmap <- function(.l,
+                 .f,
+                 ...,
+                 env = rlang::caller_env(),
+                 map_fn = purrr::pmap,
+                 simplify = TRUE) {
+  .f <- get_rhs(rlang::enexpr(.f))
 
-    if (is.atomic(.l)) {
-        .l <- tibble::tibble(`...1` = .l)
+  if (is.atomic(.l)) {
+    .l <- tibble::tibble(`...1` = .l)
+  }
+  if (is.null(names(.l))) {
+    names(.l) <- paste0("...", seq_along(.l))
+  }
+  if (is.list(.l) && !is.data.frame(.l)) {
+    if (any(length(.l[[1]]) != lengths(.l))) {
+      # TODO: remove this error to allow argument recycling
+      stop("All elements of .l must be of equal length")
     }
-    if (is.null(names(.l))) {
-        names(.l) <- paste0("...", seq_along(.l))
+    .l <- tibble::as_tibble(.l)
+  }
+
+  formula_names <- c(
+    get_formula_names(.f),
+    purrr::map(rlang::enexprs(...), get_formula_names)
+  ) |>
+    unlist() |>
+    unique()
+
+  recursive <- ".this" %in% formula_names
+
+  if (!".i" %in% names(.l)) {
+    .l <- dplyr::mutate(.l, .i = dplyr::row_number())
+    if (recursive) {
+      .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
     }
-    if (is.list(.l) && !is.data.frame(.l)) {
-        if (any(length(.l[[1]]) != lengths(.l))) {
-            # TODO: remove this error to allow argument recycling
-            stop("All elements of .l must be of equal length")
-        }
-        .l <- tibble::as_tibble(.l)
+  }
+
+  if (!".I" %in% names(.l) && ".I" %in% formula_names) {
+    .l <- dplyr::mutate(.l, .I = dplyr::cur_group_rows())
+    if (recursive) {
+      .f <- insert_argument(.f, ".this", ".I", rlang::sym(".I"))
     }
+  }
 
-    formula_names <- c(
-        get_formula_names(.f),
-        purrr::map(rlang::enexprs(...), get_formula_names)
-    ) |> unlist() |> unique()
+  name_references <- intersect(paste0(names(.l), ".nm"), formula_names) |>
+    purrr::discard(~ .x %in% names(.l))
 
-    recursive <- ".this" %in% formula_names
-
-    if (!".i" %in% names(.l)) {
-        .l <- dplyr::mutate(.l, .i = dplyr::row_number())
-        if (recursive) {
-            .f <- insert_argument(.f, ".this", ".i", rlang::sym(".i"))
-        }
+  for (nm in name_references) {
+    .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(list(NULL), length(.l[[1]]))
+    if (recursive) {
+      .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
     }
+  }
 
-    if (!".I" %in% names(.l) && ".I" %in% formula_names) {
-        .l <- dplyr::mutate(.l, .I = dplyr::cur_group_rows())
-        if (recursive) {
-            .f <- insert_argument(.f, ".this", ".I", rlang::sym(".I"))
-        }
+  group_references <- intersect(paste0(names(.l), ".grp"), formula_names) |>
+    purrr::discard(~ .x %in% names(.l))
+
+  for (grp in group_references) {
+    .l <- .l |> cmutate(!!grp ~ !!rlang::sym(grp))
+    if (recursive) {
+      .f <- insert_argument(.f, ".this", grp, rlang::sym(grp))
     }
+  }
 
-    name_references <- intersect(paste0(names(.l), ".nm"), formula_names) |>
-        purrr::discard(~ .x %in% names(.l))
-
-    for (nm in name_references) {
-        .l[[nm]] <- names(.l[[sub(".nm$", "", nm)]]) %||% rep_len(list(NULL), length(.l[[1]]))
-        if (recursive) {
-            .f <- insert_argument(.f, ".this", nm, rlang::sym(nm))
-        }
+  if (!".n" %in% names(.l) && ".n" %in% formula_names) {
+    .l <- .l |> dplyr::mutate(.n = dplyr::n())
+    if (recursive) {
+      .f <- insert_argument(.f, ".this", ".n", rlang::sym(".n"))
     }
+  }
 
-    group_references <- intersect(paste0(names(.l), ".grp"), formula_names) |>
-        purrr::discard(~ .x %in% names(.l))
+  .args <- purrr::map(
+    rlang::enquos(...),
+    ~ rlang::eval_tidy(.x, data = .l)
+  )
 
-    for (grp in group_references) {
-        .l <- .l |> cmutate(!!grp ~ !!rlang::sym(grp))
-        if (recursive) {
-            .f <- insert_argument(.f, ".this", grp, rlang::sym(grp))
-        }
-    }
+  execution_environment_variables <- list()
 
-    if (!".n" %in% names(.l) && ".n" %in% formula_names) {
-        .l <- .l |> dplyr::mutate(.n = dplyr::n())
-        if (recursive) {
-            .f <- insert_argument(.f, ".this", ".n", rlang::sym(".n"))
-        }
-    }
+  col_references <- intersect(paste0(names(.l), ".col"), formula_names) |>
+    purrr::discard(~ .x %in% names(.l))
 
-    .args <- purrr::map(
-        rlang::enquos(...),
-        ~ rlang::eval_tidy(.x, data = .l)
+  for (col in col_references) {
+    execution_environment_variables <- append(
+      execution_environment_variables,
+      rlang::list2(!!col := .l[[stringr::str_remove(col, ".col$")]])
     )
+  }
 
-    execution_environment_variables <- list()
+  if (".N" %in% formula_names) {
+    execution_environment_variables[[".N"]] <- nrow(.l)
+  }
 
-    col_references <- intersect(paste0(names(.l), ".col"), formula_names) |>
-        purrr::discard(~ .x %in% names(.l))
+  nms <- intersect(names(.l), c(formula_names, ".i"))
 
-    for (col in col_references) {
-        execution_environment_variables <- append(
-            execution_environment_variables,
-            rlang::list2(!!col := .l[[stringr::str_remove(col, ".col$")]])
-        )
-    }
+  rlang::env_bind_lazy(env, .this = .this)
 
-    if (".N" %in% formula_names) {
-        execution_environment_variables[[".N"]] <- nrow(.l)
-    }
+  .args <- append(
+    purrr::map(
+      purrr::set_names(nms),
+      ~ rlang::missing_arg()
+    ),
+    .args
+  )
 
-    nms <- intersect(names(.l), c(formula_names, ".i"))
-
-    rlang::env_bind_lazy(env, .this = .this)
-
-    .args <- append(
-        purrr::map(
-            purrr::set_names(nms),
-            ~ rlang::missing_arg()
-        ),
-        .args
+  .this <- rlang::new_function(
+    args = .args,
+    body = .f,
+    env = rlang::env(
+      env,
+      !!!execution_environment_variables
     )
+  )
 
-    .this <- rlang::new_function(
-        args = .args,
-        body = .f,
-        env = rlang::env(
-            env,
-            !!!execution_environment_variables
-        )
-    )
+  .out <- map_fn(.l = .l[nms], .f = .this)
 
-    .out <- map_fn(.l = .l[nms], .f = .this)
-
-    if (simplify && length(.out) == length(unlist(.out))) {
-        unlist(.out)
-    } else {
-        .out
-    }
+  if (simplify && length(.out) == length(unlist(.out))) {
+    unlist(.out)
+  } else {
+    .out
+  }
 }
 
 #' @rdname rmap
 #' @export
 rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
+  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
 #' @rdname rmap
 #' @export
 rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
+  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
 #' @rdname rmap
 #' @export
 rmap_df <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
+  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
 #' @rdname rmap
 #' @export
 rmap_int <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
+  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
 #' @rdname rmap
 #' @export
 rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
+  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }

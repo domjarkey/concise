@@ -87,25 +87,25 @@
 #'
 #' @examples
 #' # Apply non-vectorised functions row-by-row
-#' tibble::tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
-#' cmutate(fruit_exists ~ !is.null(fruit))
+#' tibble::tibble(fruit = list("apple", "banana", NULL, "dragonfruit", NULL)) |>
+#'   cmutate(fruit_exists ~ !is.null(fruit))
 #'
 #' # Perform multiple column mutations, including standard (non-rowwise) column
 #' # mutations using `=` instead of `~`. Mutations may depend on earlier changes
 #' # made in the same `cmutate` call, and may modify existing columns in place
 #' tibble::tibble(
-#'     fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)
+#'   fruit = list("apple", "banana", NULL, "dragonfruit", NULL)
 #' ) |>
-#' cmutate(
+#'   cmutate(
 #'     fruit_exists ~ !is.null(fruit),
 #'     fruit_name_length ~ ifelse(fruit_exists, stringr::str_length(fruit), 0),
 #'     fruit = as.character(ifelse(fruit_exists, fruit, "NO FRUIT FOUND"))
-#' )
+#'   )
 #'
 #' numbers <- tibble::tibble(
-#' x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
-#' y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
-#' z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
+#'   x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
+#'   y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
+#'   z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
 #' )
 #'
 #' numbers |> cmutate(largest ~ max(x, y, z))
@@ -116,55 +116,59 @@
 #'
 #' # Concise pronouns can be used in combination with groupings created by
 #' dplyr::group_by
-#' numbers$letter <- rep(c('A', 'B'), each = 5)
+#' numbers$letter <- rep(c("A", "B"), each = 5)
 #'
 #' numbers |>
-#'     dplyr::select(letter, x) |>
-#'     dplyr::group_by(letter) |>
-#'     cmutate(
-#'         prop_of_group ~ x / sum(x.grp),
-#'         prop_of_whole ~ x / sum(x.col),
-#'         group_row_index ~ .i,
-#'         column_row_index ~ .I
-#' )
+#'   dplyr::select(letter, x) |>
+#'   dplyr::group_by(letter) |>
+#'   cmutate(
+#'     prop_of_group ~ x / sum(x.grp),
+#'     prop_of_whole ~ x / sum(x.col),
+#'     group_row_index ~ .i,
+#'     column_row_index ~ .I
+#'   )
 #'
 #' # The `?` operator can be used after an expression to indicate the expected
 #' # data type of the column
 #' numbers |>
-#' dplyr::select(x, y, z) |>
-#'     cmutate(
-#'         max ~ max(x, y, z),
-#'         max_int ~ max(x, y, z) ? int,
-#'         max_dbl ~ max(x, y, z) ? dbl,
-#'         max_chr ~ max(x, y, z) ? chr,
-#'         max_list ~ max(x, y, z) ? list,
-#'  )
+#'   dplyr::select(x, y, z) |>
+#'   cmutate(
+#'     max ~ max(x, y, z),
+#'     max_int ~ max(x, y, z) ? int,
+#'     max_dbl ~ max(x, y, z) ? dbl,
+#'     max_chr ~ max(x, y, z) ? chr,
+#'     max_list ~ max(x, y, z) ? list,
+#'   )
 #'
 #' # Recursive functions can be implemented using the `.this` pronoun to refer
 #' # to the anonymous function
 #' tibble::tibble(n = 1:10) |> cmutate(
-#'     fibonacci ~ if (n <= 2) {1} else {.this(n - 1) + .this(n - 2)}
+#'   fibonacci ~ if (n <= 2) {
+#'     1
+#'   } else {
+#'     .this(n - 1) + .this(n - 2)
+#'   }
 #' )
 #'
 #' @export
 cmutate <- function(.data, ...) {
-    .args <- rlang::enquos(...)
-    .out <- .data
-    for (i in seq_along(.args)) {
-        if (is_concise_formula(rlang::quo_get_expr(.args[[i]]))) {
-            if (names(.args)[i] == "") {
-                names(.args)[i] <- as.character(get_lhs(rlang::quo_get_expr(.args[[i]])))
-            }
-            .args[[i]] <- rlang::quo_set_expr(
-                .args[[i]],
-                parse_concise_expression(.out, !!(rlang::quo_get_expr(.args[[i]])))
-            )
-        }
-        .out <- .out |> dplyr::mutate(!!!(.args[i]))
-        if (identical(rlang::quo_get_expr(.args[[i]])[[1]], default_map_fn)) {
-            .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
-        }
+  .args <- rlang::enquos(...)
+  .out <- .data
+  for (i in seq_along(.args)) {
+    if (is_concise_formula(rlang::quo_get_expr(.args[[i]]))) {
+      if (names(.args)[i] == "") {
+        names(.args)[i] <- as.character(get_lhs(rlang::quo_get_expr(.args[[i]])))
+      }
+      .args[[i]] <- rlang::quo_set_expr(
+        .args[[i]],
+        parse_concise_expression(.out, !!(rlang::quo_get_expr(.args[[i]])))
+      )
     }
+    .out <- .out |> dplyr::mutate(!!!(.args[i]))
+    if (identical(rlang::quo_get_expr(.args[[i]])[[1]], default_map_fn)) {
+      .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
+    }
+  }
 
-    .out
+  .out
 }
