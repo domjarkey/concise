@@ -40,6 +40,26 @@ test_that("Atomic mapping", {
         )
     )
 
+    res <- rmap_dfc(
+        tibble::tibble(x = 1:2, y = 3:4),
+        ~ tibble::tibble(!!paste0("row_", .i) := x + y)
+    )
+    comparison <- tibble::tibble(
+        row_1 = 4,
+        row_2 = 6
+    )
+    expect_equal(res, comparison)
+
+    expect_equal(
+        rmap_dfr(
+            tibble::tibble(x = 1:2, y = 3:4),
+            ~ tibble::tibble(sum = x + y, idx = .i)
+        ),
+        tibble::tibble(
+            sum = c(4, 6),
+            idx = 1:2
+        )
+    )
 })
 
 test_that("List mapping", {

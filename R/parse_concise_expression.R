@@ -128,7 +128,6 @@ concise_syntax <- function(expr) {
     },
     chr = list(.map_fn = rlang::expr(purrr::pmap_chr)),
     dbl = list(.map_fn = rlang::expr(purrr::pmap_dbl)),
-    df = list(.map_fn = rlang::expr(purrr::pmap_df)),
     int = list(.map_fn = rlang::expr(purrr::pmap_int)),
     lgl = list(.map_fn = rlang::expr(purrr::pmap_lgl)),
     list = list(.map_fn = rlang::expr(purrr::pmap))
@@ -154,7 +153,6 @@ concise_syntax <- function(expr) {
     },
     chr = list(.map_fn = rlang::expr(purrr::pmap_chr)),
     dbl = list(.map_fn = rlang::expr(purrr::pmap_dbl)),
-    df = list(.map_fn = rlang::expr(purrr::pmap_df)),
     int = list(.map_fn = rlang::expr(purrr::pmap_int)),
     lgl = list(.map_fn = rlang::expr(purrr::pmap_lgl)),
     list = list(.map_fn = rlang::expr(purrr::pmap))

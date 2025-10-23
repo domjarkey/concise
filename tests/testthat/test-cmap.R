@@ -63,6 +63,27 @@ test_that("Atomic mapping", {
         )
     )
 
+    res <- cmap_dfc(
+        list(first = c(1, 2), second = c(3, 4)),
+        ~ tibble::tibble(!!paste0(.nm, "_value") := .x)
+    )
+    comparison <- tibble::tibble(
+        first_value = c(1, 2),
+        second_value = c(3, 4)
+    )
+
+    expect_equal(res, comparison)
+
+    expect_equal(
+        cmap_dfr(
+            list(first = c(1, 2), second = c(3, 4)),
+            ~ tibble::tibble(name = .nm, value = sum(.x))
+        ),
+        tibble::tibble(
+            name = c("first", "second"),
+            value = c(3, 7)
+        )
+    )
 })
 
 test_that("List mapping", {

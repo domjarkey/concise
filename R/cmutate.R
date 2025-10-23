@@ -30,8 +30,8 @@
 #' By default, columns specified with a `~` are simplified to a vector if
 #' possible, similar to `rmap` with `simplify=TRUE`. If a specific output type
 #' is desired, à la `rmap_int`, `rmap_dbl`, etc., the column definition can be
-#' followed by a `?` and then `chr`, `dbl`, `df`, `int`, `lgl`, or `list`. When
-#' using this notation, the column definition is of the form `x ~ expr ? type`.
+#' followed by a `?` and then `chr`, `dbl`, `int`, `lgl`, or `list`. When using
+#' this notation, the column definition is of the form `x ~ expr ? type`.
 #'
 #' See Examples for further clarification.
 #'

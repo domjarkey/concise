@@ -5,6 +5,8 @@
 \alias{rmap_chr}
 \alias{rmap_dbl}
 \alias{rmap_df}
+\alias{rmap_dfc}
+\alias{rmap_dfr}
 \alias{rmap_int}
 \alias{rmap_lgl}
 \title{Map over rows of a data frame}
@@ -23,6 +25,10 @@ rmap_chr(.l, .f = NULL, ..., env = parent.frame())
 rmap_dbl(.l, .f = NULL, ..., env = parent.frame())
 
 rmap_df(.l, .f = NULL, ..., env = parent.frame())
+
+rmap_dfc(.l, .f = NULL, ..., env = parent.frame())
+
+rmap_dfr(.l, .f = NULL, ..., env = parent.frame())
 
 rmap_int(.l, .f = NULL, ..., env = parent.frame())
 
@@ -71,9 +77,10 @@ related objects or properties of the data columns, such as row number,
 grouping (if the data frame is grouped using \link[dplyr:group_by]{dplyr::group_by} or similar),
 as well as the anonymous function itself for use in recursion.
 
-\code{rmap_chr}, \code{rmap_dbl}, \code{rmap_df}, \code{rmap_int}, and \code{rmap_lgl} work like their
-\code{purrr::pmap_etc} equivalents, attempting to output a vector of the specified
-type (or a data.frame in the case of \code{rmap_df}) instead of a list.
+\code{rmap_chr}, \code{rmap_dbl}, \code{rmap_df}, \code{rmap_dfc}, \code{rmap_dfr}, \code{rmap_int}, and
+\code{rmap_lgl} work like their \code{purrr::pmap_etc} equivalents, attempting to
+output a vector of the specified type (or a data frame in the case of the
+\verb{rmap_df*} variants) instead of a list.
 }
 \section{Pronouns}{
 \code{rmap} supports reference to a set of useful "pronouns" that allow you to

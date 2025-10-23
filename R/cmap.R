@@ -7,9 +7,10 @@
 #' indices, and the function itself, so as to permit recursive function
 #' definitions.
 #'
-#' `cmap_chr`, `cmap_dbl`, `cmap_df`, `cmap_int`, and `cmap_lgl` work like their
-#' `purrr::map_etc` equivalents, attempting to output a vector of the specified
-#' type (or a data frame in the case of `cmap_df`) instead of a list.
+#' `cmap_chr`, `cmap_dbl`, `cmap_df`, `cmap_dfc`, `cmap_dfr`, `cmap_int`, and
+#' `cmap_lgl` work like their `purrr::map_etc` equivalents, attempting to output
+#' a vector of the specified type (or a data frame in the case of the `cmap_df*`
+#' variants) instead of a list.
 #'
 #' @param .x A list or atomic vector.
 #' @param .f A formula defining the anonymous function to be applied to every
@@ -190,6 +191,18 @@ cmap_dbl <- function(.x, .f, ..., env = parent.frame()) {
 #' @export
 cmap_df <- function(.x, .f, ..., env = parent.frame()) {
   cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
+}
+
+#' @rdname cmap
+#' @export
+cmap_dfc <- function(.x, .f, ..., env = parent.frame()) {
+    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfc)
+}
+
+#' @rdname cmap
+#' @export
+cmap_dfr <- function(.x, .f, ..., env = parent.frame()) {
+    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
 #' @rdname cmap

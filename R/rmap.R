@@ -12,9 +12,10 @@
 #' grouping (if the data frame is grouped using [dplyr::group_by] or similar),
 #' as well as the anonymous function itself for use in recursion.
 #'
-#' `rmap_chr`, `rmap_dbl`, `rmap_df`, `rmap_int`, and `rmap_lgl` work like their
-#' `purrr::pmap_etc` equivalents, attempting to output a vector of the specified
-#'  type (or a data.frame in the case of `rmap_df`) instead of a list.
+#' `rmap_chr`, `rmap_dbl`, `rmap_df`, `rmap_dfc`, `rmap_dfr`, `rmap_int`, and
+#' `rmap_lgl` work like their `purrr::pmap_etc` equivalents, attempting to
+#' output a vector of the specified type (or a data frame in the case of the
+#' `rmap_df*` variants) instead of a list.
 #'
 #' @param .l A data frame or named list of lists/vectors of equal length.
 #' @param .f A formula defining the anonymous function to be applied to every
@@ -230,6 +231,25 @@ rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame()) {
 #' @export
 rmap_df <- function(.l, .f = NULL, ..., env = parent.frame()) {
   rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
+}
+
+#' @rdname rmap
+#' @export
+rmap_dfc <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(
+        .l = .l,
+        .f = !!.f,
+        ...,
+        env = env,
+        map_fn = purrr::pmap_dfc,
+        simplify = FALSE
+    )
+}
+
+#' @rdname rmap
+#' @export
+rmap_dfr <- function(.l, .f = NULL, ..., env = parent.frame()) {
+    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
 #' @rdname rmap

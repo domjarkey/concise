@@ -5,6 +5,8 @@
 \alias{cmap_chr}
 \alias{cmap_dbl}
 \alias{cmap_df}
+\alias{cmap_dfc}
+\alias{cmap_dfr}
 \alias{cmap_int}
 \alias{cmap_lgl}
 \title{Apply an anonymous function to each element of a vector}
@@ -23,6 +25,10 @@ cmap_chr(.x, .f, ..., env = parent.frame())
 cmap_dbl(.x, .f, ..., env = parent.frame())
 
 cmap_df(.x, .f, ..., env = parent.frame())
+
+cmap_dfc(.x, .f, ..., env = parent.frame())
+
+cmap_dfr(.x, .f, ..., env = parent.frame())
 
 cmap_int(.x, .f, ..., env = parent.frame())
 
@@ -66,9 +72,10 @@ custom pronouns to refer to related objects such as element names, element
 indices, and the function itself, so as to permit recursive function
 definitions.
 
-\code{cmap_chr}, \code{cmap_dbl}, \code{cmap_df}, \code{cmap_int}, and \code{cmap_lgl} work like their
-\code{purrr::map_etc} equivalents, attempting to output a vector of the specified
-type (or a data frame in the case of \code{cmap_df}) instead of a list.
+\code{cmap_chr}, \code{cmap_dbl}, \code{cmap_df}, \code{cmap_dfc}, \code{cmap_dfr}, \code{cmap_int}, and
+\code{cmap_lgl} work like their \code{purrr::map_etc} equivalents, attempting to output
+a vector of the specified type (or a data frame in the case of the \verb{cmap_df*}
+variants) instead of a list.
 }
 \section{Pronouns}{
 \code{cmap} supports reference to a set of useful "pronouns" that allow you to
