@@ -170,7 +170,10 @@ cmutate <- function(.data, ...) {
       )
     }
     .out <- .out |> dplyr::mutate(!!!(.args[i]))
-    if (identical(rlang::quo_get_expr(.args[[i]])[[1]], default_map_fn)) {
+    if (
+        rlang::is_call(rlang::quo_get_expr(.args[[i]])) &&
+        identical(rlang::quo_get_expr(.args[[i]])[[1]], default_map_fn)
+    ) {
       .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
     }
   }

@@ -7,6 +7,12 @@ test_that("Input modes", {
         df |> dplyr::mutate(z = x + 1)
     )
 
+    # copying an existing column works like dplyr::mutate
+    expect_equal(
+        df |> cmutate(z = y),
+        df |> dplyr::mutate(z = y)
+    )
+
     # mode: cmutate(name = context_lambda(~ .f))
     expect_equal(
         df |> cmutate(z = context_lambda(~ is.null(y))),
