@@ -1,10 +1,10 @@
 atomise_formula <- function(.f) {
   if (purrr::is_formula(.f)) {
-    return(purrr::map(as.list(.f)[-1], atomise_formula))
+    purrr::map(as.list(.f)[-1], atomise_formula)
   } else if (is.call(.f)) {
-    return(purrr::map(as.list(.f), atomise_formula))
+    purrr::map(as.list(.f), atomise_formula)
   } else {
-    return(.f)
+    .f
   }
 }
 
