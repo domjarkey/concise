@@ -55,7 +55,7 @@ get_rhs <- function(.f) {
 
 insert_argument <- function(.f, .f_name, arg_name, arg_value, force = FALSE) {
   if (length(.f) >= 2 && .f[[1]] == rlang::sym(.f_name)) {
-    if (force | !(arg_name %in% names(.f))) {
+    if (force || !(arg_name %in% names(.f))) {
       .f[[arg_name]] <- arg_value
     }
   } else if (length(.f) >= 2) {
