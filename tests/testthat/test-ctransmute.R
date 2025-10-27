@@ -201,3 +201,78 @@ test_that("Groups hold", {
             )
     )
 })
+
+test_that("Argument passing with ?", {
+    # Pass constants directly into the concise lambda
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + z ? (z = 10)),
+        tibble::tibble(y = as.numeric(13:11))
+    )
+
+    # Explicitly coerce the concise lambda output type
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + z ? int & (z = 10)),
+        tibble::tibble(y = 13:11)
+    )
+
+    # Provide multiple injected values and a type declaration
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + z - w ? {int ; z = 10; w = 1}),
+        tibble::tibble(y = 12:10)
+    )
+
+    # Reuse concise lambdas with computed arguments from the data
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + X ? int & (X = sum(x))),
+        tibble::tibble(y = 9:7)
+    )
+
+    # Allow computed arguments with block syntax
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + X ? {int; X = sum(x)}),
+        tibble::tibble(y = 9:7)
+    )
+
+    # Differentiate between local variables and data columns via !! injection
+    x <- 1:10
+
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + X ? int & (X = sum(!!x))),
+        tibble::tibble(y = 58:56)
+    )
+
+    # Ensure block syntax respects injected local variables
+    expect_equal(
+        tibble::tibble(x = 3:1) |>
+            ctransmute(y ~ x + X ? {int; X = sum(!!x)}),
+        tibble::tibble(y = 58:56)
+    )
+})
+
+test_that("Recursion", {
+    # Recursive concise lambda using .this mirrors Fibonacci accumulation
+    expect_equal(
+        tibble::tibble(
+            value = 6:1
+        ) |> ctransmute(
+            fib ~ if (value <= 2) {1} else {.this(value - 1) + .this(value - 2)}
+        ),
+        tibble::tibble(fib = c(8, 5, 3, 2, 1, 1))
+    )
+
+    # Recursive concise lambda with explicit integer coercion in block syntax
+    expect_equal(
+        tibble::tibble(
+            value = 6:1
+        ) |> ctransmute(
+            fib ~ if (value <= 2) {z} else {.this(value - 1) + .this(value - 2)} ? {int ; z = 1}
+        ),
+        tibble::tibble(fib = c(8L, 5L, 3L, 2L, 1L, 1L))
+    )
+})
