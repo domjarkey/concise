@@ -29,6 +29,8 @@
 #'
 #' @export
 ctibble <- function(...) {
+    # TODO: Mimic tibble:::tibble_quos behaviour to allow row definitions of
+    # different lengths to be recycled
     .args <- rlang::enquos(...)
     .out <- tibble::tibble()
 
