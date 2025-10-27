@@ -66,7 +66,7 @@ ctibble <- function(...) {
             )
         } else {
             .out <- .out |>
-                dplyr::mutate(!!!rlang::set_names(list(.args[[i]]), col_name))
+                dplyr::mutate(!!!(.args[i]))
 
             if (
                 rlang::is_call(rlang::quo_get_expr(.args[[i]])) &&
