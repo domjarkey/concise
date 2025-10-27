@@ -178,8 +178,8 @@ NULL
         chr = "character",
         df = "tibble",
         data.frame = "data.frame",
-        dfc = "dfc",
-        dfr = "dfr"
+        columnwise_df = "dfc",
+        rowwise_df = "dfr"
     )
 
     if (type_string %in% names(aliases)) {
@@ -193,15 +193,35 @@ NULL
     }
 
     if (type_string == "dfr") {
-        if (rlang::is_bare_list(x) || is.data.frame(x)) {
-            return(
-                purrr::map(x, as.list) |>
-                    data.table::rbindlist(use.names = FALSE, fill = TRUE) |>
-                    tibble::as_tibble()
+        if (is.data.frame(x)) {
+            if (nrow(x) == 0) {
+                return(tibble::as_tibble(x))
+            }
+
+            rows <- purrr::map(
+                seq_len(nrow(x)),
+                function(row) {
+                    as.list(x[row, , drop = FALSE])
+                }
             )
+        } else if (rlang::is_bare_list(x)) {
+            if (length(x) == 0) {
+                return(tibble::tibble())
+            }
+
+            rows <- purrr::map(x, as.list)
+        } else {
+            return(tibble::tibble(value = x))
         }
 
-        return(tibble::tibble(value = x))
+        return(
+            data.table::rbindlist(
+                rows,
+                use.names = !is.null(names(rows)),
+                fill = TRUE
+            ) |>
+                tibble::as_tibble()
+        )
     }
 
     if (type_string == "data.frame") {
