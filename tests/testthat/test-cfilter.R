@@ -37,3 +37,26 @@ test_that("cfilter pronouns work without grouping", {
         df |> dplyr::filter(dplyr::row_number() == dplyr::n())
     )
 })
+
+
+test_that("cfilter pronouns work with grouping and ? assignment", {
+    df <- tibble::tibble(group = rep(c("a", "b"), each = 3), value = 1:6)
+
+    expect_equal(
+        df |>
+            dplyr::group_by(group) |>
+            cfilter(~ .i == z ? {z = 2}),
+        df |>
+            dplyr::group_by(group) |>
+            dplyr::filter(dplyr::row_number() == 2)
+    )
+})
+
+test_that("cfilter pronouns work without grouping and ? assignment", {
+    df <- tibble::tibble(x = 1:5)
+
+    expect_equal(
+        df |> cfilter(~ .I %% u == v ? {u = 2; v = 1}),
+        df |> dplyr::filter(dplyr::row_number() %% 2 == 1)
+    )
+})
