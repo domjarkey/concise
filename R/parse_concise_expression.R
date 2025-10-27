@@ -56,7 +56,7 @@ parse_concise_expression <- function(.data, .expr) {
   }
 
   if (".N" %in% .f_other_names) {
-    exec_env_variables[[".N"]] <- nrow(.data)
+    .extra_args[[".N"]] <- nrow(.data)
   }
 
   col_references <- setdiff(

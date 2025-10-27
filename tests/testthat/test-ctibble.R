@@ -119,10 +119,10 @@ test_that("ctibble pronouns expose names, indices, and column data", {
     expect_identical(row_indices$global_row, 1:3)
 
     # .N should provide the total number of rows for each evaluation
-    # expect_identical(
-    #     ctibble(values = 1:4, total_rows ~ .N ? int)$total_rows,
-    #     rep.int(4L, 4)
-    # )
+    expect_identical(
+        ctibble(values = 1:4, total_rows ~ .N ? int)$total_rows,
+        rep.int(4L, 4)
+    )
 
     # .col should expose whole-column vectors for aggregate calculations
     cumulative <- ctibble(
