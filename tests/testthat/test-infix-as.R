@@ -38,6 +38,10 @@ test_that("%as% handles data frame conversions", {
     expect_s3_class(column_df, "tbl_df")
     expect_named(column_df, c("a", "b"))
 
+    column_df <- list(a = 1:2, b = 3:4) %as% columnwise_df
+    expect_s3_class(column_df, "tbl_df")
+    expect_named(column_df, c("a", "b"))
+
     base_df <- list(a = 1:2, b = 3:4) %as% data.frame
     expect_s3_class(base_df, "data.frame")
 
@@ -49,6 +53,28 @@ test_that("%as% handles data frame conversions", {
     expect_s3_class(row_df, "tbl_df")
     expect_equal(nrow(row_df), 2)
     expect_named(row_df, c("a", "b"))
+
+    row_df <- list(
+        list(a = 1, b = 2),
+        list(a = 3, b = 4)
+    ) %as% rowwise_df
+
+    expect_s3_class(row_df, "tbl_df")
+    expect_equal(nrow(row_df), 2)
+    expect_named(row_df, c("a", "b"))
+})
+
+test_that("%as% dfr preserves names for data frame like inputs", {
+    df_input <- data.frame(a = 1:2, b = 3:4)
+    expect_equal(df_input %as% dfr, tibble::as_tibble(df_input))
+
+    tibble_input <- tibble::tibble(a = 1:2, b = 3:4)
+    expect_equal(tibble_input %as% dfr, tibble::as_tibble(tibble_input))
+
+    empty_df <- data.frame(a = integer(), b = character())
+    expect_equal(empty_df %as% dfr, tibble::as_tibble(empty_df))
+
+    expect_equal(1:3 %as% dfr, tibble::tibble(value = 1:3))
 })
 
 test_that("%as% repairs names for tibble-like conversions", {
