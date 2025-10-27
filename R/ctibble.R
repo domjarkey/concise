@@ -44,6 +44,8 @@ ctibble <- function(...) {
             )
         }
 
+        .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
+
         col_name <- names(.args)[i]
         if (col_name == "") {
             col_name <- paste0("...", i)
@@ -54,8 +56,8 @@ ctibble <- function(...) {
             value <- rlang::eval_tidy(.args[[i]], data = .out)
 
             if (
-                rlang::is_call(rlang::quo_get_expr(.args[[i]])) &&
-                identical(rlang::quo_get_expr(.args[[i]])[[1]], default_map_fn)
+                rlang::is_call(.expr) &&
+                identical(.expr[[1]], default_map_fn)
             ) {
                 value <- try_simplify(value)
             }
@@ -69,8 +71,8 @@ ctibble <- function(...) {
                 dplyr::mutate(!!!(.args[i]))
 
             if (
-                rlang::is_call(rlang::quo_get_expr(.args[[i]])) &&
-                identical(rlang::quo_get_expr(.args[[i]])[[1]], default_map_fn)
+                rlang::is_call(.expr) &&
+                identical(.expr[[1]], default_map_fn)
             ) {
                 .out[[col_name]] <- try_simplify(.out[[col_name]])
             }
