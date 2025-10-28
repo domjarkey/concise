@@ -140,6 +140,10 @@ test_that("ctibble pronouns expose names, indices, and column data", {
         grouped_view$group_values,
         rep_len(list(c(10, 20, 30)), 3)
     )
+
+    # .n should resolve to the last row index while .N returns row count
+    final_indices <- ctibble(values = 1:4, last_index ~ .n ? int)
+    expect_identical(final_indices$last_index, rep.int(4L, 4))
 })
 
 test_that("ctibble supports argument injection with ? syntax", {
@@ -205,4 +209,79 @@ test_that("ctibble supports recursive concise lambdas via .this", {
         ),
         tibble::tibble(value = 6:1, fib = c(8L, 5L, 3L, 2L, 1L, 1L))
     )
+})
+
+test_that("ctibble interleaves standard and concise columns sequentially", {
+    # Later standard columns should see concise results defined earlier
+    result <- ctibble(
+        base = 1:3,
+        double ~ base * 2 ? int,
+        sum = base + double,
+        triple ~ sum + base ? int,
+        quadruple = double * 2
+    )
+
+    expect_identical(
+        result,
+        tibble::tibble(
+            base = 1:3,
+            double = c(2L, 4L, 6L),
+            sum = c(3L, 6L, 9L),
+            triple = c(4L, 8L, 12L),
+            quadruple = c(4, 8, 12)
+        )
+    )
+})
+
+test_that("ctibble pronouns remain accessible when column names overlap", {
+    testthat::skip("This feature is not available")
+    # Columns named after pronouns should not mask the pronoun bindings
+    pronoun_vs_columns <- ctibble(
+        .i = c("a", "b", "c"),
+        .I = c("A", "B", "C"),
+        .n = letters[1:3],
+        .N = LETTERS[1:3],
+        pronoun_snapshot ~ paste(.i, .I, .n, .N),
+        column_snapshot ~ paste(!!rlang::sym(".i"), !!rlang::sym(".I"), !!rlang::sym(".n"), !!rlang::sym(".N"))
+    )
+
+    expect_identical(
+        pronoun_vs_columns$pronoun_snapshot,
+        c("1 1 3 3", "2 2 3 3", "3 3 3 3")
+    )
+
+    expect_identical(
+        pronoun_vs_columns$column_snapshot,
+        c("a A a A", "b B b B", "c C c C")
+    )
+})
+
+test_that("ctibble exposes .col pronouns for newly created concise columns", {
+    # Columns created via ~ should themselves expose .col aggregates
+    result <- ctibble(
+        values = c(2, 4, 6),
+        cumulative ~ sum(values.col[seq_len(.I)]),
+        total1 ~ sum(cumulative.col),
+        total2 ~ sum(cumulative.col) ? dbl
+    )
+
+    expect_identical(result$cumulative, c(2, 6, 12))
+    expect_identical(result$total1, rep_len(20, 3))
+    expect_identical(result$total2, rep_len(20, 3))
+})
+
+test_that("ctibble supports every concise type helper", {
+    # All ? helpers should coerce or retain types consistently
+    typed <- ctibble(
+        values = 1:3,
+        as_chr ~ paste0("value_", values) ? chr,
+        as_dbl ~ values * 2 ? dbl,
+        as_lgl ~ values > 1 ? lgl,
+        as_list ~ values + 1 ? list
+    )
+
+    expect_identical(typed$as_chr, c("value_1", "value_2", "value_3"))
+    expect_identical(typed$as_dbl, c(2, 4, 6))
+    expect_identical(typed$as_lgl, c(FALSE, TRUE, TRUE))
+    expect_identical(typed$as_list, list(2, 3, 4))
 })
