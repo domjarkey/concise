@@ -11,7 +11,7 @@ test_that("Atomic mapping", {
 
     # .N pronoun
     expect_equal(
-        rmap_lgl(1:10, ~ ...1 > .N / 2),
+        rowmap_lgl.(1:10, ~ ...1 > .N / 2),
         rep(c(FALSE, TRUE), each = 5)
     )
 
@@ -19,17 +19,17 @@ test_that("Atomic mapping", {
 
     # type casting
     expect_type(rowmap.(6:10, ~ ...1 ^ 2), "double")
-    expect_type(rmap_int(6:10, ~ ...1 ^ 2), "integer")
-    expect_type(rmap_dbl(6:10, ~ ...1 ^ 2), "double")
+    expect_type(rowmap_int.(6:10, ~ ...1 ^ 2), "integer")
+    expect_type(rowmap_dbl.(6:10, ~ ...1 ^ 2), "double")
     expect_type(
-        suppressWarnings(rmap_chr(6:10, ~ ...1 ^ 2)),
+        suppressWarnings(rowmap_chr.(6:10, ~ ...1 ^ 2)),
         "character"
     )
     expect_type(rowmap.(letters[1:3], ~ paste0(...1, "zzz")), "character")
     expect_type(rowmap.(letters[1:3], ~ paste0(...1, "zzz")), "character")
-    expect_equal(rmap_lgl(0:1, ~ ...1), c(FALSE, TRUE))
+    expect_equal(rowmap_lgl.(0:1, ~ ...1), c(FALSE, TRUE))
     expect_equal(
-        rmap_df(purrr::set_names(1:3, letters[1:3]), ~ c(value = ...1, name = ...1.nm)),
+        rowmap_df.(purrr::set_names(1:3, letters[1:3]), ~ c(value = ...1, name = ...1.nm)),
         structure(
             list(
                 value = c("1", "2", "3"),
@@ -40,7 +40,7 @@ test_that("Atomic mapping", {
         )
     )
 
-    res <- rmap_dfc(
+    res <- rowmap_dfc.(
         tibble::tibble(x = 1:2, y = 3:4),
         ~ tibble::tibble(!!paste0("row_", .i) := x + y)
     )
@@ -51,7 +51,7 @@ test_that("Atomic mapping", {
     expect_equal(res, comparison)
 
     expect_equal(
-        rmap_dfr(
+        rowmap_dfr.(
             tibble::tibble(x = 1:2, y = 3:4),
             ~ tibble::tibble(sum = x + y, idx = .i)
         ),
@@ -89,7 +89,7 @@ test_that("Data frame mapping", {
     )
 
     expect_equal(
-        rmap_int(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y}),
+        rowmap_int.(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y}),
         c(7L, 7L, 9L, 9L, 11L)
     )
 
@@ -124,7 +124,7 @@ test_that("Recursion", {
     )
 
     expect_equal(
-        rmap_df(
+        rowmap_df.(
             df,
             ~ if (is.list(tree)) {
                 purrr::pmap_df(

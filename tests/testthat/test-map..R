@@ -19,29 +19,29 @@ test_that("Atomic mapping", {
 
     # .col pronoun
     expect_equal(
-        cmap_dbl(1:10, ~ mean(.col[max(.i - 3, 1):.i])),
+        map_dbl.(1:10, ~ mean(.col[max(.i - 3, 1):.i])),
         c(1, 1.5, 2, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5)
     )
 
     # .n pronoun
     expect_equal(
-        cmap_lgl(1:10, ~ .x > .n / 2),
+        map_lgl.(1:10, ~ .x > .n / 2),
         rep(c(FALSE, TRUE), each = 5)
     )
 
     # type casting
     expect_type(map.(6:10, ~ .x ^ 2), "list")
-    expect_type(cmap_int(6:10, ~ .x ^ 2), "integer")
-    expect_type(cmap_dbl(6:10, ~ .x ^ 2), "double")
+    expect_type(map_int.(6:10, ~ .x ^ 2), "integer")
+    expect_type(map_dbl.(6:10, ~ .x ^ 2), "double")
     expect_equal(
-        cmap_chr(purrr::set_names(6:10, letters[6:10]), ~ paste(.nm, .i)),
+        map_chr.(purrr::set_names(6:10, letters[6:10]), ~ paste(.nm, .i)),
         c(f = "f 1", g = "g 2", h = "h 3", i = "i 4", j = "j 5")
     )
     expect_type(map.(letters[1:3], ~ paste0(.x, "zzz")), "list")
-    expect_type(cmap_chr(letters[1:3], ~ paste0(.x, "zzz")), "character")
-    expect_equal(cmap_lgl(0:1, ~ .x), c(FALSE, TRUE))
+    expect_type(map_chr.(letters[1:3], ~ paste0(.x, "zzz")), "character")
+    expect_equal(map_lgl.(0:1, ~ .x), c(FALSE, TRUE))
     expect_equal(
-        cmap_df(purrr::set_names(1:3, letters[1:3]), ~ c(value = .x, name = .nm)),
+        map_df.(purrr::set_names(1:3, letters[1:3]), ~ c(value = .x, name = .nm)),
         structure(
             list(
                 value = c("1", "2", "3"),
@@ -52,7 +52,7 @@ test_that("Atomic mapping", {
         )
     )
     expect_equal(
-        cmap_df(purrr::set_names(1:5, letters[1:5]), ~ data.frame(.x, .nm)),
+        map_df.(purrr::set_names(1:5, letters[1:5]), ~ data.frame(.x, .nm)),
         structure(
             list(
                 .x = 1:5,
@@ -63,7 +63,7 @@ test_that("Atomic mapping", {
         )
     )
 
-    res <- cmap_dfc(
+    res <- map_dfc.(
         list(first = c(1, 2), second = c(3, 4)),
         ~ tibble::tibble(!!paste0(.nm, "_value") := .x)
     )
@@ -75,7 +75,7 @@ test_that("Atomic mapping", {
     expect_equal(res, comparison)
 
     expect_equal(
-        cmap_dfr(
+        map_dfr.(
             list(first = c(1, 2), second = c(3, 4)),
             ~ tibble::tibble(name = .nm, value = sum(.x))
         ),
@@ -88,7 +88,7 @@ test_that("Atomic mapping", {
 
 test_that("List mapping", {
     expect_equal(
-        cmap_dbl(list(1:3, 4:6), ~ sum(.x)),
+        map_dbl.(list(1:3, 4:6), ~ sum(.x)),
         c(6, 15)
     )
 
@@ -121,7 +121,7 @@ test_that("Data frame mapping", {
     )
 
     expect_equal(
-        cmap_int(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ sum(.x)),
+        map_int.(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ sum(.x)),
         c(x = 40L, y = 7L)
     )
 
@@ -157,7 +157,7 @@ test_that("Recursion", {
     )
 
     expect_equal(
-        cmap_chr(purrr::set_names(1:4, letters[1:4]), ~ ifelse(.x == 1, "1", paste(.nm, .this(.x - 1)))),
+        map_chr.(purrr::set_names(1:4, letters[1:4]), ~ ifelse(.x == 1, "1", paste(.nm, .this(.x - 1)))),
         c(a = "1", b = "b 1", c = "c c 1", d = "d d d 1")
     )
 
@@ -174,7 +174,7 @@ test_that("Recursion", {
     )
 
     expect_equal(
-        cmap_df(
+        map_df.(
             tree,
             ~ if (is.list(.x)) {
                 purrr::pmap_df(
