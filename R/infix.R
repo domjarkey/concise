@@ -57,6 +57,8 @@
 #' @export
 `%to%` <- function(from, codomain) {
   # TODO: Ensure to/from must work together
+  # TODO: consider third operator to make optional defaults easier to specify
+  # TODO: might be good to check if this handles lists
   ifelse(
     from$input %in% from$domain,
     codomain[match(from$input, from$domain)],
