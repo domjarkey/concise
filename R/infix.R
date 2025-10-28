@@ -139,12 +139,14 @@ NULL
 #' @rdname concise-infixes
 #' @export
 `%from%` <- function(input, domain) {
+  # TODO: Ensure to/from must work together
   list(input = input, domain = domain)
 }
 
 #' @rdname concise-infixes
 #' @export
 `%to%` <- function(from, codomain) {
+  # TODO: Ensure to/from must work together
   ifelse(
     from$input %in% from$domain,
     codomain[match(from$input, from$domain)],
@@ -155,6 +157,18 @@ NULL
 #' @rdname concise-infixes
 #' @export
 `%as%` <- function(x, type) {
+  # TODO: properly enumerate all possibilities in documenation as well as add
+  # missing options to tests (e.g. %as% name, symbol aren't explicitly mentioned)
+  # Also make clear that RHS can be a character or a symbol with NSE.
+
+  # TODO: investigate magrittr-style autocompletion.
+
+  # TODO: Other possible castings: date, difftime, tibble, matrix, factor,
+  # data.table, ts (time series), POSIXTct, POSIXlt,
+  # encodings (e.g. UTF-8, ASCII, etc), kableExtra tables, markdown code,
+  # tibble::tribble-like text. Check lubridate and rlang for more ideas.
+
+  # TODO: Maybe an equivalent `%is%` infix operator for all of these
     type_expr <- rlang::enexpr(type)
 
     type_string <- if (rlang::is_symbol(type_expr)) {
