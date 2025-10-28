@@ -151,7 +151,7 @@ rmap <- function(.l,
     purrr::discard(~ .x %in% names(.l))
 
   for (grp in group_references) {
-    .l <- .l |> cmutate(!!grp ~ !!rlang::sym(grp))
+    .l <- .l |> mutate.(!!grp ~ !!rlang::sym(grp))
     if (recursive) {
       .f <- insert_argument(.f, ".this", grp, rlang::sym(grp))
     }

@@ -1,10 +1,10 @@
 #' Create tibbles with Concise notation
 #'
 #' @description
-#' `ctibble` functions exactly like [tibble::tibble] with the additional
+#' `tibble.` functions exactly like [tibble::tibble] with the additional
 #' feature that column definitions specified using a `~` instead of `=` are
 #' iteratively evaluated as a lambda function with access to the same pronouns
-#' and helpers available in [cmutate]. This allows concise row-wise operations
+#' and helpers available in [mutate.]. This allows concise row-wise operations
 #' while constructing a tibble, including referencing columns defined earlier in
 #' the call, retrieving row indices, and accessing entire columns.
 #'
@@ -12,23 +12,23 @@
 #'   [tibble::tibble], evaluation happens sequentially so columns can refer to
 #'   previously created columns. When a column is defined using a two-sided
 #'   formula `x ~ expr`, the expression `expr` is evaluated iteratively as a
-#'   lambda in the same fashion as [cmutate], including support for pronouns and
+#'   lambda in the same fashion as [mutate.], including support for pronouns and
 #'   optional type specification via `?`.
 #'
 #' @return A tibble created in the same way as [tibble::tibble] but with
 #'   support for concise formulas.
 #'
 #' @examples
-#' ctibble(x = 1:3, y = 2 * x)
+#' tibble.(x = 1:3, y = 2 * x)
 #'
-#' ctibble(
+#' tibble.(
 #'   x = 1:3,
 #'   y = 3:1,
 #'   sum ~ x + y ? int
 #' )
 #'
 #' @export
-ctibble <- function(...) {
+tibble. <- function(...) {
     # TODO: Mimic tibble:::tibble_quos behaviour to allow row definitions of
     # different lengths to be recycled
     .args <- rlang::enquos(...)

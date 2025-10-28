@@ -1,7 +1,7 @@
 #' Create, modify, and delete columns with Concise notation
 #'
 #' @description
-#' `cmutate` functions exactly like [dplyr::mutate] with the additional feature
+#' `mutate.` functions exactly like [dplyr::mutate] with the additional feature
 #' that column definitions specified using a `~` instead of `=` are iteratively
 #' evaluated as a lambda function. In practice, this works similarly to using
 #' [dplyr::rowwise] before [dplyr::mutate], except the result is calculated much
@@ -48,7 +48,7 @@
 #' clarification.
 #'
 #' # Pronouns
-#' `cmutate` supports a set of useful "pronouns" that allow you to refer
+#' `mutate.` supports a set of useful "pronouns" that allow you to refer
 #' to other objects within the column formula as though they were locally
 #' defined as variables. Note these are not pronouns in the `rlang` sense of
 #' the term, but a convenient shorthand to provide additional functionality in
@@ -91,15 +91,15 @@
 #' @examples
 #' # Apply non-vectorised functions row-by-row
 #' tibble::tibble(fruit = list("apple", "banana", NULL, "dragonfruit", NULL)) |>
-#'   cmutate(fruit_exists ~ !is.null(fruit))
+#'   mutate.(fruit_exists ~ !is.null(fruit))
 #'
 #' # Perform multiple column mutations, including standard (non-rowwise) column
 #' # mutations using `=` instead of `~`. Mutations may depend on earlier changes
-#' # made in the same `cmutate` call, and may modify existing columns in place
+#' # made in the same `mutate.` call, and may modify existing columns in place
 #' tibble::tibble(
 #'   fruit = list("apple", "banana", NULL, "dragonfruit", NULL)
 #' ) |>
-#'   cmutate(
+#'   mutate.(
 #'     fruit_exists ~ !is.null(fruit),
 #'     fruit_name_length ~ ifelse(fruit_exists, stringr::str_length(fruit), 0),
 #'     fruit = as.character(ifelse(fruit_exists, fruit, "NO FRUIT FOUND"))
@@ -111,11 +111,11 @@
 #'   z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
 #' )
 #'
-#' numbers |> cmutate(largest ~ max(x, y, z))
+#' numbers |> mutate.(largest ~ max(x, y, z))
 #'
 #' # Use pronouns such as `.i` and `<column_name>.col` to succinctly create
 #' # anonymous window functions
-#' numbers |> cmutate(avg_x ~ mean(x.col[max(.i - 3, 1):.i]))
+#' numbers |> mutate.(avg_x ~ mean(x.col[max(.i - 3, 1):.i]))
 #'
 #' # Concise pronouns can be used in combination with groupings created by
 #' dplyr::group_by
@@ -124,7 +124,7 @@
 #' numbers |>
 #'   dplyr::select(letter, x) |>
 #'   dplyr::group_by(letter) |>
-#'   cmutate(
+#'   mutate.(
 #'     prop_of_group ~ x / sum(x.grp),
 #'     prop_of_whole ~ x / sum(x.col),
 #'     group_row_index ~ .i,
@@ -135,7 +135,7 @@
 #' # data type of the column
 #' numbers |>
 #'   dplyr::select(x, y, z) |>
-#'   cmutate(
+#'   mutate.(
 #'     max ~ max(x, y, z),
 #'     max_int ~ max(x, y, z) ? int,
 #'     max_dbl ~ max(x, y, z) ? dbl,
@@ -145,7 +145,7 @@
 #'
 #' # Recursive functions can be implemented using the `.this` pronoun to refer
 #' # to the anonymous function
-#' tibble::tibble(n = 1:10) |> cmutate(
+#' tibble::tibble(n = 1:10) |> mutate.(
 #'   fibonacci ~ if (n <= 2) {
 #'     1
 #'   } else {
@@ -154,7 +154,7 @@
 #' )
 #'
 #' @export
-cmutate <- function(.data, ...) {
+mutate. <- function(.data, ...) {
     .args <- rlang::enquos(...)
     .out <- .data
 

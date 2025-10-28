@@ -1,30 +1,30 @@
 #' Filter rows with Concise notation
 #'
 #' @description
-#' `cfilter` behaves identically to [dplyr::filter] while adding support for
-#' Concise notation and pronouns, mirroring the behaviour of [cmutate].
+#' `filter.` behaves identically to [dplyr::filter] while adding support for
+#' Concise notation and pronouns, mirroring the behaviour of [mutate.].
 #' Expressions that begin with `~` are interpreted as concise formulas and are
-#' evaluated rowwise using the same pronouns that `cmutate` recognises. These
+#' evaluated rowwise using the same pronouns that `mutate.` recognises. These
 #' expressions can also specify optional mappings and additional arguments using
-#' the `?` operator, just like `cmutate`.
+#' the `?` operator, just like `mutate.`.
 #'
 #' @param .data A data frame.
 #' @param ... Expressions passed on to [dplyr::filter]. Any expression that
 #'   begins with `~` is treated as a concise formula and gains access to the
-#'   additional pronouns and helpers provided by [cmutate].
+#'   additional pronouns and helpers provided by [mutate.].
 #'
 #' @return A data frame containing the rows that satisfy all filtering
 #'   expressions.
 #'
 #' @examples
 #' tibble::tibble(x = list("apple", NULL, "banana")) |>
-#'   cfilter(~ !is.null(x))
+#'   filter.(~ !is.null(x))
 #'
 #' tibble::tibble(x = 1:5) |>
-#'   cfilter(~ .i %% 2 == 1)
+#'   filter.(~ .i %% 2 == 1)
 #'
 #' @export
-cfilter <- function(.data, ...) {
+filter. <- function(.data, ...) {
     .args <- rlang::enquos(...)
     .out <- .data
 

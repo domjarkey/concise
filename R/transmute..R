@@ -1,7 +1,7 @@
 #' Create and modify columns with Concise notation
 #'
 #' @description
-#' `ctransmute` functions exactly like [dplyr::transmute] with the additional
+#' `transmute.` functions exactly like [dplyr::transmute] with the additional
 #' feature that column definitions specified using a `~` instead of `=` are
 #' iteratively evaluated as a lambda function. In practice, this works similarly
 #' to using [dplyr::rowwise] before [dplyr::transmute], except the result is
@@ -17,7 +17,7 @@
 #' arguments to pass to the lambda function, as well as the output type of the
 #' column, e.g. integer, character, list, etc.
 #'
-#' @inheritParams cmutate
+#' @inheritParams mutate.
 #'
 #' @return
 #' A data frame containing only the columns created or referenced in the
@@ -26,16 +26,16 @@
 #'
 #' @examples
 #' tibble::tibble(fruit = list("apple", "banana", NULL, "dragonfruit", NULL)) |>
-#'   ctransmute(fruit_exists ~ !is.null(fruit))
+#'   transmute.(fruit_exists ~ !is.null(fruit))
 #'
 #' tibble::tibble(x = c(29L, 11L, 72L), y = c(38L, 80L, 98L)) |>
-#'   ctransmute(
+#'   transmute.(
 #'     largest ~ max(x, y),
 #'     diff = largest - x
 #'   )
 #'
 #' @export
-ctransmute <- function(.data, ...) {
+transmute. <- function(.data, ...) {
     .args <- rlang::enquos(...)
     .out <- .data
     keep_names <- character(0)
