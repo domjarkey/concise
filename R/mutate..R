@@ -29,7 +29,7 @@
 #' # Optional column type specification with `?`
 #' By default, columns specified with a `~` are simplified to a vector if
 #' possible, similar to `rowmap.` with `simplify=TRUE`. If a specific output type
-#' is desired, à la `rmap_int`, `rmap_dbl`, etc., the column definition can be
+#' is desired, à la `rowmap_int.`, `rowmap_dbl.`, etc., the column definition can be
 #' followed by a `?` and then `chr`, `dbl`, `int`, `lgl`, or `list`. When using
 #' this notation, the column definition is of the form `x ~ expr ? type`.
 #'

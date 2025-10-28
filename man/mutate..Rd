@@ -42,7 +42,7 @@ column, e.g. integer, character, list, etc.
 \section{Optional column type specification with \verb{?}}{
 By default, columns specified with a \code{~} are simplified to a vector if
 possible, similar to \code{rowmap.} with \code{simplify=TRUE}. If a specific output type
-is desired, à la \code{rmap_int}, \code{rmap_dbl}, etc., the column definition can be
+is desired, à la \code{rowmap_int.}, \code{rowmap_dbl.}, etc., the column definition can be
 followed by a \verb{?} and then \code{chr}, \code{dbl}, \code{int}, \code{lgl}, or \code{list}. When using
 this notation, the column definition is of the form \code{x ~ expr ? type}.
 

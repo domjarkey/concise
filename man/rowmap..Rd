@@ -77,10 +77,10 @@ related objects or properties of the data columns, such as row number,
 grouping (if the data frame is grouped using \link[dplyr:group_by]{dplyr::group_by} or similar),
 as well as the anonymous function itself for use in recursion.
 
-\code{rmap_chr}, \code{rmap_dbl}, \code{rmap_df}, \code{rmap_dfc}, \code{rmap_dfr}, \code{rmap_int}, and
-\code{rmap_lgl} work like their \code{purrr::pmap_etc} equivalents, attempting to
+\code{rowmap_chr.}, \code{rowmap_dbl.}, \code{rowmap_df.}, \code{rowmap_dfc.}, \code{rowmap_dfr.}, \code{rowmap_int.}, and
+\code{rowmap_lgl.} work like their \code{purrr::pmap_etc} equivalents, attempting to
 output a vector of the specified type (or a data frame in the case of the
-\verb{rmap_df*} variants) instead of a list.
+\verb{rowmap_df*} variants) instead of a list.
 }
 \section{Pronouns}{
 \code{rowmap.} supports reference to a set of useful "pronouns" that allow you to
@@ -122,7 +122,7 @@ recursion is needed.
 }
 
 \examples{
-numbers <- tibble::tibble(
+numbers <- tibble.(
   x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
   y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
   z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
@@ -130,6 +130,6 @@ numbers <- tibble::tibble(
 )
 
 numbers |>
-  rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
+  rowmap_chr.(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
 
 }

@@ -12,10 +12,10 @@
 #' grouping (if the data frame is grouped using [dplyr::group_by] or similar),
 #' as well as the anonymous function itself for use in recursion.
 #'
-#' `rmap_chr`, `rmap_dbl`, `rmap_df`, `rmap_dfc`, `rmap_dfr`, `rmap_int`, and
-#' `rmap_lgl` work like their `purrr::pmap_etc` equivalents, attempting to
+#' `rowmap_chr.`, `rowmap_dbl.`, `rowmap_df.`, `rowmap_dfc.`, `rowmap_dfr.`, `rowmap_int.`, and
+#' `rowmap_lgl.` work like their `purrr::pmap_etc` equivalents, attempting to
 #' output a vector of the specified type (or a data frame in the case of the
-#' `rmap_df*` variants) instead of a list.
+#' `rowmap_df*` variants) instead of a list.
 #'
 #' @param .l A data frame or named list of lists/vectors of equal length.
 #' @param .f A formula defining the anonymous function to be applied to every
@@ -79,7 +79,7 @@
 #' outputs.
 #'
 #' @examples
-#' numbers <- tibble::tibble(
+#' numbers <- tibble.(
 #'   x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
 #'   y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
 #'   z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L),
@@ -87,7 +87,7 @@
 #' )
 #'
 #' numbers |>
-#'   rmap_chr(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
+#'   rowmap_chr.(~ paste0("Row ", .i, ", Group ", letter, ": ", mean(c(x, y, z))))
 #'
 #' @import rlang
 #' @export
