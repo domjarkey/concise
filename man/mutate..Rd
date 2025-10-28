@@ -41,7 +41,7 @@ column, e.g. integer, character, list, etc.
 }
 \section{Optional column type specification with \verb{?}}{
 By default, columns specified with a \code{~} are simplified to a vector if
-possible, similar to \code{rmap} with \code{simplify=TRUE}. If a specific output type
+possible, similar to \code{rowmap.} with \code{simplify=TRUE}. If a specific output type
 is desired, à la \code{rmap_int}, \code{rmap_dbl}, etc., the column definition can be
 followed by a \verb{?} and then \code{chr}, \code{dbl}, \code{int}, \code{lgl}, or \code{list}. When using
 this notation, the column definition is of the form \code{x ~ expr ? type}.
@@ -67,7 +67,7 @@ clarification.
 to other objects within the column formula as though they were locally
 defined as variables. Note these are not pronouns in the \code{rlang} sense of
 the term, but a convenient shorthand to provide additional functionality in
-a readable format. Unlike its sister function \code{cmap}, \code{rmap} takes multiple
+a readable format. Unlike its sister function \code{map.}, \code{rowmap.} takes multiple
 named inputs, so row elements a referred to by the name of the column (here
 indicated as \verb{<column_name>}) instead of \code{.x}.
 

@@ -28,7 +28,7 @@
 #' @details
 #' # Optional column type specification with `?`
 #' By default, columns specified with a `~` are simplified to a vector if
-#' possible, similar to `rmap` with `simplify=TRUE`. If a specific output type
+#' possible, similar to `rowmap.` with `simplify=TRUE`. If a specific output type
 #' is desired, à la `rmap_int`, `rmap_dbl`, etc., the column definition can be
 #' followed by a `?` and then `chr`, `dbl`, `int`, `lgl`, or `list`. When using
 #' this notation, the column definition is of the form `x ~ expr ? type`.
@@ -52,7 +52,7 @@
 #' to other objects within the column formula as though they were locally
 #' defined as variables. Note these are not pronouns in the `rlang` sense of
 #' the term, but a convenient shorthand to provide additional functionality in
-#' a readable format. Unlike its sister function `cmap`, `rmap` takes multiple
+#' a readable format. Unlike its sister function `map.`, `rowmap.` takes multiple
 #' named inputs, so row elements a referred to by the name of the column (here
 #' indicated as `<column_name>`) instead of `.x`.
 #'

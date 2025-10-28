@@ -1,13 +1,13 @@
 #' Map over rows of a data frame
 #'
 #' @description
-#' `rmap` iteratively applies an anonymous function to rows of a data frame or a
-#' named list of lists of equal length. `rmap` works similarly to [purrr::pmap],
+#' `rowmap.` iteratively applies an anonymous function to rows of a data frame or a
+#' named list of lists of equal length. `rowmap.` works similarly to [purrr::pmap],
 #' except the data frame does not need to be subsetted to only those columns
 #' used by the function, and columns can be directly referred to by name inside
 #' the definition of the anonymous function.
 #'
-#' `rmap` also permits the usage of additional "pronouns" to concisely refer to
+#' `rowmap.` also permits the usage of additional "pronouns" to concisely refer to
 #' related objects or properties of the data columns, such as row number,
 #' grouping (if the data frame is grouped using [dplyr::group_by] or similar),
 #' as well as the anonymous function itself for use in recursion.
@@ -24,13 +24,13 @@
 #' @param ... Additional named arguments are passed directly to the execution
 #' environment of the anonymous function as variables. These variables may
 #' include transformations on the entire `.l` object as well as any variables
-#' local to the calling environment of the `rmap` function.
+#' local to the calling environment of the `rowmap.` function.
 #' @param env Specify the parent environment of the execution environment of
 #' the anonymous function to be created. By default, this will be the
-#' environment in which `rmap` is called.
+#' environment in which `rowmap.` is called.
 #' @param map_fn The underlying function used to perform the mapping - this
 #' should not be chosen directly as safe options are prespecified by the
-#' defaults of the `_chr`, `_dbl`, `_df`, `_int`, and `_lgl` variants of `rmap`.
+#' defaults of the `_chr`, `_dbl`, `_df`, `_int`, and `_lgl` variants of `rowmap.`.
 #' @param simplify If `TRUE`, the function will attempt to flatten list outputs
 #' to a vector where possible (if "unlisting" is not possible, say, in the case
 #' of a list of lists of length > 1, the original output in list form will be
@@ -38,11 +38,11 @@
 #'
 #' @details
 #' # Pronouns
-#' `rmap` supports reference to a set of useful "pronouns" that allow you to
+#' `rowmap.` supports reference to a set of useful "pronouns" that allow you to
 #' refer to other objects within the formula `.f` as though they were locally
 #' defined as variables. Note these are not pronouns in the `rlang` sense of the
 #' term, but a convenient shorthand to provide additional functionality in a
-#' readable format. Unlike its sister function `cmap`, `rmap` takes multiple
+#' readable format. Unlike its sister function `map.`, `rowmap.` takes multiple
 #' named inputs, so row elements are referred to by the name of the column (here
 #' indicated as `<column_name>`) instead of `.x`.
 #'
@@ -91,7 +91,7 @@
 #'
 #' @import rlang
 #' @export
-rmap <- function(.l,
+rowmap. <- function(.l,
                  .f,
                  ...,
                  env = rlang::caller_env(),
@@ -215,28 +215,28 @@ rmap <- function(.l,
   }
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame()) {
-  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
+  rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame()) {
-  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
+  rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_df <- function(.l, .f = NULL, ..., env = parent.frame()) {
-  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
+  rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_dfc <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(
+    rowmap.(
         .l = .l,
         .f = !!.f,
         ...,
@@ -246,20 +246,20 @@ rmap_dfc <- function(.l, .f = NULL, ..., env = parent.frame()) {
     )
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_dfr <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
+    rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_int <- function(.l, .f = NULL, ..., env = parent.frame()) {
-  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
+  rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
-#' @rdname rmap
+#' @rdname rowmap.
 #' @export
 rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame()) {
-  rmap(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
+  rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }

@@ -1,7 +1,7 @@
 #' Apply an anonymous function to each element of a vector
 #'
 #' @description
-#' `cmap` works very similarly to [purrr::map] when specifying the formula of
+#' `map.` works very similarly to [purrr::map] when specifying the formula of
 #' the anonymous function using tilde (`~`) formula notation, but includes extra
 #' custom pronouns to refer to related objects such as element names, element
 #' indices, and the function itself, so as to permit recursive function
@@ -19,13 +19,13 @@
 #' @param ... Additional named arguments are passed directly to the execution
 #' environment of the anonymous function as variables. These variables may
 #' include transformations on the entire `.x` object as well as any variables
-#' local to the calling environment of the `cmap` function.
+#' local to the calling environment of the `map.` function.
 #' @param env Specify the parent environment of the execution environment of the
 #' anonymous function to be created. By default, this will be the environment in
-#' which `cmap` is called.
+#' which `map.` is called.
 #' @param map_fn The underlying function used to perform the mapping - this
 #' should not be chosen directly as safe options are pre-specified by the
-#' defaults of the `_chr`, `_dbl`, `_df`, `_int`, and `_lgl` variants of `cmap`.
+#' defaults of the `_chr`, `_dbl`, `_df`, `_int`, and `_lgl` variants of `map.`.
 #' @param simplify If `TRUE`, the function will attempt to flatten list outputs
 #' to a vector where possible (if "unlisting" is not possible, say, in the case
 #' of a list of lists of length > 1, the original output in list form will be
@@ -33,7 +33,7 @@
 #'
 #' @details
 #' # Pronouns
-#' `cmap` supports reference to a set of useful "pronouns" that allow you to
+#' `map.` supports reference to a set of useful "pronouns" that allow you to
 #' refer to other objects within the formula `.f` as though they were locally
 #' defined as variables. Note these are not pronouns in the `rlang` sense of
 #' the term, but a convenient shorthand to provide additional functionality in
@@ -59,8 +59,8 @@
 #' @examples
 #' # Simplify to vector using `simplify=TRUE` or specify output type with
 #' # function suffix
-#' cmap(1:5, ~ .x^2)
-#' cmap(1:5, ~ .x^2, simplify = TRUE)
+#' map.(1:5, ~ .x^2)
+#' map.(1:5, ~ .x^2, simplify = TRUE)
 #' cmap_int(1:5, ~ .x^2)
 #'
 #' # Refer to index with .i
@@ -106,7 +106,7 @@
 #' )
 #' @import rlang
 #' @export
-cmap <- function(.x,
+map. <- function(.x,
                  .f,
                  ...,
                  env = rlang::caller_env(),
@@ -175,44 +175,44 @@ cmap <- function(.x,
   }
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_chr <- function(.x, .f, ..., env = parent.frame()) {
-  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_dbl <- function(.x, .f, ..., env = parent.frame()) {
-  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_df <- function(.x, .f, ..., env = parent.frame()) {
-  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_dfc <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfc)
+    map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfc)
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_dfr <- function(.x, .f, ..., env = parent.frame()) {
-    cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
+    map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_int <- function(.x, .f, ..., env = parent.frame()) {
-  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
-#' @rdname cmap
+#' @rdname map.
 #' @export
 cmap_lgl <- function(.x, .f, ..., env = parent.frame()) {
-  cmap(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }

@@ -67,5 +67,5 @@ context_lambda <- function(.f,
       list(.l = .l, env = env)
     )
 
-  do.call("rmap", args)
+  do.call("rowmap.", args)
 }
