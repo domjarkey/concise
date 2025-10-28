@@ -46,7 +46,10 @@ parse_concise_expression <- function(.data, .expr) {
 
   if (
     ".I" %in% .f_other_names ||
-      (length(.f_arg_names) + length(.extra_args) == 0)
+      (
+          length(.f_arg_names) +
+          length(.extra_args[names(.extra_args) != ".map_fn"]) == 0
+      )
   ) {
     .extra_args[[".I"]] <- rlang::expr(dplyr::cur_group_rows())
   }
