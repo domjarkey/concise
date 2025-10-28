@@ -4,6 +4,7 @@
 # concise
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ## Overview
@@ -45,9 +46,9 @@ remotes::install_github("domjarkey/concise")
 
 ## Usage
 
-### `cmutate`
+### `mutate.`
 
-`cmutate` is equivalent to `dplyr`’s `mutate` but with the additional
+`mutate.` is equivalent to `dplyr`’s `mutate` but with the additional
 option of evaluating column definitions as a lambda function iteratively
 applied to each row. Columns defined using `~` instead of `=` will be
 evaluated as an anonymous function with special `concise` syntax.
@@ -60,8 +61,8 @@ library(concise)
 
 # The is.null function is not vectorised, so normally can't be called on an entire
 # column unless a function like purrr::map is used
-tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
-    cmutate(fruit_exists ~ !is.null(fruit))
+tibble.(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
+    mutate.(fruit_exists ~ !is.null(fruit))
 #> # A tibble: 5 × 2
 #>   fruit     fruit_exists
 #>   <list>    <lgl>       
@@ -77,8 +78,8 @@ with `=`, and multiple mutations can be performed at once, able to make
 reference to columns created or modified within the same function call:
 
 ``` r
-tibble(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
-    cmutate(
+tibble.(fruit = list('apple', 'banana', NULL, 'dragonfruit', NULL)) |>
+    mutate.(
         fruit_exists ~ !is.null(fruit),
         fruit_name_length ~ ifelse(fruit_exists, stringr::str_length(fruit), 0),
         fruit = as.character(ifelse(fruit_exists, fruit, "NO FRUIT FOUND"))
@@ -105,7 +106,7 @@ source code easier to write and clearer to read.
 
 ``` r
 # This data frame will be referred to in the next few examples
-numbers <- tibble(
+numbers <- tibble.(
     x = c(29L, 11L, 72L, 81L, 27L, 61L, 42L, 26L, 57L, 39L),
     y = c(38L, 80L, 98L, 93L, 34L, 26L, 4L, 31L, 18L, 69L),
     z = c(31L, 83L, 91L, 69L, 82L, 65L, 75L, 3L, 20L, 71L)
@@ -127,7 +128,7 @@ column as a vector (`<column_name>.col`). These can be used to make
 simple, intelligible window functions.
 
 ``` r
-numbers |> cmutate(
+numbers |> mutate.(
     avg_of_last_3_z_values ~ mean(z.col[max(.i - 3, 1):.i])
 )
 #> # A tibble: 10 × 4
@@ -157,9 +158,9 @@ while `.I` will refer to the absolute row index.
 numbers$letter <- rep(c('A', 'B'), each = 5)
 
 numbers |>
-    select(letter, x) |>
-    group_by(letter) |>
-    cmutate(
+    dplyr::select(letter, x) |>
+    dplyr::group_by(letter) |>
+    mutate.(
         prop_of_group ~ x / sum(x.grp),
         prop_of_whole ~ x / sum(x.col),
         group_row_index ~ .i,
@@ -187,15 +188,15 @@ data frame.
 
 ##### Specifying data type with `?`
 
-By default, `cmutate` simplifies the output to the most suitable data
+By default, `mutate.` simplifies the output to the most suitable data
 type. On occasion, it may be necessary to explicitly specify the data
 type of the output column, similar to calling `map_int` or `map_chr`.
 This can be done using the `?` operator as in the following example:
 
 ``` r
 numbers |>
-    select(x, y, z) |>
-    cmutate(
+    dplyr::select(x, y, z) |>
+    mutate.(
         max ~ max(x, y, z),
         max_int ~ max(x, y, z) ? int,
         max_dbl ~ max(x, y, z) ? dbl,
@@ -218,26 +219,29 @@ numbers |>
 ```
 
 <!-- N.B. As with `purrr`'s mapping functions, `?` won't automatically coerce any data -->
+
 <!-- type, so it is recommended to use functions such as `as.integer` or `as.character` -->
+
 <!-- where appropriate. -->
 
-### `rmap` and `cmap`
+### `rowmap.` and `map.`
 
-`rmap` (short for “row map”) applies an anonymous function to the rows
-of a data frame while allowing the columns to be referred to directly
-inside the function definition. As with `cmutate` and other `concise`
-functions, pronouns such as `.i` (the index or position in the element
-in the list) are able to be used.
+`rowmap.` (short for “row map”) applies an anonymous function to the
+rows of a data frame while allowing the columns to be referred to
+directly inside the function definition. As with `mutate.` and other
+`concise` functions, pronouns such as `.i` (the index or position in the
+element in the list) are able to be used.
 
-`rmap` works similarly to `purrr::pmap` except the input data frame does
-not need to be subsetted to only those columns used in the function. By
-default, `rmap` returns a list, but the data type of the output vector
-can also specified with a suffix in a similar fashion to other `purrr`
-map functions, e.g. `rmap_chr`, `rmap_dbl`, `rmap_df`, etc.
+`rowmap.` works similarly to `purrr::pmap` except the input data frame
+does not need to be subsetted to only those columns used in the
+function. By default, `rowmap.` returns a list, but the data type of the
+output vector can also specified with a suffix in a similar fashion to
+other `purrr` map functions, e.g. `rowmap_chr.`, `rowmap_dbl.`,
+`rowmap_df.`, etc.
 
 ``` r
 numbers |>
-    rmap(~ paste0("\n\tRow ", .i, ", Group ", letter, ": ", mean(c(x, y, z)))) |>
+    rowmap.(~ paste0("\n\tRow ", .i, ", Group ", letter, ": ", mean(c(x, y, z)))) |>
     cat()
 #> 
 #>  Row 1, Group A: 32.6666666666667 
@@ -252,7 +256,7 @@ numbers |>
 #>  Row 10, Group B: 59.6666666666667
 ```
 
-`cmap` is equivalent to `purrr::map`, applying an anonymous function
+`map.` is equivalent to `purrr::map`, applying an anonymous function
 iteratively to a list input, except it also allows for use of `concise`
 pronouns. In the below example, `.nm` is used to refer to the `names`
 attribute for each element in the input vector, and `.col` refers to the
@@ -265,12 +269,9 @@ names(state_areas) <- state.name
 head(state_areas)
 #>    Alabama     Alaska    Arizona   Arkansas California   Colorado 
 #>      51609     589757     113909      53104     158693     104247
-```
-
-``` r
 
 state_areas |>
-    cmap_df(
+    map_df.(
         ~ c(
             state = .nm,
             larger_than_median_state = .x > median(.col)
@@ -293,8 +294,8 @@ state_areas |>
 ```
 
 Note: If the column of an input data frame is a named vector, the
-`<column_name>.nm` pronoun can be used in `rmap` and `cmutate` function
-definitions in a similar fashion.
+`<column_name>.nm` pronoun can be used in `rowmap.` and `mutate.`
+function definitions in a similar fashion.
 
 ### Recursion in `concise`
 
@@ -309,10 +310,10 @@ itself to complete a task with an indeterminate amount of steps. In
 The canonical example of recursion is Fibonacci’s sequence, where the
 first two terms are defined as 1 and 1 (or sometimes 0 and 1), and the
 nth term is defined as the sum of the two previous terms. This sequence
-can be succinctly computed using `cmap`:
+can be succinctly computed using `map.`:
 
 ``` r
-cmap_int(1:10, ~ if (.x <= 2) {1} else {.this(.x - 1) + .this(.x - 2)})
+map_int.(1:10, ~ if (.x <= 2) {1} else {.this(.x - 1) + .this(.x - 2)})
 #>  [1]  1  1  2  3  5  8 13 21 34 55
 ```
 
@@ -332,7 +333,7 @@ tree <- list(
     g = list(h = 5)
 )
 
-cmap_df(
+map_df.(
     tree,
     ~ if (is.list(.x)) {
         purrr::pmap_df(
@@ -341,7 +342,7 @@ cmap_df(
             path = paste0(path, "/", .nm)
         )
     } else {
-        tibble(path = paste0(path, "/", .nm), value = .x)
+        tibble.(path = paste0(path, "/", .nm), value = .x)
     },
     path = "root"
 )
@@ -370,9 +371,6 @@ mapping an input vector *from* a set of keys *to* a set of values.
 # Map a sequence of letters to their numerical positions in the alphabet
 c('d', 'o', 'g') %from% letters %to% 1:26
 #> [1]  4 15  7
-```
-
-``` r
 # Look up the abbreviations for US states
 c('California', 'Virginia', 'Texas') %from% state.name %to% state.abb
 #> [1] "CA" "VA" "TX"
@@ -396,9 +394,6 @@ head(starwars)
 #> 6 Owen Lars    178   120 brown, gr… light      blue            52   male  mascu…
 #> # ℹ 5 more variables: homeworld <chr>, species <chr>, films <list>,
 #> #   vehicles <list>, starships <list>
-```
-
-``` r
 # Find mean height of characters in the starwars dataset
 mean(height, na.rm = TRUE) %with% starwars
 #> [1] 174.6049
