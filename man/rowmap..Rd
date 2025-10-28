@@ -2,13 +2,13 @@
 % Please edit documentation in R/rowmap..R
 \name{rowmap.}
 \alias{rowmap.}
-\alias{rmap_chr}
-\alias{rmap_dbl}
-\alias{rmap_df}
-\alias{rmap_dfc}
-\alias{rmap_dfr}
-\alias{rmap_int}
-\alias{rmap_lgl}
+\alias{rowmap_chr.}
+\alias{rowmap_dbl.}
+\alias{rowmap_df.}
+\alias{rowmap_dfc.}
+\alias{rowmap_dfr.}
+\alias{rowmap_int.}
+\alias{rowmap_lgl.}
 \title{Map over rows of a data frame}
 \usage{
 rowmap.(
@@ -20,19 +20,19 @@ rowmap.(
   simplify = TRUE
 )
 
-rmap_chr(.l, .f = NULL, ..., env = parent.frame())
+rowmap_chr.(.l, .f = NULL, ..., env = parent.frame())
 
-rmap_dbl(.l, .f = NULL, ..., env = parent.frame())
+rowmap_dbl.(.l, .f = NULL, ..., env = parent.frame())
 
-rmap_df(.l, .f = NULL, ..., env = parent.frame())
+rowmap_df.(.l, .f = NULL, ..., env = parent.frame())
 
-rmap_dfc(.l, .f = NULL, ..., env = parent.frame())
+rowmap_dfc.(.l, .f = NULL, ..., env = parent.frame())
 
-rmap_dfr(.l, .f = NULL, ..., env = parent.frame())
+rowmap_dfr.(.l, .f = NULL, ..., env = parent.frame())
 
-rmap_int(.l, .f = NULL, ..., env = parent.frame())
+rowmap_int.(.l, .f = NULL, ..., env = parent.frame())
 
-rmap_lgl(.l, .f = NULL, ..., env = parent.frame())
+rowmap_lgl.(.l, .f = NULL, ..., env = parent.frame())
 }
 \arguments{
 \item{.l}{A data frame or named list of lists/vectors of equal length.}

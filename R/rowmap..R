@@ -217,25 +217,25 @@ rowmap. <- function(.l,
 
 #' @rdname rowmap.
 #' @export
-rmap_chr <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_chr. <- function(.l, .f = NULL, ..., env = parent.frame()) {
   rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
 #' @rdname rowmap.
 #' @export
-rmap_dbl <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_dbl. <- function(.l, .f = NULL, ..., env = parent.frame()) {
   rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
 #' @rdname rowmap.
 #' @export
-rmap_df <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_df. <- function(.l, .f = NULL, ..., env = parent.frame()) {
   rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
 #' @rdname rowmap.
 #' @export
-rmap_dfc <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_dfc. <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rowmap.(
         .l = .l,
         .f = !!.f,
@@ -248,18 +248,18 @@ rmap_dfc <- function(.l, .f = NULL, ..., env = parent.frame()) {
 
 #' @rdname rowmap.
 #' @export
-rmap_dfr <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_dfr. <- function(.l, .f = NULL, ..., env = parent.frame()) {
     rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
 #' @rdname rowmap.
 #' @export
-rmap_int <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_int. <- function(.l, .f = NULL, ..., env = parent.frame()) {
   rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
 #' @rdname rowmap.
 #' @export
-rmap_lgl <- function(.l, .f = NULL, ..., env = parent.frame()) {
+rowmap_lgl. <- function(.l, .f = NULL, ..., env = parent.frame()) {
   rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }

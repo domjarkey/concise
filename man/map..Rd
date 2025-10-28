@@ -2,13 +2,13 @@
 % Please edit documentation in R/map..R
 \name{map.}
 \alias{map.}
-\alias{cmap_chr}
-\alias{cmap_dbl}
-\alias{cmap_df}
-\alias{cmap_dfc}
-\alias{cmap_dfr}
-\alias{cmap_int}
-\alias{cmap_lgl}
+\alias{map_chr.}
+\alias{map_dbl.}
+\alias{map_df.}
+\alias{map_dfc.}
+\alias{map_dfr.}
+\alias{map_int.}
+\alias{map_lgl.}
 \title{Apply an anonymous function to each element of a vector}
 \usage{
 map.(
@@ -20,19 +20,19 @@ map.(
   simplify = FALSE
 )
 
-cmap_chr(.x, .f, ..., env = parent.frame())
+map_chr.(.x, .f, ..., env = parent.frame())
 
-cmap_dbl(.x, .f, ..., env = parent.frame())
+map_dbl.(.x, .f, ..., env = parent.frame())
 
-cmap_df(.x, .f, ..., env = parent.frame())
+map_df.(.x, .f, ..., env = parent.frame())
 
-cmap_dfc(.x, .f, ..., env = parent.frame())
+map_dfc.(.x, .f, ..., env = parent.frame())
 
-cmap_dfr(.x, .f, ..., env = parent.frame())
+map_dfr.(.x, .f, ..., env = parent.frame())
 
-cmap_int(.x, .f, ..., env = parent.frame())
+map_int.(.x, .f, ..., env = parent.frame())
 
-cmap_lgl(.x, .f, ..., env = parent.frame())
+map_lgl.(.x, .f, ..., env = parent.frame())
 }
 \arguments{
 \item{.x}{A list or atomic vector.}

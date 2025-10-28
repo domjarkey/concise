@@ -177,42 +177,42 @@ map. <- function(.x,
 
 #' @rdname map.
 #' @export
-cmap_chr <- function(.x, .f, ..., env = parent.frame()) {
+map_chr. <- function(.x, .f, ..., env = parent.frame()) {
   map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_chr)
 }
 
 #' @rdname map.
 #' @export
-cmap_dbl <- function(.x, .f, ..., env = parent.frame()) {
+map_dbl. <- function(.x, .f, ..., env = parent.frame()) {
   map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dbl)
 }
 
 #' @rdname map.
 #' @export
-cmap_df <- function(.x, .f, ..., env = parent.frame()) {
+map_df. <- function(.x, .f, ..., env = parent.frame()) {
   map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_df)
 }
 
 #' @rdname map.
 #' @export
-cmap_dfc <- function(.x, .f, ..., env = parent.frame()) {
+map_dfc. <- function(.x, .f, ..., env = parent.frame()) {
     map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfc)
 }
 
 #' @rdname map.
 #' @export
-cmap_dfr <- function(.x, .f, ..., env = parent.frame()) {
+map_dfr. <- function(.x, .f, ..., env = parent.frame()) {
     map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
 #' @rdname map.
 #' @export
-cmap_int <- function(.x, .f, ..., env = parent.frame()) {
+map_int. <- function(.x, .f, ..., env = parent.frame()) {
   map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_int)
 }
 
 #' @rdname map.
 #' @export
-cmap_lgl <- function(.x, .f, ..., env = parent.frame()) {
+map_lgl. <- function(.x, .f, ..., env = parent.frame()) {
   map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_lgl)
 }
