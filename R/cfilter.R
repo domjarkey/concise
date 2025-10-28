@@ -33,9 +33,10 @@ cfilter <- function(.data, ...) {
 
         if (is_concise_formula(.expr)) {
             .expr <- ensure_concise_type(.expr, "lgl")
+            .parsed <- parse_concise_expression(.out, !!.expr)
             .args[[i]] <- rlang::quo_set_expr(
                 .args[[i]],
-                parse_concise_expression(.out, !!.expr)
+                .parsed
             )
         }
 

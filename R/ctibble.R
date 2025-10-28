@@ -40,9 +40,10 @@ ctibble <- function(...) {
             if (names(.args)[i] == "") {
                 names(.args)[i] <- as.character(get_lhs(.expr))
             }
+            .parsed <- parse_concise_expression(.out, !!.expr)
             .args[[i]] <- rlang::quo_set_expr(
                 .args[[i]],
-                parse_concise_expression(.out, !!.expr)
+                .parsed
             )
         }
 
