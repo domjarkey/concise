@@ -1,13 +1,13 @@
 test_that("Atomic mapping", {
     # ...1 pronoun
-    expect_equal(rmap(6:10, ~ ...1 ^ 2), c(36, 49, 64, 81, 100))
-    expect_equal(rmap(letters[1:3], ~ paste0(...1, "zzz")), c("azzz", "bzzz", "czzz"))
+    expect_equal(rowmap.(6:10, ~ ...1 ^ 2), c(36, 49, 64, 81, 100))
+    expect_equal(rowmap.(letters[1:3], ~ paste0(...1, "zzz")), c("azzz", "bzzz", "czzz"))
 
     # TODO: .x pronoun (when implemented)
 
     # .i pronoun
-    expect_equal(rmap(6:10, ~ .i ^ 2), c(1, 4, 9, 16, 25))
-    expect_equal(rmap(6:10, ~ ...1 * .i), c(6L, 14L, 24L, 36L, 50L))
+    expect_equal(rowmap.(6:10, ~ .i ^ 2), c(1, 4, 9, 16, 25))
+    expect_equal(rowmap.(6:10, ~ ...1 * .i), c(6L, 14L, 24L, 36L, 50L))
 
     # .N pronoun
     expect_equal(
@@ -18,15 +18,15 @@ test_that("Atomic mapping", {
     # TODO: test .i, test .i when .i exists in data columns
 
     # type casting
-    expect_type(rmap(6:10, ~ ...1 ^ 2), "double")
+    expect_type(rowmap.(6:10, ~ ...1 ^ 2), "double")
     expect_type(rmap_int(6:10, ~ ...1 ^ 2), "integer")
     expect_type(rmap_dbl(6:10, ~ ...1 ^ 2), "double")
     expect_type(
         suppressWarnings(rmap_chr(6:10, ~ ...1 ^ 2)),
         "character"
     )
-    expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
-    expect_type(rmap(letters[1:3], ~ paste0(...1, "zzz")), "character")
+    expect_type(rowmap.(letters[1:3], ~ paste0(...1, "zzz")), "character")
+    expect_type(rowmap.(letters[1:3], ~ paste0(...1, "zzz")), "character")
     expect_equal(rmap_lgl(0:1, ~ ...1), c(FALSE, TRUE))
     expect_equal(
         rmap_df(purrr::set_names(1:3, letters[1:3]), ~ c(value = ...1, name = ...1.nm)),
@@ -64,17 +64,17 @@ test_that("Atomic mapping", {
 
 test_that("List mapping", {
     expect_equal(
-        rmap(list(1:3, 4:6), ~ ...1 + ...2),
+        rowmap.(list(1:3, 4:6), ~ ...1 + ...2),
         c(5, 7, 9)
     )
     expect_equal(
-        rmap(list(alpha = 1:3, beta = 4:6), ~ alpha + beta),
+        rowmap.(list(alpha = 1:3, beta = 4:6), ~ alpha + beta),
         c(5, 7, 9)
     )
 
     # .nm pronoun
     expect_equal(
-        rmap(
+        rowmap.(
             list(first = c(a = 1, b = 2), second = c(x = 3, y = 4)),
             ~ paste0(first.nm, second.nm)
         ),
@@ -84,7 +84,7 @@ test_that("List mapping", {
 
 test_that("Data frame mapping", {
     expect_equal(
-        rmap(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y}),
+        rowmap.(data.frame(x = 6:10, y = c(1, 2, 1, 2, 1)), ~ if(y %% 2 == 0) {x} else {x + y}),
         c(7, 7, 9, 9, 11)
     )
 
@@ -95,15 +95,15 @@ test_that("Data frame mapping", {
 
     # .nm pronoun
     expect_equal(
-        rmap(tibble::tibble(x = c(a = 1, b = 2)), ~ paste0(x.nm, x)),
+        rowmap.(tibble::tibble(x = c(a = 1, b = 2)), ~ paste0(x.nm, x)),
         c(a = "a1", b = "b2")
     )
     expect_equal(
-        rmap(tibble::tibble(x = c(a = 1, b = 2), x.nm = c("hello", "goodbye")), ~ paste0(x.nm, x)),
+        rowmap.(tibble::tibble(x = c(a = 1, b = 2), x.nm = c("hello", "goodbye")), ~ paste0(x.nm, x)),
         c(a = "hello1", b = "goodbye2")
     )
     expect_equal(
-        rmap(tibble::tibble(x = c(1, 2)), ~ x.nm),
+        rowmap.(tibble::tibble(x = c(1, 2)), ~ x.nm),
         list(NULL, NULL)
     )
 })
@@ -149,14 +149,14 @@ test_that("Recursion", {
 
 test_that("Fails correctly", {
     expect_error(
-        rmap(list(1:3, 4:7), ~ ...1 + ...2),
+        rowmap.(list(1:3, 4:7), ~ ...1 + ...2),
         "All elements of .l must be of equal length"
     )
 })
 
 test_that("Constant functions", {
     expect_equal(
-        rmap(1:3, ~5),
+        rowmap.(1:3, ~5),
         c(5, 5, 5)
     )
 })
@@ -171,35 +171,35 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            rmap(~ .i),
+            rowmap.(~ .i),
         c(1L, 1L, 2L, 3L, 2L, 4L, 1L, 5L)
     )
 
     expect_equal(
         df |>
             dplyr::group_by(colour, shape) |>
-            rmap(~ .i),
+            rowmap.(~ .i),
         c(1L, 1L, 2L, 1L, 1L, 2L, 1L, 3L)
     )
 
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            rmap(~ .I),
+            rowmap.(~ .I),
         1:8
     )
 
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            rmap(~ .n),
+            rowmap.(~ .n),
         c(5L, 2L, 5L, 5L, 2L, 5L, 1L, 5L)
     )
 
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            rmap(~ number.grp),
+            rowmap.(~ number.grp),
         list(c(8, 1, 2, 7, 6),
              c(5, 4),
              c(8, 1, 2, 7, 6),
@@ -213,7 +213,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            rmap(~ mean(number.col[max(.I - 1, 1):.I])),
+            rowmap.(~ mean(number.col[max(.I - 1, 1):.I])),
         c(8, 6.5, 3, 1.5, 3, 5.5, 5, 4.5)
     )
 })
@@ -222,33 +222,33 @@ test_that("Use ... to pass additional values", {
     # Pass constants
     expect_equal(
         tibble::tibble(x = 1:3) |>
-            rmap(~ x + z, z = 10),
+            rowmap.(~ x + z, z = 10),
         11:13
     )
 
     # Pass transformations of data variable(s) and pronouns
     expect_equal(
         tibble::tibble(x = 1:3) |>
-            rmap(~ x + X, X = sum(x)),
+            rowmap.(~ x + X, X = sum(x)),
         7:9
     )
 
     expect_equal(
         tibble::tibble(x = 1:3, y = 4:6) |>
-            rmap(~ x + X - Y, X = sum(x), Y = prod(y)),
+            rowmap.(~ x + X - Y, X = sum(x), Y = prod(y)),
         (-113):(-111)
     )
 
     expect_equal(
         tibble::tibble(x = 1:3, y = 4:6) |>
-                     rmap(~ x + I, I = sum(.i)),
+                     rowmap.(~ x + I, I = sum(.i)),
         7:9
     )
 
     expect_equal(
         list(a = purrr::set_names(letters[1:3], LETTERS[1:3]), b = letters[1:3]) |>
             tibble::as_tibble() |>
-            rmap(~ Z, Z = paste0(a.nm, collapse = '')),
+            rowmap.(~ Z, Z = paste0(a.nm, collapse = '')),
         c("ABC", "ABC", "ABC")
     )
 
@@ -257,7 +257,7 @@ test_that("Use ... to pass additional values", {
 
     expect_equal(
         tibble::tibble(x = 1:3) |>
-            rmap(~ x + X, X = sum(!!x)),
+            rowmap.(~ x + X, X = sum(!!x)),
         56:58
     )
 
@@ -267,7 +267,7 @@ test_that("Use ... to pass additional values", {
             determiner = c("the", "a", "those"),
             adjective = c("quick", "slow", "naughty"),
             noun = c("fox", "loris", "children")
-        ) |> rmap(~ determiner + adjective + noun, `+` = paste),
+        ) |> rowmap.(~ determiner + adjective + noun, `+` = paste),
         c("the quick fox", "a slow loris", "those naughty children")
     )
 })
