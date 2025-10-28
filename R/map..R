@@ -7,9 +7,9 @@
 #' indices, and the function itself, so as to permit recursive function
 #' definitions.
 #'
-#' `cmap_chr`, `cmap_dbl`, `cmap_df`, `cmap_dfc`, `cmap_dfr`, `cmap_int`, and
-#' `cmap_lgl` work like their `purrr::map_etc` equivalents, attempting to output
-#' a vector of the specified type (or a data frame in the case of the `cmap_df*`
+#' `map_chr.`, `map_dbl.`, `map_df.`, `map_dfc.`, `map_dfr.`, `map_int.`, and
+#' `map_lgl.` work like their `purrr::map_etc` equivalents, attempting to output
+#' a vector of the specified type (or a data frame in the case of the `map_df*`
 #' variants) instead of a list.
 #'
 #' @param .x A list or atomic vector.
@@ -52,7 +52,7 @@
 #' * `.this` -- the anonymous function itself, to be used in cases where
 #' recursion is needed.
 #' @returns Returns a list (or vector) of the same length as `.x`. By default a
-#' list, unless `cmap_` suffixes are used to specify the output vector type, or
+#' list, unless `map_` suffixes are used to specify the output vector type, or
 #' if `simplify = TRUE` a vector of whichever type uniformly fits the unlisted
 #' outputs.
 #'
@@ -61,23 +61,23 @@
 #' # function suffix
 #' map.(1:5, ~ .x^2)
 #' map.(1:5, ~ .x^2, simplify = TRUE)
-#' cmap_int(1:5, ~ .x^2)
+#' map_int.(1:5, ~ .x^2)
 #'
 #' # Refer to index with .i
-#' cmap_chr(letters, ~ ifelse(.i %% 2 == 0, toupper(.x), .x))
+#' map_chr.(letters, ~ ifelse(.i %% 2 == 0, toupper(.x), .x))
 #'
 #' # Refer to column names with .nm
-#' cmap_df(
+#' map_df.(
 #'   list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
 #'   ~ c(name = .nm, species = .x)
 #' )
 #'
 #' # Refer to entire column using .col
 #' # This can be useful for creating window functions like moving averages
-#' cmap_dbl(c(5:1, 1:5), ~ mean(.col[max(1, .i - 2):.i]))
+#' map_dbl.(c(5:1, 1:5), ~ mean(.col[max(1, .i - 2):.i]))
 #'
 #' # Refer to the anonymous function recursively using .this
-#' cmap_int(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
+#' map_int.(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
 #'
 #' # Recursive functions can be useful for tree traversal
 #' tree <- list(
@@ -91,7 +91,7 @@
 #'   f = 4,
 #'   g = list(h = 5)
 #' )
-#' cmap_df(
+#' map_df.(
 #'   tree,
 #'   ~ if (is.list(.x)) {
 #'     purrr::pmap_df(
@@ -100,7 +100,7 @@
 #'       path = paste0(path, "/", .nm)
 #'     )
 #'   } else {
-#'     tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+#'     tibble.(path = paste0(path, "/", .nm), value = .x)
 #'   },
 #'   path = "root"
 #' )

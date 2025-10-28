@@ -61,7 +61,7 @@ returned).}
 }
 \value{
 Returns a list (or vector) of the same length as \code{.x}. By default a
-list, unless \code{cmap_} suffixes are used to specify the output vector type, or
+list, unless \code{map_} suffixes are used to specify the output vector type, or
 if \code{simplify = TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
 }
@@ -72,9 +72,9 @@ custom pronouns to refer to related objects such as element names, element
 indices, and the function itself, so as to permit recursive function
 definitions.
 
-\code{cmap_chr}, \code{cmap_dbl}, \code{cmap_df}, \code{cmap_dfc}, \code{cmap_dfr}, \code{cmap_int}, and
-\code{cmap_lgl} work like their \code{purrr::map_etc} equivalents, attempting to output
-a vector of the specified type (or a data frame in the case of the \verb{cmap_df*}
+\code{map_chr.}, \code{map_dbl.}, \code{map_df.}, \code{map_dfc.}, \code{map_dfr.}, \code{map_int.}, and
+\code{map_lgl.} work like their \code{purrr::map_etc} equivalents, attempting to output
+a vector of the specified type (or a data frame in the case of the \verb{map_df*}
 variants) instead of a list.
 }
 \section{Pronouns}{
@@ -104,23 +104,23 @@ recursion is needed.
 # function suffix
 map.(1:5, ~ .x^2)
 map.(1:5, ~ .x^2, simplify = TRUE)
-cmap_int(1:5, ~ .x^2)
+map_int.(1:5, ~ .x^2)
 
 # Refer to index with .i
-cmap_chr(letters, ~ ifelse(.i \%\% 2 == 0, toupper(.x), .x))
+map_chr.(letters, ~ ifelse(.i \%\% 2 == 0, toupper(.x), .x))
 
 # Refer to column names with .nm
-cmap_df(
+map_df.(
   list(Fluffy = "cat", Rusty = "dog", Bubbles = "fish"),
   ~ c(name = .nm, species = .x)
 )
 
 # Refer to entire column using .col
 # This can be useful for creating window functions like moving averages
-cmap_dbl(c(5:1, 1:5), ~ mean(.col[max(1, .i - 2):.i]))
+map_dbl.(c(5:1, 1:5), ~ mean(.col[max(1, .i - 2):.i]))
 
 # Refer to the anonymous function recursively using .this
-cmap_int(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
+map_int.(1:10, ~ ifelse(.x <= 2, 1, .this(.x - 1) + .this(.x - 2)))
 
 # Recursive functions can be useful for tree traversal
 tree <- list(
@@ -134,7 +134,7 @@ tree <- list(
   f = 4,
   g = list(h = 5)
 )
-cmap_df(
+map_df.(
   tree,
   ~ if (is.list(.x)) {
     purrr::pmap_df(
@@ -143,7 +143,7 @@ cmap_df(
       path = paste0(path, "/", .nm)
     )
   } else {
-    tibble::tibble(path = paste0(path, "/", .nm), value = .x)
+    tibble.(path = paste0(path, "/", .nm), value = .x)
   },
   path = "root"
 )
