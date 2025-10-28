@@ -74,7 +74,7 @@
 #' * `.this` -- the anonymous function itself, to be used in cases where
 #' recursion is needed.
 #' @return Returns a list (or vector) of the same length as `.l`. By default a
-#' list, unless `rmap_` suffixes are used to specify the output vector type, or
+#' list, unless `rowmap_` suffixes are used to specify the output vector type, or
 #' if `simplify = TRUE` a vector of whichever type uniformly fits the unlisted
 #' outputs.
 #'

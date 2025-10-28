@@ -61,7 +61,7 @@ returned).}
 }
 \value{
 Returns a list (or vector) of the same length as \code{.l}. By default a
-list, unless \code{rmap_} suffixes are used to specify the output vector type, or
+list, unless \code{rowmap_} suffixes are used to specify the output vector type, or
 if \code{simplify = TRUE} a vector of whichever type uniformly fits the unlisted
 outputs.
 }
