@@ -1,39 +1,39 @@
 test_that("Input modes", {
     df <- tibble::tibble(x = 1:3, y = list(4, NULL, 6))
 
-    # cmutate == mutate
+    # mutate. == mutate
     expect_equal(
-        df |> cmutate(z = x + 1),
+        df |> mutate.(z = x + 1),
         df |> dplyr::mutate(z = x + 1)
     )
 
     # copying an existing column works like dplyr::mutate
     expect_equal(
-        df |> cmutate(z = x),
+        df |> mutate.(z = x),
         df |> dplyr::mutate(z = x)
     )
 
     expect_equal(
-        df |> cmutate(z = y),
+        df |> mutate.(z = y),
         df |> dplyr::mutate(z = y)
     )
 
-    # mode: cmutate(name = context_lambda(~ .f))
+    # mode: mutate.(name = context_lambda(~ .f))
     expect_equal(
-        df |> cmutate(z = context_lambda(~ is.null(y))),
-        df |> cmutate(z = purrr::map_lgl(y, ~ is.null(.x)))
+        df |> mutate.(z = context_lambda(~ is.null(y))),
+        df |> mutate.(z = purrr::map_lgl(y, ~ is.null(.x)))
     )
 
-    # mode: cmutate(name ~ .f)
+    # mode: mutate.(name ~ .f)
     expect_equal(
-        df |> cmutate(z ~ is.null(y)),
-        df |> cmutate(z = purrr::map_lgl(y, ~ is.null(.x)))
+        df |> mutate.(z ~ is.null(y)),
+        df |> mutate.(z = purrr::map_lgl(y, ~ is.null(.x)))
     )
 
     # overwrite column
     expect_equal(
-        df |> cmutate(y ~ is.null(y)),
-        df |> cmutate(y = purrr::map_lgl(y, ~ is.null(.x)))
+        df |> mutate.(y ~ is.null(y)),
+        df |> mutate.(y = purrr::map_lgl(y, ~ is.null(.x)))
     )
 })
 
@@ -41,21 +41,21 @@ test_that("Multiple column inputs", {
     df <- tibble::tibble(x = 1:3, y = list(4, NULL, 1))
 
     expect_equal(
-        df |> cmutate(z ~ ifelse(is.null(y), x, y) ? int),
-        df |> cmutate(z = purrr::map2_int(x, y, ~ ifelse(is.null(.y), .x, .y)))
+        df |> mutate.(z ~ ifelse(is.null(y), x, y) ? int),
+        df |> mutate.(z = purrr::map2_int(x, y, ~ ifelse(is.null(.y), .x, .y)))
     )
 
     expect_equal(
-        df |> cmutate(z ~ ifelse(is.null(y), x, y) ? list),
-        df |> cmutate(z = purrr::map2(x, y, ~ ifelse(is.null(.y), .x, .y)))
+        df |> mutate.(z ~ ifelse(is.null(y), x, y) ? list),
+        df |> mutate.(z = purrr::map2(x, y, ~ ifelse(is.null(.y), .x, .y)))
     )
 
     expect_equal(
-        df |> cmutate(
+        df |> mutate.(
             z ~ ifelse(is.null(y), x, y),
             w ~ max(x, z)
         ),
-        df |> cmutate(
+        df |> mutate.(
             z = purrr::map2_dbl(x, y, ~ ifelse(is.null(.y), .x, .y)),
             w = purrr::map2_dbl(x, z, ~ max(.x, .y))
         )
@@ -64,17 +64,17 @@ test_that("Multiple column inputs", {
 
 test_that("Pronouns", {
     expect_equal(
-        tibble::tibble(x = c(a = 1, b = 2)) |> cmutate(z ~ x.nm),
+        tibble::tibble(x = c(a = 1, b = 2)) |> mutate.(z ~ x.nm),
         tibble::tibble(x = c(a = 1, b = 2), z = c("a", "b"))
     )
 
     expect_equal(
-        tibble::tibble(x = c(1, 2)) |> cmutate(z ~ x.nm),
+        tibble::tibble(x = c(1, 2)) |> mutate.(z ~ x.nm),
         tibble::tibble(x = c(1, 2), z = list(NULL, NULL))
     )
 
     expect_equal(
-        tibble::tibble(x = c(a = 4, b = 5)) |> cmutate(z ~ .i),
+        tibble::tibble(x = c(a = 4, b = 5)) |> mutate.(z ~ .i),
         tibble::tibble(x = c(a = 4, b = 5), z = 1:2)
     )
 
@@ -82,7 +82,7 @@ test_that("Pronouns", {
         tibble::tibble(
             x = c(4, 5),
             .i = c("a", "b")
-        ) |> cmutate(z ~ .i),
+        ) |> mutate.(z ~ .i),
         tibble::tibble(
             x = c(4, 5),
             .i = c("a", "b"),
@@ -94,7 +94,7 @@ test_that("Pronouns", {
         tibble::tibble(
             x = c(a = 4, b = 5),
             x.nm = c("c", "d")
-        ) |> cmutate(z ~ x.nm),
+        ) |> mutate.(z ~ x.nm),
         tibble::tibble(
             x = c(a = 4, b = 5),
             x.nm = c("c", "d"),
@@ -104,13 +104,13 @@ test_that("Pronouns", {
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + sum(x.col)),
+            mutate.(y ~ x + sum(x.col)),
         tibble::tibble(x = 3:1, y = 9:7)
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ sum(x.col)),
+            mutate.(y ~ sum(x.col)),
         tibble::tibble(x = 3:1, y = 6)
     )
 })
@@ -125,7 +125,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            cmutate(index ~ .i),
+            mutate.(index ~ .i),
         df |>
             dplyr::group_by(colour) |>
             dplyr::mutate(index = dplyr::row_number())
@@ -134,7 +134,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour, shape) |>
-            cmutate(index ~ .i),
+            mutate.(index ~ .i),
         df |>
             dplyr::group_by(colour, shape) |>
             dplyr::mutate(index = dplyr::row_number())
@@ -143,7 +143,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour, shape) |>
-            cmutate(group_row_index ~ .i, overall_row_index ~ .I),
+            mutate.(group_row_index ~ .i, overall_row_index ~ .I),
         df |>
             dplyr::group_by(colour, shape) |>
             dplyr::mutate(
@@ -155,7 +155,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            cmutate(x ~ sum(number.grp), y ~ sum(number.col)),
+            mutate.(x ~ sum(number.grp), y ~ sum(number.col)),
         df |>
             dplyr::group_by(colour) |>
             dplyr::mutate(x = sum(number), y = 36)
@@ -164,7 +164,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            cmutate(x ~ number.grp),
+            mutate.(x ~ number.grp),
         df |>
             dplyr::group_by(colour) |>
             dplyr::mutate(
@@ -177,7 +177,7 @@ test_that("Groups hold", {
 
     expect_equal(
         df |> dplyr::group_by(colour) |>
-            cmutate(
+            mutate.(
                 avg ~ mean(number.col[max(1, .I - 1):.I]),
                 grp_avg ~ mean(number.grp[max(1, .i - 1):.i])
             ),
@@ -206,7 +206,7 @@ test_that("Groups hold", {
 
     expect_equal(
         df |> dplyr::group_by(colour, shape) |>
-            cmutate(
+            mutate.(
                 n ~ .n,
                 N ~ .N
             ),
@@ -222,45 +222,45 @@ test_that("Argument passing with ?", {
     # Pass constants
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + z ? (z = 10)),
+            mutate.(y ~ x + z ? (z = 10)),
         tibble::tibble(x = 3:1, y = as.numeric(13:11))
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + z ? int & (z = 10)),
+            mutate.(y ~ x + z ? int & (z = 10)),
         tibble::tibble(x = 3:1, y = 13:11)
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + z - w ? {int ; z = 10; w = 1}),
+            mutate.(y ~ x + z - w ? {int ; z = 10; w = 1}),
         tibble::tibble(x = 3:1, y = 12:10)
     )
 
     # Pass transformations of data variable(s) and pronouns
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + X ? int & (X = sum(x))),
+            mutate.(y ~ x + X ? int & (X = sum(x))),
         tibble::tibble(x = 3:1, y = 9:7)
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + X ? {int; X = sum(x)}),
+            mutate.(y ~ x + X ? {int; X = sum(x)}),
         tibble::tibble(x = 3:1, y = 9:7)
     )
 
     # expect_equal(
     #     tibble::tibble(x = 3:1) |>
-    #         cmutate(y ~ x + I ? int & (I = sum(.i))),
+    #         mutate.(y ~ x + I ? int & (I = sum(.i))),
     #     tibble::tibble(x = 3:1, y = 9:7)
     # )
 
     # expect_equal(
     #     list(a = purrr::set_names(letters[1:3], LETTERS[1:3]), b = letters[1:3]) |>
     #         tibble::as_tibble() |>
-    #         cmutate(c ~ Z ? (Z = paste0(a.nm, collapse = ''))),
+    #         mutate.(c ~ Z ? (Z = paste0(a.nm, collapse = ''))),
     #     list(a = purrr::set_names(letters[1:3], LETTERS[1:3]), b = letters[1:3]) |>
     #         tibble::as_tibble() |>
     #         dplyr::mutate(c = "ABC")
@@ -271,13 +271,13 @@ test_that("Argument passing with ?", {
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + X ? int & (X = sum(!!x))),
+            mutate.(y ~ x + X ? int & (X = sum(!!x))),
         tibble::tibble(x = 3:1, y = 58:56)
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            cmutate(y ~ x + X ? {int; X = sum(!!x)}),
+            mutate.(y ~ x + X ? {int; X = sum(!!x)}),
         tibble::tibble(x = 3:1, y = 58:56)
     )
 
@@ -287,7 +287,7 @@ test_that("Argument passing with ?", {
     #         determiner = c("the", "a", "those"),
     #         adjective = c("quick", "slow", "naughty"),
     #         noun = c("fox", "loris", "children")
-    #     ) |> cmutate(sentence ~ determiner + adjective + noun - end ? (`+` = paste) & (`-` = paste0) & (end = ".")),
+    #     ) |> mutate.(sentence ~ determiner + adjective + noun - end ? (`+` = paste) & (`-` = paste0) & (end = ".")),
     #     tibble::tibble(
     #         determiner = c("the", "a", "those"),
     #         adjective = c("quick", "slow", "naughty"),
@@ -301,7 +301,7 @@ test_that("Recursion", {
     expect_equal(
         tibble::tibble(
             value = 6:1
-        ) |> cmutate(
+        ) |> mutate.(
             fib ~ if (value <= 2) {1} else {.this(value - 1) + .this(value - 2)}
         ),
         tibble::tibble(value = 6:1, fib = c(8, 5, 3, 2, 1, 1))
@@ -310,7 +310,7 @@ test_that("Recursion", {
     expect_equal(
         tibble::tibble(
             value = 6:1
-        ) |> cmutate(
+        ) |> mutate.(
             fib ~ if (value <= 2) {z} else {.this(value - 1) + .this(value - 2)} ? {int ; z = 1}
         ),
         tibble::tibble(value = 6:1, fib = c(8L, 5L, 3L, 2L, 1L, 1L))

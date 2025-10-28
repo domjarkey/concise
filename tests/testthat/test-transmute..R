@@ -2,33 +2,33 @@ test_that("Input modes", {
     df <- tibble::tibble(x = 1:3, y = list(4, NULL, 6))
 
     expect_equal(
-        df |> ctransmute(z = x + 1),
+        df |> transmute.(z = x + 1),
         df |> dplyr::transmute(z = x + 1)
     )
 
     expect_equal(
-        df |> ctransmute(z = x),
+        df |> transmute.(z = x),
         df |> dplyr::transmute(z = x)
     )
 
     expect_equal(
-        df |> ctransmute(z = y),
+        df |> transmute.(z = y),
         df |> dplyr::transmute(z = y)
     )
 
     expect_equal(
-        df |> ctransmute(z = context_lambda(~ is.null(y))),
-        df |> ctransmute(z = purrr::map_lgl(y, ~ is.null(.x)))
+        df |> transmute.(z = context_lambda(~ is.null(y))),
+        df |> transmute.(z = purrr::map_lgl(y, ~ is.null(.x)))
     )
 
     expect_equal(
-        df |> ctransmute(z ~ is.null(y)),
-        df |> ctransmute(z = purrr::map_lgl(y, ~ is.null(.x)))
+        df |> transmute.(z ~ is.null(y)),
+        df |> transmute.(z = purrr::map_lgl(y, ~ is.null(.x)))
     )
 
     expect_equal(
-        df |> ctransmute(y ~ is.null(y)),
-        df |> ctransmute(y = purrr::map_lgl(y, ~ is.null(.x)))
+        df |> transmute.(y ~ is.null(y)),
+        df |> transmute.(y = purrr::map_lgl(y, ~ is.null(.x)))
     )
 })
 
@@ -36,21 +36,21 @@ test_that("Multiple column inputs", {
     df <- tibble::tibble(x = 1:3, y = list(4, NULL, 1))
 
     expect_equal(
-        df |> ctransmute(z ~ ifelse(is.null(y), x, y) ? int),
-        df |> ctransmute(z = purrr::map2_int(x, y, ~ ifelse(is.null(.y), .x, .y)))
+        df |> transmute.(z ~ ifelse(is.null(y), x, y) ? int),
+        df |> transmute.(z = purrr::map2_int(x, y, ~ ifelse(is.null(.y), .x, .y)))
     )
 
     expect_equal(
-        df |> ctransmute(z ~ ifelse(is.null(y), x, y) ? list),
-        df |> ctransmute(z = purrr::map2(x, y, ~ ifelse(is.null(.y), .x, .y)))
+        df |> transmute.(z ~ ifelse(is.null(y), x, y) ? list),
+        df |> transmute.(z = purrr::map2(x, y, ~ ifelse(is.null(.y), .x, .y)))
     )
 
     expect_equal(
-        df |> ctransmute(
+        df |> transmute.(
             z ~ ifelse(is.null(y), x, y),
             w ~ max(x, z)
         ),
-        df |> ctransmute(
+        df |> transmute.(
             z = purrr::map2_dbl(x, y, ~ ifelse(is.null(.y), .x, .y)),
             w = purrr::map2_dbl(x, z, ~ max(.x, .y))
         )
@@ -59,17 +59,17 @@ test_that("Multiple column inputs", {
 
 test_that("Pronouns", {
     expect_equal(
-        tibble::tibble(x = c(a = 1, b = 2)) |> ctransmute(z ~ x.nm),
+        tibble::tibble(x = c(a = 1, b = 2)) |> transmute.(z ~ x.nm),
         tibble::tibble(z = c("a", "b"))
     )
 
     expect_equal(
-        tibble::tibble(x = c(1, 2)) |> ctransmute(z ~ x.nm),
+        tibble::tibble(x = c(1, 2)) |> transmute.(z ~ x.nm),
         tibble::tibble(z = list(NULL, NULL))
     )
 
     expect_equal(
-        tibble::tibble(x = c(a = 4, b = 5)) |> ctransmute(z ~ .i),
+        tibble::tibble(x = c(a = 4, b = 5)) |> transmute.(z ~ .i),
         tibble::tibble(z = 1:2)
     )
 
@@ -77,7 +77,7 @@ test_that("Pronouns", {
         tibble::tibble(
             x = c(4, 5),
             .i = c("a", "b")
-        ) |> ctransmute(z ~ .i),
+        ) |> transmute.(z ~ .i),
         tibble::tibble(z = c("a", "b"))
     )
 
@@ -85,19 +85,19 @@ test_that("Pronouns", {
         tibble::tibble(
             x = c(a = 4, b = 5),
             x.nm = c("c", "d")
-        ) |> ctransmute(z ~ x.nm),
+        ) |> transmute.(z ~ x.nm),
         tibble::tibble(z = c("c", "d"))
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + sum(x.col)),
+            transmute.(y ~ x + sum(x.col)),
         tibble::tibble(y = 9:7)
     )
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ sum(x.col)),
+            transmute.(y ~ sum(x.col)),
         tibble::tibble(y = c(6, 6, 6))
     )
 })
@@ -112,7 +112,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            ctransmute(index ~ .i),
+            transmute.(index ~ .i),
         df |>
             dplyr::group_by(colour) |>
             dplyr::transmute(index = dplyr::row_number())
@@ -121,7 +121,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour, shape) |>
-            ctransmute(index ~ .i),
+            transmute.(index ~ .i),
         df |>
             dplyr::group_by(colour, shape) |>
             dplyr::transmute(index = dplyr::row_number())
@@ -130,7 +130,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour, shape) |>
-            ctransmute(group_row_index ~ .i, overall_row_index ~ .I),
+            transmute.(group_row_index ~ .i, overall_row_index ~ .I),
         df |>
             dplyr::group_by(colour, shape) |>
             dplyr::transmute(
@@ -142,7 +142,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            ctransmute(x ~ sum(number.grp), y ~ sum(number.col)),
+            transmute.(x ~ sum(number.grp), y ~ sum(number.col)),
         df |>
             tibble::as_tibble() |>
             dplyr::group_by(colour) |>
@@ -156,7 +156,7 @@ test_that("Groups hold", {
     expect_equal(
         df |>
             dplyr::group_by(colour) |>
-            ctransmute(x ~ number.grp),
+            transmute.(x ~ number.grp),
         df |>
             tibble::as_tibble() |>
             dplyr::group_by(colour) |>
@@ -171,7 +171,7 @@ test_that("Groups hold", {
 
     expect_equal(
         df |> dplyr::group_by(colour) |>
-            ctransmute(
+            transmute.(
                 avg ~ mean(number.col[max(1, .I - 1):.I]),
                 grp_avg ~ mean(number.grp[max(1, .i - 1):.i])
             ),
@@ -206,35 +206,35 @@ test_that("Argument passing with ?", {
     # Pass constants directly into the concise lambda
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + z ? (z = 10)),
+            transmute.(y ~ x + z ? (z = 10)),
         tibble::tibble(y = as.numeric(13:11))
     )
 
     # Explicitly coerce the concise lambda output type
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + z ? int & (z = 10)),
+            transmute.(y ~ x + z ? int & (z = 10)),
         tibble::tibble(y = 13:11)
     )
 
     # Provide multiple injected values and a type declaration
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + z - w ? {int ; z = 10; w = 1}),
+            transmute.(y ~ x + z - w ? {int ; z = 10; w = 1}),
         tibble::tibble(y = 12:10)
     )
 
     # Reuse concise lambdas with computed arguments from the data
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + X ? int & (X = sum(x))),
+            transmute.(y ~ x + X ? int & (X = sum(x))),
         tibble::tibble(y = 9:7)
     )
 
     # Allow computed arguments with block syntax
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + X ? {int; X = sum(x)}),
+            transmute.(y ~ x + X ? {int; X = sum(x)}),
         tibble::tibble(y = 9:7)
     )
 
@@ -243,14 +243,14 @@ test_that("Argument passing with ?", {
 
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + X ? int & (X = sum(!!x))),
+            transmute.(y ~ x + X ? int & (X = sum(!!x))),
         tibble::tibble(y = 58:56)
     )
 
     # Ensure block syntax respects injected local variables
     expect_equal(
         tibble::tibble(x = 3:1) |>
-            ctransmute(y ~ x + X ? {int; X = sum(!!x)}),
+            transmute.(y ~ x + X ? {int; X = sum(!!x)}),
         tibble::tibble(y = 58:56)
     )
 })
@@ -260,7 +260,7 @@ test_that("Recursion", {
     expect_equal(
         tibble::tibble(
             value = 6:1
-        ) |> ctransmute(
+        ) |> transmute.(
             fib ~ if (value <= 2) {1} else {.this(value - 1) + .this(value - 2)}
         ),
         tibble::tibble(fib = c(8, 5, 3, 2, 1, 1))
@@ -270,7 +270,7 @@ test_that("Recursion", {
     expect_equal(
         tibble::tibble(
             value = 6:1
-        ) |> ctransmute(
+        ) |> transmute.(
             fib ~ if (value <= 2) {z} else {.this(value - 1) + .this(value - 2)} ? {int ; z = 1}
         ),
         tibble::tibble(fib = c(8L, 5L, 3L, 2L, 1L, 1L))
