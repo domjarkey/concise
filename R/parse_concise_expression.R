@@ -47,7 +47,7 @@ parse_concise_expression <- function(.data, .expr) {
   if (
     ".I" %in% .f_other_names ||
       (
-          length(.f_arg_names) +
+        length(.f_arg_names) +
           length(.extra_args[names(.extra_args) != ".map_fn"]) == 0
       )
   ) {

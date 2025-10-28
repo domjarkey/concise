@@ -155,34 +155,34 @@
 #'
 #' @export
 mutate. <- function(.data, ...) {
-    .args <- rlang::enquos(...)
-    .out <- .data
+  .args <- rlang::enquos(...)
+  .out <- .data
 
-    for (i in seq_along(.args)) {
-        .expr <- rlang::quo_get_expr(.args[[i]])
+  for (i in seq_along(.args)) {
+    .expr <- rlang::quo_get_expr(.args[[i]])
 
-        if (is_concise_formula(.expr)) {
-            if (names(.args)[i] == "") {
-                names(.args)[i] <- as.character(
-                    get_lhs(.expr)
-                )
-            }
-            .parsed <- parse_concise_expression(.out, !!.expr)
-            .args[[i]] <- rlang::quo_set_expr(
-                .args[[i]],
-                .parsed
-            )
-        }
-        .out <- .out |> dplyr::mutate(!!!(.args[i]))
-        .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
-
-        if (
-            rlang::is_call(.expr) &&
-            identical(.expr[[1]], default_map_fn)
-        ) {
-            .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
-        }
+    if (is_concise_formula(.expr)) {
+      if (names(.args)[i] == "") {
+        names(.args)[i] <- as.character(
+          get_lhs(.expr)
+        )
+      }
+      .parsed <- parse_concise_expression(.out, !!.expr)
+      .args[[i]] <- rlang::quo_set_expr(
+        .args[[i]],
+        .parsed
+      )
     }
+    .out <- .out |> dplyr::mutate(!!!(.args[i]))
+    .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
 
-    .out
+    if (
+      rlang::is_call(.expr) &&
+        identical(.expr[[1]], default_map_fn)
+    ) {
+      .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
+    }
+  }
+
+  .out
 }

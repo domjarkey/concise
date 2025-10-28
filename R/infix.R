@@ -81,80 +81,80 @@
   # tibble::tribble-like text. Check lubridate and rlang for more ideas.
 
   # TODO: Maybe an equivalent `%is%` infix operator for all of these
-    type_expr <- rlang::enexpr(type)
+  type_expr <- rlang::enexpr(type)
 
-    type_string <- if (rlang::is_symbol(type_expr)) {
-        rlang::as_name(type_expr)
-    } else {
-        evaluated <- rlang::eval_tidy(type_expr)
+  type_string <- if (rlang::is_symbol(type_expr)) {
+    rlang::as_name(type_expr)
+  } else {
+    evaluated <- rlang::eval_tidy(type_expr)
 
-        if (!rlang::is_string(evaluated)) {
-            rlang::abort("`type` must be a single string or bare name specifying the target type.")
-        }
-
-        evaluated
+    if (!rlang::is_string(evaluated)) {
+      rlang::abort("`type` must be a single string or bare name specifying the target type.")
     }
 
-    type_string <- tolower(type_string)
+    evaluated
+  }
 
-    aliases <- c(
-        lgl = "logical",
-        int = "integer",
-        dbl = "double",
-        chr = "character",
-        df = "tibble",
-        data.frame = "data.frame",
-        columnwise_df = "dfc",
-        rowwise_df = "dfr"
+  type_string <- tolower(type_string)
+
+  aliases <- c(
+    lgl = "logical",
+    int = "integer",
+    dbl = "double",
+    chr = "character",
+    df = "tibble",
+    data.frame = "data.frame",
+    columnwise_df = "dfc",
+    rowwise_df = "dfr"
+  )
+
+  if (type_string %in% names(aliases)) {
+    type_string <- aliases[[type_string]]
+  }
+
+  if (type_string %in% c("tibble", "dfc")) {
+    return(
+      tibble::as_tibble(tibble::repair_names(x))
     )
+  }
 
-    if (type_string %in% names(aliases)) {
-        type_string <- aliases[[type_string]]
-    }
+  if (type_string == "dfr") {
+    if (is.data.frame(x)) {
+      if (nrow(x) == 0) {
+        return(tibble::as_tibble(x))
+      }
 
-    if (type_string %in% c("tibble", "dfc")) {
-        return(
-            tibble::as_tibble(tibble::repair_names(x))
-        )
-    }
-
-    if (type_string == "dfr") {
-        if (is.data.frame(x)) {
-            if (nrow(x) == 0) {
-                return(tibble::as_tibble(x))
-            }
-
-            rows <- purrr::map(
-                seq_len(nrow(x)),
-                function(row) {
-                    as.list(x[row, , drop = FALSE])
-                }
-            )
-        } else if (rlang::is_bare_list(x)) {
-            if (length(x) == 0) {
-                return(tibble::tibble())
-            }
-
-            rows <- purrr::map(x, as.list)
-        } else {
-            return(tibble::tibble(value = x))
+      rows <- purrr::map(
+        seq_len(nrow(x)),
+        function(row) {
+          as.list(x[row, , drop = FALSE])
         }
+      )
+    } else if (rlang::is_bare_list(x)) {
+      if (length(x) == 0) {
+        return(tibble::tibble())
+      }
 
-        return(
-            data.table::rbindlist(
-                rows,
-                use.names = !is.null(names(rows)),
-                fill = TRUE
-            ) |>
-                tibble::as_tibble()
-        )
+      rows <- purrr::map(x, as.list)
+    } else {
+      return(tibble::tibble(value = x))
     }
 
-    if (type_string == "data.frame") {
-        return(as.data.frame(x, stringsAsFactors = FALSE))
-    }
+    return(
+      data.table::rbindlist(
+        rows,
+        use.names = !is.null(names(rows)),
+        fill = TRUE
+      ) |>
+        tibble::as_tibble()
+    )
+  }
 
-    as.vector(x, mode = type_string)
+  if (type_string == "data.frame") {
+    return(as.data.frame(x, stringsAsFactors = FALSE))
+  }
+
+  as.vector(x, mode = type_string)
 }
 
 #' @rdname concise-infixes

@@ -36,53 +36,53 @@
 #'
 #' @export
 transmute. <- function(.data, ...) {
-    .args <- rlang::enquos(...)
-    .out <- .data
-    keep_names <- character(0)
+  .args <- rlang::enquos(...)
+  .out <- .data
+  keep_names <- character(0)
 
-    for (i in seq_along(.args)) {
-        .expr <- rlang::quo_get_expr(.args[[i]])
+  for (i in seq_along(.args)) {
+    .expr <- rlang::quo_get_expr(.args[[i]])
 
-        if (is_concise_formula(.expr)) {
-            if (names(.args)[i] == "") {
-                names(.args)[i] <- as.character(
-                    get_lhs(.expr)
-                )
-            }
-            .parsed <- parse_concise_expression(.out, !!.expr)
-            .args[[i]] <- rlang::quo_set_expr(
-                .args[[i]],
-                .parsed
-            )
-        }
-
-        .out <- .out |> dplyr::mutate(!!!(.args[i]))
-        .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
-
-        if (
-            rlang::is_call(.expr) &&
-            identical(.expr[[1]], default_map_fn)
-        ) {
-            .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
-        }
-
-        col_name <- if (names(.args)[i] != "") {
-            names(.args)[i]
-        } else {
-            rlang::quo_name(.args[[i]])
-        }
-
-        keep_names <- keep_names[keep_names != col_name]
-        keep_names <- c(keep_names, col_name)
+    if (is_concise_formula(.expr)) {
+      if (names(.args)[i] == "") {
+        names(.args)[i] <- as.character(
+          get_lhs(.expr)
+        )
+      }
+      .parsed <- parse_concise_expression(.out, !!.expr)
+      .args[[i]] <- rlang::quo_set_expr(
+        .args[[i]],
+        .parsed
+      )
     }
 
-    grouping_vars <- dplyr::group_vars(.out)
-    grouping_vars <- grouping_vars[grouping_vars %in% names(.out)]
-    final_names <- c(grouping_vars, keep_names[!keep_names %in% grouping_vars])
+    .out <- .out |> dplyr::mutate(!!!(.args[i]))
+    .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
 
-    if (length(final_names) == 0) {
-        dplyr::transmute(.out)
+    if (
+      rlang::is_call(.expr) &&
+        identical(.expr[[1]], default_map_fn)
+    ) {
+      .out[[names(.args)[i]]] <- try_simplify(.out[[names(.args)[i]]])
+    }
+
+    col_name <- if (names(.args)[i] != "") {
+      names(.args)[i]
     } else {
-        .out |> dplyr::select(dplyr::all_of(final_names))
+      rlang::quo_name(.args[[i]])
     }
+
+    keep_names <- keep_names[keep_names != col_name]
+    keep_names <- c(keep_names, col_name)
+  }
+
+  grouping_vars <- dplyr::group_vars(.out)
+  grouping_vars <- grouping_vars[grouping_vars %in% names(.out)]
+  final_names <- c(grouping_vars, keep_names[!keep_names %in% grouping_vars])
+
+  if (length(final_names) == 0) {
+    dplyr::transmute(.out)
+  } else {
+    .out |> dplyr::select(dplyr::all_of(final_names))
+  }
 }

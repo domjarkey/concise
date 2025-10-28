@@ -25,23 +25,23 @@
 #'
 #' @export
 filter. <- function(.data, ...) {
-    .args <- rlang::enquos(...)
-    .out <- .data
+  .args <- rlang::enquos(...)
+  .out <- .data
 
-    for (i in seq_along(.args)) {
-        .expr <- rlang::quo_get_expr(.args[[i]])
+  for (i in seq_along(.args)) {
+    .expr <- rlang::quo_get_expr(.args[[i]])
 
-        if (is_concise_formula(.expr)) {
-            .expr <- ensure_concise_type(.expr, "lgl")
-            .parsed <- parse_concise_expression(.out, !!.expr)
-            .args[[i]] <- rlang::quo_set_expr(
-                .args[[i]],
-                .parsed
-            )
-        }
-
-        .out <- dplyr::filter(.out, !!.args[[i]])
+    if (is_concise_formula(.expr)) {
+      .expr <- ensure_concise_type(.expr, "lgl")
+      .parsed <- parse_concise_expression(.out, !!.expr)
+      .args[[i]] <- rlang::quo_set_expr(
+        .args[[i]],
+        .parsed
+      )
     }
 
-    .out
+    .out <- dplyr::filter(.out, !!.args[[i]])
+  }
+
+  .out
 }

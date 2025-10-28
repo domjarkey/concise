@@ -29,58 +29,58 @@
 #'
 #' @export
 tibble. <- function(...) {
-    # TODO: Mimic tibble:::tibble_quos behaviour to allow row definitions of
-    # different lengths to be recycled
-    .args <- rlang::enquos(...)
-    .out <- tibble::tibble()
+  # TODO: Mimic tibble:::tibble_quos behaviour to allow row definitions of
+  # different lengths to be recycled
+  .args <- rlang::enquos(...)
+  .out <- tibble::tibble()
 
-    for (i in seq_along(.args)) {
-        .expr <- rlang::quo_get_expr(.args[[i]])
-        if (is_concise_formula(.expr)) {
-            if (names(.args)[i] == "") {
-                names(.args)[i] <- as.character(get_lhs(.expr))
-            }
-            .parsed <- parse_concise_expression(.out, !!.expr)
-            .args[[i]] <- rlang::quo_set_expr(
-                .args[[i]],
-                .parsed
-            )
-        }
-
-        .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
-
-        col_name <- names(.args)[i]
-        if (col_name == "") {
-            col_name <- paste0("...", i)
-            names(.args)[i] <- col_name
-        }
-
-        if (ncol(.out) == 0) {
-            value <- rlang::eval_tidy(.args[[i]], data = .out)
-
-            if (
-                rlang::is_call(.expr) &&
-                identical(.expr[[1]], default_map_fn)
-            ) {
-                value <- try_simplify(value)
-            }
-
-            .out <- tibble::as_tibble(
-                rlang::set_names(list(value), col_name),
-                .name_repair = "minimal"
-            )
-        } else {
-            .out <- .out |>
-                dplyr::mutate(!!!(.args[i]))
-
-            if (
-                rlang::is_call(.expr) &&
-                identical(.expr[[1]], default_map_fn)
-            ) {
-                .out[[col_name]] <- try_simplify(.out[[col_name]])
-            }
-        }
+  for (i in seq_along(.args)) {
+    .expr <- rlang::quo_get_expr(.args[[i]])
+    if (is_concise_formula(.expr)) {
+      if (names(.args)[i] == "") {
+        names(.args)[i] <- as.character(get_lhs(.expr))
+      }
+      .parsed <- parse_concise_expression(.out, !!.expr)
+      .args[[i]] <- rlang::quo_set_expr(
+        .args[[i]],
+        .parsed
+      )
     }
 
-    tibble::as_tibble(.out, .name_repair = "unique")
+    .expr <- rlang::quo_get_expr(.args[[i]]) # Needs to be reset
+
+    col_name <- names(.args)[i]
+    if (col_name == "") {
+      col_name <- paste0("...", i)
+      names(.args)[i] <- col_name
+    }
+
+    if (ncol(.out) == 0) {
+      value <- rlang::eval_tidy(.args[[i]], data = .out)
+
+      if (
+        rlang::is_call(.expr) &&
+          identical(.expr[[1]], default_map_fn)
+      ) {
+        value <- try_simplify(value)
+      }
+
+      .out <- tibble::as_tibble(
+        rlang::set_names(list(value), col_name),
+        .name_repair = "minimal"
+      )
+    } else {
+      .out <- .out |>
+        dplyr::mutate(!!!(.args[i]))
+
+      if (
+        rlang::is_call(.expr) &&
+          identical(.expr[[1]], default_map_fn)
+      ) {
+        .out[[col_name]] <- try_simplify(.out[[col_name]])
+      }
+    }
+  }
+
+  tibble::as_tibble(.out, .name_repair = "unique")
 }

@@ -92,11 +92,11 @@
 #' @import rlang
 #' @export
 rowmap. <- function(.l,
-                 .f,
-                 ...,
-                 env = rlang::caller_env(),
-                 map_fn = purrr::pmap,
-                 simplify = TRUE) {
+                    .f,
+                    ...,
+                    env = rlang::caller_env(),
+                    map_fn = purrr::pmap,
+                    simplify = TRUE) {
   .f <- get_rhs(rlang::enexpr(.f))
 
   if (is.atomic(.l)) {
@@ -236,20 +236,20 @@ rowmap_df. <- function(.l, .f = NULL, ..., env = parent.frame()) {
 #' @rdname rowmap.
 #' @export
 rowmap_dfc. <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rowmap.(
-        .l = .l,
-        .f = !!.f,
-        ...,
-        env = env,
-        map_fn = purrr::pmap_dfc,
-        simplify = FALSE
-    )
+  rowmap.(
+    .l = .l,
+    .f = !!.f,
+    ...,
+    env = env,
+    map_fn = purrr::pmap_dfc,
+    simplify = FALSE
+  )
 }
 
 #' @rdname rowmap.
 #' @export
 rowmap_dfr. <- function(.l, .f = NULL, ..., env = parent.frame()) {
-    rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
+  rowmap.(.l = .l, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
 #' @rdname rowmap.

@@ -196,13 +196,13 @@ map_df. <- function(.x, .f, ..., env = parent.frame()) {
 #' @rdname map.
 #' @export
 map_dfc. <- function(.x, .f, ..., env = parent.frame()) {
-    map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfc)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfc)
 }
 
 #' @rdname map.
 #' @export
 map_dfr. <- function(.x, .f, ..., env = parent.frame()) {
-    map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
+  map.(.x = .x, .f = !!.f, ..., env = env, map_fn = purrr::pmap_dfr)
 }
 
 #' @rdname map.

@@ -67,63 +67,64 @@ insert_argument <- function(.f, .f_name, arg_name, arg_value, force = FALSE) {
 }
 
 ensure_concise_type <- function(.expr, type) {
-    desired_type <- rlang::sym(type)
-    if (.expr[[1]] == rlang::sym("?")) {
-        possible_types <- c(
-            "chr",
-            "dbl",
-            "int",
-            "lgl",
-            "list"
-        ) |>
-            purrr::map(rlang::sym)
+  desired_type <- rlang::sym(type)
+  if (.expr[[1]] == rlang::sym("?")) {
+    possible_types <- c(
+      "chr",
+      "dbl",
+      "int",
+      "lgl",
+      "list"
+    ) |>
+      purrr::map(rlang::sym)
 
-        question_mark_expression <- .expr[[3]]
+    question_mark_expression <- .expr[[3]]
 
-        if (length(question_mark_expression) == 1) {
-            if (question_mark_expression == desired_type) {
-                return(.expr)
-            } else if (any(possible_types == question_mark_expression)) {
-                .expr[[3]] <- substitute_name(
-                    .expr[[3]],
-                    question_mark_expression,
-                    desired_type
-                )
-            } else {
-                .expr[[3]] <- rlang::expr(
-                    {!!question_mark_expression ; !!desired_type}
-                )
-            }
-        } else {
-            current_type <- intersect(
-                unlist(atomise_formula(question_mark_expression)),
-                possible_types
-            )
-            if (length(current_type) == 0) {
-                .expr[[3]] <- call2(
-                    .fn = "{",
-                    !!!append(
-                        desired_type,
-                        as.list(.expr[[3]][-1])
-                    )
-                )
-                return(.expr)
-            } else {
-                current_type <- current_type[[1]]
-            }
-            if (current_type == desired_type) {
-                return(.expr)
-            } else {
-                .expr[[3]] <- substitute_name(
-                    .expr[[3]],
-                    current_type,
-                    desired_type
-                )
-            }
-        }
-
-        .expr
+    if (length(question_mark_expression) == 1) {
+      if (question_mark_expression == desired_type) {
+        return(.expr)
+      } else if (any(possible_types == question_mark_expression)) {
+        .expr[[3]] <- substitute_name(
+          .expr[[3]],
+          question_mark_expression,
+          desired_type
+        )
+      } else {
+        .expr[[3]] <- rlang::expr({
+          !!question_mark_expression
+          !!desired_type
+        })
+      }
     } else {
-        rlang::expr(!!.expr ? !!desired_type)
+      current_type <- intersect(
+        unlist(atomise_formula(question_mark_expression)),
+        possible_types
+      )
+      if (length(current_type) == 0) {
+        .expr[[3]] <- call2(
+          .fn = "{",
+          !!!append(
+            desired_type,
+            as.list(.expr[[3]][-1])
+          )
+        )
+        return(.expr)
+      } else {
+        current_type <- current_type[[1]]
+      }
+      if (current_type == desired_type) {
+        return(.expr)
+      } else {
+        .expr[[3]] <- substitute_name(
+          .expr[[3]],
+          current_type,
+          desired_type
+        )
+      }
     }
+
+    .expr
+  } else {
+    rlang::expr(!!.expr ? !!desired_type)
+  }
 }
